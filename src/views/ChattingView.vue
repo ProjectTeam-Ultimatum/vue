@@ -30,7 +30,7 @@ export default {
         });
     },
     enterChatRoom(roomId) {
-      // Vue Router를 사용하여 해당 채팅방의 상세 페이지로 이동
+      // Vue Router를 사용하여 해당 채팅방의 상세 페이지로 이동!
       this.$router.push({ name: 'ChatRoom', params: { roomId: roomId } });
     }
   }
