@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ReviewBoard from '../views/ReviewBoard.vue'
+import ChattingView from '../views/ChattingView.vue'
 
 
 const routes = [
@@ -13,6 +14,11 @@ const routes = [
     path: '/reviews',
     name: 'reviews',
     component: ReviewBoard
+  },
+  {
+    path: '/chatting',
+    name: 'chatting',
+    component: ChattingView
   },
 
   {
