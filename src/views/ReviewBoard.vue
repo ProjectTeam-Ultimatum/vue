@@ -1,12 +1,15 @@
 <template>
   <div v-for="review in reviews" :key="review.id" class="review-card">
     <!-- Review Image -->
-    <div
-      v-if="review.reviewImages && review.reviewImages.length > 0"
-      class="review-image"
-    >
-      <!-- 첫 번째 이미지의 경로를 바인딩 -->
-      <img :src="review.reviewImages[0].filePath" alt="Review Image" />
+    <div class="review-image">
+      <img
+        :src="
+          review.reviewImages.length > 0
+            ? review.reviewImages[0].imageUri
+            : 'default-image-url'
+        "
+        alt="Review Image"
+      />
     </div>
     <div class="review-content">
       <h3>{{ review.reviewTitle }}</h3>
@@ -56,7 +59,7 @@ export default {
           //성공적으로 데이터를 받아온 경우
           console.log("데이터요청 성공 : " + response.data);
           this.reviews = response.data.content;
-          this.totalPage = response.data.totalPages;
+          this.totalPages = response.data.totalPages;
         })
         .catch((error) => {
           //요청중 에러
@@ -66,6 +69,9 @@ export default {
     changePage(page) {
       this.page = page;
       this.fetchData();
+    },
+    incrementLikes(review) {
+      // 좋아요를 증가시키는 로직을 추가
     },
   },
   mounted() {
