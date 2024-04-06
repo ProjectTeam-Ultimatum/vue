@@ -1,9 +1,14 @@
 <template>
   <div>
     <h2>채팅방 목록</h2>
+    <form @submit.prevent="createChatRoom">
+      <input v-model="newChatRoomName" type="text" placeholder="채팅방 이름 입력" />
+      <button type="submit">채팅방 생성</button>
+    </form>
     <ul>
       <li v-for="room in chatRooms" :key="room.chatRoomId">
         <a href="#" @click="enterChatRoom(room.chatRoomId)">{{ room.chatRoomName }}</a>
+        <button @click="deleteChatRoom(room.chatRoomId)">삭제</button>
       </li>
     </ul>
   </div>
@@ -14,6 +19,7 @@ export default {
   data() {
     return {
       chatRooms: [], // 채팅방 목록을 저장할 배열
+      newChatRoomName: '',
     };
   },
   mounted() {
@@ -27,6 +33,30 @@ export default {
         })
         .catch(error => {
           console.error("채팅방 목록을 불러오는데 실패했습니다:", error);
+        });
+    },
+    createChatRoom() {
+      const newChatRoom = {
+        chatRoomName: this.newChatRoomName, // 사용자 입력으로 받은 채팅방 이름
+      };
+      this.$axios.post('http://localhost:8080/api/v1/chat/create', newChatRoom)
+        .then(response => {
+          console.log("채팅방 생성 성공:", response.data);
+          this.newChatRoomName = ''; // 입력 필드 초기화
+          this.fetchChatRooms(); // 채팅방 목록 다시 불러오기
+        })
+        .catch(error => {
+          console.error("채팅방 생성 실패:", error);
+        });
+    },
+    deleteChatRoom(roomId) {
+      this.$axios.delete(`http://localhost:8080/api/v1/chat/room/${roomId}`)
+        .then(() => {
+          alert("채팅방이 삭제되었습니다.");
+          this.fetchChatRooms(); // 채팅방 목록을 다시 불러옵니다.
+        })
+        .catch(error => {
+          console.error("채팅방 삭제 중 오류가 발생했습니다:", error);
         });
     },
     enterChatRoom(roomId) {
