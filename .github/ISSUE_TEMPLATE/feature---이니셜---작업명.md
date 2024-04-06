@@ -1,5 +1,5 @@
 ---
-name: Feature Template
+name: feature / 이니셜 / 작업명
 about: 기능 추가 이슈 템플릿
 title: Feature / 이름 / 기능명
 labels: ''
