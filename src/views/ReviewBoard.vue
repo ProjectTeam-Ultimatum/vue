@@ -14,15 +14,17 @@
     <div class="review-content">
       <h3>{{ review.reviewTitle }}</h3>
       <p>{{ review.reviewSubtitle }}</p>
+      <p>{{ truncate(review.reviewContent, 50) }}</p>
       <div class="review-footer">
-        <span class="likes" @click="incrementLikes"
-          >❤️ {{ review.reviewLikes }}</span
+        <span class="likes" @click="incrementLikes(review)"
+          >❤️ {{ review.reviewLike }}</span
         >
         <span class="comment"
           ><i class="fa-regular fa-comment comment-icon"></i>
           {{ review.comment }}</span
         >
-        <!-- <span class="date">{{ review.reg_date | formatDate }}</span> -->
+        <span class="date">{{ formatDate(review.reg_date) }}</span>
+
         <span class="author">by auther</span>
       </div>
     </div>
@@ -66,12 +68,41 @@ export default {
           console.error("에러났어요 : " + error);
         });
     },
+    truncate(str, num) {
+      if (str.length > num) {
+        return str.slice(0, num) + "...";
+      } else {
+        return str;
+      }
+    },
+    async incrementLikes(review) {
+      // 좋아요를 증가시키는 로직
+      review.reviewLike += 1;
+      try {
+        // 백엔드 서버에 변경사항을 전달
+        await this.$axios.post(
+          `http://localhost:8080/api/reviews/${review.reviewId}`,
+          {
+            reviewLike: review.reviewLike,
+          },
+          console.log(review)
+        );
+        // 필요하다면 응답 처리
+      } catch (error) {
+        console.error("좋아요 업데이트 중 에러 발생: " + error);
+      }
+    },
+    // 날짜를 인자로 받아서 원하는 형태의 문자열로 변환하여 반환
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
+      const day = date.getDate().toString().padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    },
     changePage(page) {
       this.page = page;
       this.fetchData();
-    },
-    incrementLikes(review) {
-      // 좋아요를 증가시키는 로직을 추가
     },
   },
   mounted() {
@@ -93,7 +124,7 @@ export default {
 }
 
 .review-image {
-  flex: 1.3; /* 이미지 영역과 콘텐츠 영역이 비율에 따라 공간을 나눔 */
+  flex: 1.6; /* 이미지 영역과 콘텐츠 영역이 비율에 따라 공간을 나눔 */
   background-size: cover;
   background-position: center;
 }
