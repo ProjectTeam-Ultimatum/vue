@@ -1,5 +1,12 @@
 <template>
-  <div v-for="review in reviews" :key="review.id" class="review-card">
+  <select v-model="selectedRegion" @change="fetchData">
+    <option value="">전체 지역</option>
+    <option value="제주 북부 ">제주 북부</option>
+    <option value="제주 남부">제주 남부</option>
+    <option value="제주 서부">제주 서부</option>
+    <option value="제주 동부">제주 동부</option>
+  </select>
+  <div v-for="review in filteredReviews" :key="review.id" class="review-card">
     <!-- Review Image -->
     <div class="review-image">
       <img
@@ -39,33 +46,53 @@
 export default {
   name: "ReviewBoard",
   components: {},
+
   data() {
     return {
-      reviews: [], // 복수형으로 변경하여 여러 후기 데이터를 담을 수 있도록 함
+      allReviews: [], // 복수형으로 변경하여 여러 후기 데이터를 담을 수 있도록 함
       page: 0,
       totalPages: 10,
+      selectedRegion: "", //기본값 전체로 설정
     };
   },
+  computed: {
+    filteredReviews() {
+      //선택된 지역에 따라 리뷰를 필터링
+      console.log(this.selectedResion); //필터링 전 선택지역확인
+      const result = !this.selectedRegion
+        ? this.allReviews
+        : this.allReviews.filter(
+            (review) => review.reviewLocation === this.selectedRegion
+          );
+      console.log(result); //필터링 결과 확인
+      return result;
+    },
+  },
+
   //created, mounted같은 생명주기 훅을 사용하여 후기 데이터를 가져오기
   methods: {
-    fetchData() {
-      const params = {
-        page: this.page,
-        size: 6,
-        sort: "reviewId,desc", //정렬방식
-      };
-      this.$axios
-        .get("http://localhost:8080/api/reviews", { params })
-        .then((response) => {
-          //성공적으로 데이터를 받아온 경우
-          console.log("데이터요청 성공 : " + response.data);
-          this.reviews = response.data.content;
-          this.totalPages = response.data.totalPages;
-        })
-        .catch((error) => {
-          //요청중 에러
-          console.error("에러났어요 : " + error);
-        });
+    async fetchData() {
+      try {
+        const params = {
+          page: this.page,
+          size: 6,
+          sort: "reviewId,desc", //정렬방식
+        };
+        if (this.selectedRegion) {
+          params.reviewLocation = this.selectedRegion.trim();
+        }
+        const response = await this.$axios.get(
+          "http://localhost:8080/api/reviews",
+          { params }
+        );
+        //성공적으로 데이터를 받아온 경우
+        console.log("데이터요청 성공 : " + response.data);
+        console.log(this.allReviews);
+        this.allReviews = response.data.content;
+        this.totalPages = response.data.totalPages;
+      } catch (error) {
+        console.error("에러났어요 : " + error);
+      }
     },
     truncate(str, num) {
       if (str.length > num) {
@@ -104,6 +131,7 @@ export default {
       this.fetchData();
     },
   },
+
   mounted() {
     this.fetchData(); //컴포넌트가 마운트 될 때 데이터를 가져옴
   },
