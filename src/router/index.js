@@ -1,6 +1,10 @@
+// eslint-disable-next-line
+/* eslint-disable */
+
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ReviewBoard from '../views/ReviewBoard.vue'
+import RecommendList from '../views/RecommendList.vue' // 수정된 부분
 
 
 const routes = [
@@ -14,7 +18,11 @@ const routes = [
     name: 'reviews',
     component: ReviewBoard
   },
-
+  {
+    path: '/list',
+    name: 'list',
+    component: RecommendList
+  },
   {
     path: '/about',
     name: 'about',
