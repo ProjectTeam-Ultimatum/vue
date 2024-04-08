@@ -3,6 +3,8 @@
     <h1>{{ chatRoomName }}</h1>
     <!-- 사용자 아이디 입력 필드 추가 -->
     <input v-model="userId" placeholder="아이디 입력" />
+    <!-- 입장 버튼 추가 -->
+    <button @click="enterChatRoom">입장</button>
     <ul v-for="message in messages" :key="message.id">
       <!-- 채팅 메시지 목록 표시 -->
       <li>{{ message.senderId }}: {{ message.message }}</li>
@@ -23,9 +25,11 @@ export default {
       userId: '',
       newMessage: '', // 사용자가 입력한 새 메시지
       messages: [], // 채팅방의 메시지 목록
+      socket: null,
     };
   },
   mounted() {
+    this.connectWebSocket(); // WebSocket 연결을 설정합니다.
     // URL에서 roomId를 추출
     this.chatRoomId = this.$route.params.roomId;
     // 추출한 roomId를 사용하여 API 호출
@@ -34,6 +38,33 @@ export default {
     this.fetchMessages(); 
   },
   methods: {
+    connectWebSocket() {
+      // WebSocket 연결을 생성합니다.
+      this.socket = new WebSocket(`ws://localhost:8080/ws/chat?chatRoomId=${this.chatRoomId}`);
+      
+      // 연결이 열릴 때 실행될 콜백 함수를 정의합니다.
+      this.socket.onopen = () => {
+        console.log("WebSocket 연결 성공");
+        // 채팅방에 입장 메시지를 전송합니다.
+        this.enterChatRoom();
+      };
+      
+      // 메시지를 수신할 때 실행될 콜백 함수를 정의합니다.
+      this.socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        this.messages.push(data); // 수신된 메시지를 메시지 목록에 추가합니다.
+      };
+      
+      // 연결이 종료될 때 실행될 콜백 함수를 정의합니다.
+      this.socket.onclose = () => {
+        console.log("WebSocket 연결 종료");
+      };
+      
+      // 오류가 발생했을 때 실행될 콜백 함수를 정의합니다.
+      this.socket.onerror = (error) => {
+        console.error("WebSocket 오류 발생:", error);
+      };
+    },
     fetchChatRoomDetails(roomId) {
       // Axios를 사용하여 백엔드 API 호출
       this.$axios.get(`http://localhost:8080/api/v1/chat/room/${roomId}`)
@@ -57,21 +88,39 @@ export default {
         });
     },
     sendMessage() {
-      const messageData = {
-        messageType: "TALK",
-        chatRoomId: this.chatRoomId,
-        senderId: this.userId, 
-        message: this.newMessage,
-      };
-      this.$axios.post('http://localhost:8080/api/v1/chat/message', messageData)
-        .then(() => {
-          this.newMessage = ''; // 입력 필드 초기화
-          this.fetchMessages(); // 메시지 목록을 다시 불러옵니다.
-        })
-        .catch(error => {
-          console.error("메시지 전송 실패:", error);
-        });
+      if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+        const messageData = {
+          messageType: "TALK",
+          chatRoomId: this.chatRoomId,
+          senderId: this.userId, 
+          message: this.newMessage,
+        };
+        // WebSocket을 통해 서버로 메시지를 전송합니다.
+        this.socket.send(JSON.stringify(messageData));
+        this.newMessage = ''; // 입력 필드 초기화
+      } else {
+        console.error("WebSocket 연결이 되어있지 않습니다.");
+      }
+    },
+    enterChatRoom() {
+    // WebSocket이 열려있는지 확인하고, 열려있다면 서버에 입장 신호만 전송합니다.
+      if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      // messageType이 'ENTER'인 메시지를 서버로 전송합니다.
+      // 이 메시지는 서버에서 사용자의 입장을 알리는 용도로 사용됩니다.
+        const enterSignal = {
+          messageType: "ENTER",
+          chatRoomId: this.chatRoomId,
+          senderId: this.userId,
+          // 실제 메시지 내용은 서버에서 생성됩니다.
+        };
+        this.socket.send(JSON.stringify(enterSignal));
+        } else {
+        console.error("WebSocket 연결이 준비되지 않았습니다.");
+      }
     },
   }
 };
 </script>
+<style>
+
+</style>

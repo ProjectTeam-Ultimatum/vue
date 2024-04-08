@@ -1,6 +1,32 @@
 <template>
-  <div>
-    <h2>채팅방 목록</h2>
+  <div class="app-container">
+  <div class="title-container">
+  <!-- 타이틀 -->
+    <h1>여행 조인 게시판</h1>
+    <p class="right-text"><font-awesome-icon icon="fa-solid fa-pen-to-square" />글쓰기</p>
+  </div>
+  <!-- 서브타이틀 -->
+  <p style="text-align: left;">당신의 여행이 더욱 특별해질 수 있게 여행메이트를 찾아보세요.</p>
+
+  <!-- 검색 폼 -->
+  <div class="d-flex justify-content-center">
+  <input class="form-control me-2" style="flex-grow: 1; max-width: 80%;" type="text" placeholder="Default input" aria-label="default input example">
+  <button type="button" class="btn btn-primary">Primary</button>
+  </div>
+  
+  <!-- 채팅방 목록 -->
+  <div class= "chatting-background">
+    <div class="card-container">
+    <div class="profile-picture">
+      <img src="../assets/hanra.jpeg" alt="home" >
+    </div>
+    <div class="text-content">
+      <h3 class="chatroom-name">채팅방 이름</h3>
+      <p class="author-name">작성자 이름</p>
+      <p class="subtitle">서브타이틀</p>
+    </div>
+  </div>
+    <h2>채팅방 목록 <font-awesome-icon icon="fa-solid fa-rotate-right" /></h2>
     <form @submit.prevent="createChatRoom">
       <input v-model="newChatRoomName" type="text" placeholder="채팅방 이름 입력" />
       <button type="submit">채팅방 생성</button>
@@ -12,6 +38,8 @@
       </li>
     </ul>
   </div>
+
+</div>
 </template>
 
 <script>
@@ -66,3 +94,58 @@ export default {
   }
 };
 </script>
+<style>
+/* 전체 페이지에 적용되는 스타일 */
+.app-container {
+  max-width: 1200px; /* 최대 너비 설정 */
+  margin: 0 auto; /* 상하 마진 0, 좌우 마진 자동으로 중앙 정렬 */
+  padding: 0 20px; /* 양 옆에 20px의 패딩을 추가하여 내용과 화면 가장자리 사이에 공간을 생성 */
+}
+
+.title-container {
+  display: flex;
+  justify-content: space-between; /* 좌우 요소를 양 끝으로 정렬 */
+  align-items: center; /* 세로 방향으로 중앙 정렬 */
+}
+.right-text {
+}
+
+.card-container {
+  display: flex;
+  align-items: center; /* 세로 중앙 정렬 */
+  margin: 20px;
+  padding: 10px;
+  border: 1px solid #ccc; /* 경계선 설정 */
+  border-radius: 8px; /* 경계선 둥글게 */
+}
+
+.profile-picture img {
+  width: 80px; /* 프로필 이미지 크기 */
+  height: 80px; /* 프로필 이미지 크기 */
+  border-radius: 50%; /* 원형으로 만들기 */
+  margin-right: 20px; /* 텍스트 컨텐츠와의 간격 */
+}
+
+.text-content {
+  flex: 1; /* 텍스트 컨텐츠가 나머지 공간을 채우도록 */
+}
+
+.chatroom-name {
+  margin: 0;
+  font-size: 20px; /* 제목 크기 */
+}
+
+.author-name {
+  margin: 5px 0;
+  font-size: 16px; /* 작성자 이름 크기 */
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 14px; /* 서브타이틀 크기 */
+  color: #666; /* 서브타이틀 색상 */
+}
+.chatting-background {
+  background-color: rgb(255, 241, 244);
+}
+</style>
