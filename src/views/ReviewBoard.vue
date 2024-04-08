@@ -20,11 +20,10 @@
           >❤️ {{ review.reviewLike }}</span
         >
         <span class="comment"
-          ><i class="fa-regular fa-comment comment-icon"></i>
-          {{ review.comment }}</span
+          ><i class="fa-regular fa-comment comment-icon"></i> 📨
+          {{ review.replyCount }}</span
         >
         <span class="date">{{ formatDate(review.reg_date) }}</span>
-
         <span class="author">by auther</span>
       </div>
     </div>
