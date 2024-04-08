@@ -15,28 +15,31 @@
   </div>
   
   <!-- 채팅방 목록 -->
-  <div class= "chatting-background">
-    <div class="card-container">
-    <div class="profile-picture">
-      <img src="../assets/hanra.jpeg" alt="home" >
+  <div class="app-container">
+    <!-- 타이틀과 서브타이틀, 검색 폼 등 기존 내용 유지 -->
+
+    <!-- 채팅방 목록 -->
+    <div class="chatting-background">
+      <h2>채팅방 목록</h2>
+      <form @submit.prevent="createChatRoom">
+        <input v-model="newChatRoomName" type="text" placeholder="채팅방 이름 입력" />
+        <button type="submit">채팅방 생성</button>
+      </form>
+
+      <!-- 채팅방 카드 목록 -->
+      <div v-for="room in chatRooms" :key="room.chatRoomId" class="card-container">
+        <div class="profile-picture">
+          <img src="../assets/hanra.jpeg" alt="Profile Picture" >
+        </div>
+        <div class="text-content">
+          <h3 class="chatroom-name">{{ room.chatRoomName }}</h3>
+          <p class="author-name">작성자 이름: {{ room.authorName }}</p>
+          <p class="subtitle">서브타이틀: 예시 텍스트</p>
+          <button @click="enterChatRoom(room.chatRoomId)">입장</button>
+          <button @click="deleteChatRoom(room.chatRoomId)">삭제</button>
+        </div>
+      </div>
     </div>
-    <div class="text-content">
-      <h3 class="chatroom-name">채팅방 이름</h3>
-      <p class="author-name">작성자 이름</p>
-      <p class="subtitle">서브타이틀</p>
-    </div>
-  </div>
-    <h2>채팅방 목록 <font-awesome-icon icon="fa-solid fa-rotate-right" /></h2>
-    <form @submit.prevent="createChatRoom">
-      <input v-model="newChatRoomName" type="text" placeholder="채팅방 이름 입력" />
-      <button type="submit">채팅방 생성</button>
-    </form>
-    <ul>
-      <li v-for="room in chatRooms" :key="room.chatRoomId">
-        <a href="#" @click="enterChatRoom(room.chatRoomId)">{{ room.chatRoomName }}</a>
-        <button @click="deleteChatRoom(room.chatRoomId)">삭제</button>
-      </li>
-    </ul>
   </div>
 
 </div>
