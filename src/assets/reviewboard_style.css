@@ -1,0 +1,112 @@
+
+.main-text {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 0;
+}
+.highlight {
+  color: #ffc83b;
+  font-style: bold;
+  font-size: 38px;
+}
+.sub-text { margin-top: 5px; margin-bottom: 30px;}
+.container {
+  display: flex; /* 기본적으로 가로 방향 */
+  flex-direction: row; /* 기본적으로 가로 방향 */
+  align-items: flex-start; /* 컨텐츠를 상단에 정렬 */
+  gap: 0px; /* 컬럼사이 간격 */
+  justify-content: center;
+  margin-left: 250px;
+  margin-right: 250px;
+}
+
+.region-list {
+  margin-top: 20px;
+  flex: 0.5; /*sidebar 가 차지할 공간 */
+  flex-direction: column;
+}
+.region-item {
+  padding: 15px;
+  cursor: pointer;
+  font-size: 23px;
+  margin-bottom: 15px;
+}
+.region-item.active {
+  font-weight: bold;
+  font-size: 28px;
+  color: #1275d6;
+}
+.reviews {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.review-card {
+  display: flex; /* Flexbox 레이아웃 적용 */
+  border: 1px solid #eee;
+  border-radius: 15px;
+  overflow: hidden; /* 컨테이너 밖으로 내용물이 넘치지 않도록 설정 */
+  margin: 10px auto;
+  width: 100%; /* 카드의 너비를 부모 컨테이너에 맞춤 */
+  max-width: 860px; /* 최대 너비 설정 */
+  height: 260px; /* 카드의 높이 고정 */
+}
+
+.review-image {
+  flex: 1.9; /* 이미지 영역과 콘텐츠 영역이 비율에 따라 공간을 나눔 */
+  background-size: cover;
+  background-position: center;
+}
+
+.review-content {
+  flex: 2; /* 콘텐츠 영역이 이미지 영역보다 크게 설정 */
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+.card-main {
+  padding: 20px;
+  text-align: left;
+}
+.review-title{
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 10px;
+margin-bottom: 15px;
+}
+.subtitle{
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.review-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.review-footer {
+  margin: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+
+.rating,
+.author,
+.date {
+  font-size: 0.9em;
+  margin-right: 15px;
+}
+.likes {
+  cursor: pointer;
+  user-select: none; /* 텍스트 선택 방지 */
+  margin-left: 15px;
+  margin-right: 15px;
+}
+.comment-icon {
+  transform: scaleX(-1); /* 아이콘을 수평으로 뒤집음 */
+}
+
+

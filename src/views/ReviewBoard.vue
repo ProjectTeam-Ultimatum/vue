@@ -1,8 +1,12 @@
 <template>
-  <h1 class="main-text">여행 <span class="highlight">후기</span> 게시판</h1>
-  <h4 class="sub-text">
+  <p class="main-text">여행 <span class="highlight">후기</span> 게시판</p>
+  <p class="sub-text">
     당신의 여행이 더욱 특별해질 수 있게 여행기록을 공유하세요
-  </h4>
+  </p>
+  <!-- 검색창 -->
+  <input type="text" v-model="searchQuery" placeholder="검색어를 입력하세요" />
+  <!-- 검색 버튼 -->
+  <button @click="performSearch">검색</button>
   <div class="container">
     <div class="region-list">
       <div
@@ -61,19 +65,28 @@
         </div>
         <div class="review-content">
           <div class="card-main">
-            <h2>[{{ review.reviewLocation }}] {{ review.reviewTitle }}</h2>
-            <h4>{{ review.reviewSubtitle }}</h4>
-            <p>{{ truncate(review.reviewContent, 50) }}</p>
+            <div class="review-title">
+              [{{ review.reviewLocation }}] {{ review.reviewTitle }}
+            </div>
+            <div class="subtitle">{{ review.reviewSubtitle }}</div>
+            <div>{{ truncate(review.reviewContent, 50) }}</div>
           </div>
           <div class="review-footer">
             <div class="footer-container">
-              <span class="likes" @click="incrementLikes(review)"
-                >❤️ {{ review.reviewLike }}</span
-              >
-              <span class="comment"
-                ><i class="fa-regular fa-comment comment-icon"></i> 📨
-                {{ review.replyCount }}</span
-              >
+              <span class="likes" @click="incrementLikes(review)">
+                <font-awesome-icon
+                  :icon="['fas', 'heart']"
+                  size="lg"
+                  style="color: #e00b0b"
+                />
+                {{ review.reviewLike }}
+              </span>
+              <font-awesome-icon
+                :icon="['far', 'comment']"
+                size="lg"
+                flip="horizontal"
+              />
+              <span class="comment">. {{ review.replyCount }}</span>
             </div>
             <div class="footer-container">
               <span class="date">{{ formatDate(review.reg_date) }}</span>
@@ -102,18 +115,30 @@ export default {
       page: 0,
       totalPages: 10,
       selectedRegion: "", //기본값 전체로 설정
+      searchQuery: "",
     };
   },
   computed: {
     filteredReviews() {
-      //선택된 지역에 따라 리뷰를 필터링
-      console.log(this.selectedResion); //필터링 전 선택지역확인
-      const result = !this.selectedRegion
-        ? this.allReviews
-        : this.allReviews.filter(
-            (review) => review.reviewLocation === this.selectedRegion
-          );
-      console.log(result); //필터링 결과 확인
+      // 검색 쿼리와 선택된 지역에 따라 리뷰를 필터링
+      let result = this.allReviews;
+
+      if (this.selectedRegion) {
+        result = result.filter(
+          (review) => review.reviewLocation === this.selectedRegion
+        );
+      }
+
+      if (this.searchQuery) {
+        const searchLowerCase = this.searchQuery.toLowerCase();
+        result = result.filter(
+          (review) =>
+            review.reviewTitle.toLowerCase().includes(searchLowerCase) ||
+            review.reviewSubtitle.toLowerCase().includes(searchLowerCase) ||
+            review.reviewContent.toLowerCase().includes(searchLowerCase)
+        );
+      }
+
       return result;
     },
   },
@@ -130,10 +155,7 @@ export default {
         if (this.selectedRegion) {
           params.reviewLocation = this.selectedRegion.trim();
         }
-        const response = await this.$axios.get(
-          "http://localhost:8080/api/reviews",
-          { params }
-        );
+        const response = await this.$axios.get("/api/reviews", { params });
         //성공적으로 데이터를 받아온 경우
         console.log("데이터요청 성공 : " + response.data);
         console.log(this.allReviews);
@@ -156,7 +178,7 @@ export default {
       try {
         // 백엔드 서버에 변경사항을 전달
         await this.$axios.post(
-          `http://localhost:8080/api/reviews/${review.reviewId}`,
+          `/api/reviews/${review.reviewId}`,
           {
             reviewLike: review.reviewLike,
           },
@@ -191,103 +213,6 @@ export default {
 };
 </script>
 
-<style>
-.main-text {
-  margin-top: 20px;
-}
-.highlight {
-  color: #ffc83b;
-  font-style: bold;
-  font-size: 38px;
-}
-.container {
-  display: flex; /* 기본적으로 가로 방향 */
-  flex-direction: row; /* 기본적으로 가로 방향 */
-  align-items: flex-start; /* 컨텐츠를 상단에 정렬 */
-  gap: 0px; /* 컬럼사이 간격 */
-  padding: 0;
-  justify-content: center;
-}
-
-.region-list {
-  margin-top: 20px;
-  flex: 1; /*sidebar 가 차지할 공간 */
-  flex-direction: column;
-}
-.region-item {
-  padding: 28px;
-  cursor: pointer;
-  font-size: 24px;
-}
-.region-item.active {
-  font-weight: bold;
-  font-size: 28px;
-  color: #1275d6;
-}
-.reviews {
-  flex: 3;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-left: -100px;
-}
-.review-card {
-  display: flex; /* Flexbox 레이아웃 적용 */
-  border: 1px solid #eee;
-  border-radius: 15px;
-  overflow: hidden; /* 컨테이너 밖으로 내용물이 넘치지 않도록 설정 */
-  margin: 10px auto;
-  width: 100%; /* 카드의 너비를 부모 컨테이너에 맞춤 */
-  max-width: 860px; /* 최대 너비 설정 */
-  height: 260px; /* 카드의 높이 고정 */
-}
-
-.review-image {
-  flex: 1.9; /* 이미지 영역과 콘텐츠 영역이 비율에 따라 공간을 나눔 */
-  background-size: cover;
-  background-position: center;
-}
-
-.review-content {
-  flex: 2; /* 콘텐츠 영역이 이미지 영역보다 크게 설정 */
-  display: flex;
-  flex-direction: column;
-  margin-left: 20px;
-  margin-right: 20px;
-}
-.card-main {
-  padding: 20px;
-  text-align: left;
-}
-
-.review-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.review-footer {
-  margin: 10px;
-  display: flex;
-  justify-content: space-between;
-}
-.footer-container {
-}
-
-.rating,
-.author,
-.date {
-  font-size: 0.9em;
-  margin-right: 15px;
-}
-.likes {
-  cursor: pointer;
-  user-select: none; /* 텍스트 선택 방지 */
-  margin-left: 15px;
-  margin-right: 15px;
-}
-.comment-icon {
-  transform: scaleX(-1); /* 아이콘을 수평으로 뒤집음 */
-}
+<style scoped>
+@import "../assets/reviewboard_style.css";
 </style>
-
