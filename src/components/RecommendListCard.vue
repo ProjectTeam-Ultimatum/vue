@@ -1,25 +1,42 @@
 <template>
     <div>
+      <div>
+        <button>가볼만한 곳</button>
+        <button>맛집</button>
+        <button>숙소</button>
+      </div>
+        <div class="card-wrap">
         <!-- <div v-for="list in recommendList" :key="list.id"> -->
         <div :key="i" v-for="(list, i) in recommendList">
           <div class="card">
           <div class="card-image">
-              <img src="your-image-path.jpg" alt="Restaurant Image">
+            <img :src="
+                list.recommendImageUrl.length > 0
+                    ? list.recommendImageUrl[0].recommendImageUrl
+                    : 'default-image-url'
+                "
+                alt="Review Image"
+            />
               <div class="score">{{ list.recommendFoodStar }}</div>
           </div>
           <div class="card-content">
               <div class="card-title">{{ list.recommendFoodTitle }}</div>
+              <!-- 영업시간 -->
               <div class="card-info">
-                  <span class="valet-service">{{ list.recommendFoodOpentime }}</span>
-              </div>
+              <span class="status" :class="getStatusClass(list.recommendFoodClosetime)">
+                {{ getStatusMessage(list.recommendFoodClosetime) }}
+              </span>
+            </div>
               <div class="card-description">{{ list.recommendFoodContent }}</div>
-              <div class="card-stats">
-                  <div class="stat">
-                      <span class="stat-count">211</span>
-                      <span class="stat-label">Likes</span>
-                  </div>
-              </div>
+              <div class="stat" @click="toggleLike">
+                <font-awesome-icon
+                  class="like-icon"
+                  :icon="isLiked ? 'heart' : ['far', 'heart']"
+                />
+                <span class="stat-label">좋아요</span>
+            </div>
           </div>
+        </div>
         </div>
         </div>
     </div>
@@ -29,29 +46,21 @@
   /* eslint-disable */
   export default {
     name: 'RecommendListCard',
-  //   props: {
-  //   recommendList: {
-  //     type: Array,
-  //     default: () => []
-  //   }
-  // },
     data(){
         return{
           recommendList: [], // 복수형으로 변경하여 여러 후기 데이터를 담을 수 있도록 함
-            //page: 0,
-            //totalPages: 10,
-            //loading: false // 로딩 상태를 나타내는 데이터 추가
+            loading: false, // 로딩 상태를 나타내는 데이터 추가
+            isLiked: false, 
         };
     },
-    //created, mounted같은 생명주기 훅을 사용하여 후기 데이터를 가져오기
+    //created, mounted
     methods: {
+          toggleLike() {
+          this.isLiked = !this.isLiked;
+        },
+        //api axios 요청
         fetchData() {
-        //this.loading = true; // 데이터 요청 시작 시 로딩 상태 활성화
-        // const params = {
-        //     page: this.page,
-        //     size: 2,
-        //     sort: "recommendFoodId,desc", //정렬방식
-        // };
+        this.loading = true; // 데이터 요청 시작 시 로딩 상태 활성화
         this.$axios
             .get("http://localhost:8080/api/recommend/list")
             .then((response) => {
@@ -59,25 +68,39 @@
             console.log("데이터요청 성공 : " + response.data);
             console.log("데이터요청 성공 : " + response.data.content);
             this.recommendList = response.data.content;
-            //this.totalPages = response.data.totalPages;
             })
             .catch((error) => {
             //요청중 에러
             console.error("에러났어요 : " + error);
             });
         },
-        // truncate(str, num) {
-        // if (str.length > num) {
-        //     return str.slice(0, num) + "...";
-        // } else {
-        //     return str;
-        // }
-        // },
-        // changePage(page) {
-        // this.page = page;
-        // this.fetchData();
-        // },
+        //영업중, 영업마감
+        isOperating(closeTime) {
+      if (!closeTime) return '휴무일'; // 휴무일 처리
+      
+      const now = new Date();
+      const currentHours = now.getHours();
+      const currentMinutes = now.getMinutes();
+      const [closeHours, closeMinutes] = closeTime.split(':').map(Number);
+
+      if (currentHours < closeHours || (currentHours === closeHours && currentMinutes < closeMinutes)) {
+        return '영업중';
+      } else {
+        return '영업마감';
+      }
     },
+    getStatusClass(closeTime) {
+      const status = this.isOperating(closeTime);
+      return {
+        open: status === '영업중',
+        closed: status === '영업마감',
+        holiday: status === '휴무일',
+      };
+    },
+    getStatusMessage(closeTime) {
+      return this.isOperating(closeTime);
+    }
+  },
     mounted() {
         this.fetchData(); //컴포넌트가 마운트 될 때 데이터를 가져옴
     }
@@ -85,5 +108,5 @@
   </script>
 
 <style scoped>
-@import "../assets/styles.css";
+@import "../assets/recommendList_style.css";
 </style>
