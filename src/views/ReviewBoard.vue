@@ -1,37 +1,86 @@
 <template>
-  <select v-model="selectedRegion" @change="fetchData">
-    <option value="">전체 지역</option>
-    <option value="제주 북부 ">제주 북부</option>
-    <option value="제주 남부">제주 남부</option>
-    <option value="제주 서부">제주 서부</option>
-    <option value="제주 동부">제주 동부</option>
-  </select>
-  <div v-for="review in filteredReviews" :key="review.id" class="review-card">
-    <!-- Review Image -->
-    <div class="review-image">
-      <img
-        :src="
-          review.reviewImages.length > 0
-            ? review.reviewImages[0].imageUri
-            : 'default-image-url'
-        "
-        alt="Review Image"
-      />
+  <h1 class="main-text">여행 <span class="highlight">후기</span> 게시판</h1>
+  <h4 class="sub-text">
+    당신의 여행이 더욱 특별해질 수 있게 여행기록을 공유하세요
+  </h4>
+  <div class="container">
+    <div class="region-list">
+      <div
+        class="region-item"
+        :class="{ active: selectedRegion === '' }"
+        @click="selectRegion('')"
+      >
+        전체 지역
+      </div>
+      <div
+        class="region-item"
+        :class="{ active: selectedRegion === '제주 북부' }"
+        @click="selectRegion('제주 북부')"
+      >
+        제주 북부
+      </div>
+      <div
+        class="region-item"
+        :class="{ active: selectedRegion === '제주 남부' }"
+        @click="selectRegion('제주 남부')"
+      >
+        제주 남부
+      </div>
+      <div
+        class="region-item"
+        :class="{ active: selectedRegion === '제주 동부' }"
+        @click="selectRegion('제주 동부')"
+      >
+        제주 동부
+      </div>
+      <div
+        class="region-item"
+        :class="{ active: selectedRegion === '제주 서부' }"
+        @click="selectRegion('제주 서부')"
+      >
+        제주 서부
+      </div>
     </div>
-    <div class="review-content">
-      <h3>{{ review.reviewTitle }}</h3>
-      <p>{{ review.reviewSubtitle }}</p>
-      <p>{{ truncate(review.reviewContent, 50) }}</p>
-      <div class="review-footer">
-        <span class="likes" @click="incrementLikes(review)"
-          >❤️ {{ review.reviewLike }}</span
-        >
-        <span class="comment"
-          ><i class="fa-regular fa-comment comment-icon"></i> 📨
-          {{ review.replyCount }}</span
-        >
-        <span class="date">{{ formatDate(review.reg_date) }}</span>
-        <span class="author">by auther</span>
+
+    <div class="reviews">
+      <div
+        v-for="review in filteredReviews"
+        :key="review.id"
+        class="review-card"
+      >
+        <!-- Review Image -->
+        <div class="review-image">
+          <img
+            :src="
+              review.reviewImages.length > 0
+                ? review.reviewImages[0].imageUri
+                : 'default-image-url'
+            "
+            alt="Review Image"
+          />
+        </div>
+        <div class="review-content">
+          <div class="card-main">
+            <h2>[{{ review.reviewLocation }}] {{ review.reviewTitle }}</h2>
+            <h4>{{ review.reviewSubtitle }}</h4>
+            <p>{{ truncate(review.reviewContent, 50) }}</p>
+          </div>
+          <div class="review-footer">
+            <div class="footer-container">
+              <span class="likes" @click="incrementLikes(review)"
+                >❤️ {{ review.reviewLike }}</span
+              >
+              <span class="comment"
+                ><i class="fa-regular fa-comment comment-icon"></i> 📨
+                {{ review.replyCount }}</span
+              >
+            </div>
+            <div class="footer-container">
+              <span class="date">{{ formatDate(review.reg_date) }}</span>
+              <span class="author">by auther</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -130,6 +179,10 @@ export default {
       this.page = page;
       this.fetchData();
     },
+    selectRegion(region) {
+      this.selectedRegion = region;
+      this.fetchData;
+    },
   },
 
   mounted() {
@@ -138,7 +191,46 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
+.main-text {
+  margin-top: 20px;
+}
+.highlight {
+  color: #ffc83b;
+  font-style: bold;
+  font-size: 38px;
+}
+.container {
+  display: flex; /* 기본적으로 가로 방향 */
+  flex-direction: row; /* 기본적으로 가로 방향 */
+  align-items: flex-start; /* 컨텐츠를 상단에 정렬 */
+  gap: 0px; /* 컬럼사이 간격 */
+  padding: 0;
+  justify-content: center;
+}
+
+.region-list {
+  margin-top: 20px;
+  flex: 1; /*sidebar 가 차지할 공간 */
+  flex-direction: column;
+}
+.region-item {
+  padding: 28px;
+  cursor: pointer;
+  font-size: 24px;
+}
+.region-item.active {
+  font-weight: bold;
+  font-size: 28px;
+  color: #1275d6;
+}
+.reviews {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-left: -100px;
+}
 .review-card {
   display: flex; /* Flexbox 레이아웃 적용 */
   border: 1px solid #eee;
@@ -146,22 +238,26 @@ export default {
   overflow: hidden; /* 컨테이너 밖으로 내용물이 넘치지 않도록 설정 */
   margin: 10px auto;
   width: 100%; /* 카드의 너비를 부모 컨테이너에 맞춤 */
-  max-width: 1000px; /* 최대 너비 설정 */
-  height: 280px; /* 카드의 높이 고정 */
+  max-width: 860px; /* 최대 너비 설정 */
+  height: 260px; /* 카드의 높이 고정 */
 }
 
 .review-image {
-  flex: 1.6; /* 이미지 영역과 콘텐츠 영역이 비율에 따라 공간을 나눔 */
+  flex: 1.9; /* 이미지 영역과 콘텐츠 영역이 비율에 따라 공간을 나눔 */
   background-size: cover;
   background-position: center;
 }
 
 .review-content {
   flex: 2; /* 콘텐츠 영역이 이미지 영역보다 크게 설정 */
-  padding: 20px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+.card-main {
+  padding: 20px;
+  text-align: left;
 }
 
 .review-image img {
@@ -171,19 +267,24 @@ export default {
 }
 
 .review-footer {
-  margin-top: 20px;
+  margin: 10px;
   display: flex;
   justify-content: space-between;
+}
+.footer-container {
 }
 
 .rating,
 .author,
 .date {
   font-size: 0.9em;
+  margin-right: 15px;
 }
 .likes {
   cursor: pointer;
   user-select: none; /* 텍스트 선택 방지 */
+  margin-left: 15px;
+  margin-right: 15px;
 }
 .comment-icon {
   transform: scaleX(-1); /* 아이콘을 수평으로 뒤집음 */
