@@ -29,8 +29,8 @@ export default {
   data() {
     return {
       olMap: undefined,
-      addressCopy: '',
-      address: ''
+      address: '',
+      iconsSource: undefined
     }
   },
   mounted() {
@@ -56,6 +56,7 @@ this.olMap = new OlMap({
     zoom: 11
   })
 });
+this.$store.dispatch('setReviews', this);
 
 this.olMap.on('click', async (e) => {
   await addUiAddress.call(this); // 화살표 함수를 사용하여 this 컨텍스트를 유지합니다.
@@ -116,6 +117,38 @@ methods: {
   setUiAddress(str) {
   this.address = str.split(', ').reverse().join(' ');
 },
+drawFeatures() {
+            if (this.iconsSource)
+                this.iconsSource.clear();
+
+            this.iconsSource = new OlVectorSource(EPSG_3857);
+            const iconsLayer = new OlVectorLayer({
+                source: this.iconsSource
+            });
+            const style = new OlStyle({
+                image: new OlIcon({
+                    scale: 0.8,
+                    src: require('@/assets/jjang.jpeg')
+                })
+            });
+            const features = this.reviews.map(review => {
+                const point = this.coordi4326To3857([review.lon, review.lat]);
+                const feature = new OlFeature({
+                    geometry: new OlPoint(point)
+                });
+                feature.set('title', review.title);
+                feature.set('grade', review.grade);
+                feature.set('address', review.address);
+                feature.set('review', review.review);
+                feature.set('reviewId', review.id);
+                feature.setStyle(style);
+
+                return feature;
+            })
+            this.iconsSource.addFeatures(features);
+
+            this.olMap.addLayer(iconsLayer);
+        }
 }
 
 }
