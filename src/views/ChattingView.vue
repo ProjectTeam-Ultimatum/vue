@@ -151,6 +151,7 @@ export default {
     .then(response => {
       console.log("채팅방 생성 성공:", response.data);
       // 성공 후 필요한 상태 초기화
+      console.log("travleStyles", this.travelStyles)
       this.newChatRoomTitle = '';
       this.travelStyles = [];
       this.showModal = false; // 모달 창 닫기

@@ -1,18 +1,34 @@
 <template>
-  <div>
-    <h1>{{ chatRoomName }}</h1>
-    <!-- 사용자 아이디 입력 필드 추가 -->
-    <input v-model="userId" placeholder="아이디 입력" />
+  <div class="chat-room-container">
+    <!-- 채팅방 상단 영역: 채팅방 이름 및 사용자 정보 -->
+    <header class="chat-room-header">
+      <div class="chat-room-title">{{ chatRoomName }}</div>
+      <div class="user-profile">
+        <img src="../assets/profile.png" alt="User Avatar" class="user-avatar" />
+        <span class="user-name">배정현</span>
+            <input v-model="userId" placeholder="아이디 입력" />
     <!-- 입장 버튼 추가 -->
     <button @click="enterChatRoom">입장</button>
-    <ul v-for="message in messages" :key="message.id">
-      <!-- 채팅 메시지 목록 표시 -->
-      <li>{{ message.senderId }}: {{ message.message }}</li>
-    </ul>
-    <form @submit.prevent="sendMessage">
-      <input v-model="newMessage" placeholder="메시지를 입력하세요" />
-      <button type="submit">보내기</button>
-    </form>
+      </div>
+    </header>
+
+    <!-- 채팅 메시지 목록 -->
+    <section class="chat-messages">
+      <ul>
+        <li v-for="message in messages" :key="message.id" class="message-item">
+          <span class="message-sender">{{ message.senderId }}:</span>
+          <span class="message-content">{{ message.message }}</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 메시지 입력 영역 -->
+    <footer class="message-input-area">
+      <form @submit.prevent="sendMessage" class="message-form">
+        <input v-model="newMessage" placeholder="메시지를 입력하세요" class="input-field" />
+        <button type="submit" class="send-button">보내기</button>
+      </form>
+    </footer>
   </div>
 </template>
 
@@ -122,5 +138,89 @@ export default {
 };
 </script>
 <style>
+/* 전체 채팅방 컨테이너 */
+.chat-room-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
+/* 채팅방 헤더 스타일 */
+.chat-room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+}
+
+.chat-room-title {
+  font-size: 1.5em;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.user-name {
+  font-size: 1em;
+}
+
+/* 채팅 메시지 목록 스타일 */
+.chat-messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 16px;
+  background-color: #e9e9e9;
+}
+
+.message-item {
+  margin-bottom: 10px;
+}
+
+.message-sender {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.message-content {
+  word-break: break-word;
+}
+
+/* 메시지 입력 영역 스타일 */
+.message-input-area {
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-top: 1px solid #ddd;
+}
+
+.message-form {
+  display: flex;
+}
+
+.input-field {
+  flex-grow: 1;
+  padding: 10px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.send-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
 </style>
