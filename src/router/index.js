@@ -4,8 +4,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ReviewBoard from '../views/ReviewBoard.vue'
-import RecommendList from '../views/RecommendList.vue' // 수정된 부분
-
+import RecommendListFood from '../components/RecommendListFood.vue' 
+import RecommendListHotel from '../components/RecommendListHotel.vue' 
+import RecommendList from '../views/RecommendList.vue'
+//import RecommendList from '../views/RecommendListPlace.vue' 
 
 const routes = [
   {
@@ -20,8 +22,18 @@ const routes = [
   },
   {
     path: '/list',
-    name: 'list',
+    name: 'RecommendList',
     component: RecommendList
+  },
+  {
+    path: '/listfood',
+    name: 'listfood',
+    component: RecommendListFood
+  },
+  {
+    path: '/listhotel',
+    name: 'listhotel',
+    component: RecommendListHotel
   },
   {
     path: '/about',

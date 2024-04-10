@@ -1,33 +1,28 @@
 <template>
     <div>
-      <div>
-        <button>가볼만한 곳</button>
-        <button>맛집</button>
-        <button>숙소</button>
-      </div>
         <div class="card-wrap">
         <!-- <div v-for="list in recommendList" :key="list.id"> -->
-        <div :key="i" v-for="(list, i) in recommendList">
+        <div :key="i" v-for="(food, i) in recommendListFood">
           <div class="card">
           <div class="card-image">
             <img :src="
-                list.recommendImageUrl.length > 0
-                    ? list.recommendImageUrl[0].recommendImageUrl
+                food.recommendImageUrl.length > 0
+                    ? food.recommendImageUrl[0].recommendImageUrl
                     : 'default-image-url'
                 "
                 alt="Review Image"
             />
-              <div class="score">{{ list.recommendFoodStar }}</div>
+              <div class="score">{{ food.recommendFoodStar }}</div>
           </div>
           <div class="card-content">
-              <div class="card-title">{{ list.recommendFoodTitle }}</div>
+              <div class="card-title">{{ food.recommendFoodTitle }}</div>
               <!-- 영업시간 -->
               <div class="card-info">
-              <span class="status" :class="getStatusClass(list.recommendFoodClosetime)">
-                {{ getStatusMessage(list.recommendFoodClosetime) }}
+              <span class="status" :class="getStatusClass(food.recommendFoodClosetime)">
+                {{ getStatusMessage(food.recommendFoodClosetime) }}
               </span>
             </div>
-              <div class="card-description">{{ list.recommendFoodContent }}</div>
+              <div class="card-description">{{ food.recommendFoodContent }}</div>
               <div class="stat" @click="toggleLike">
                 <font-awesome-icon
                   class="like-icon"
@@ -48,7 +43,7 @@
     name: 'RecommendListCard',
     data(){
         return{
-          recommendList: [], // 복수형으로 변경하여 여러 후기 데이터를 담을 수 있도록 함
+          recommendListFood: [], // 복수형으로 변경하여 여러 후기 데이터를 담을 수 있도록 함
             loading: false, // 로딩 상태를 나타내는 데이터 추가
             isLiked: false, 
         };
@@ -62,12 +57,12 @@
         fetchData() {
         this.loading = true; // 데이터 요청 시작 시 로딩 상태 활성화
         this.$axios
-            .get("http://localhost:8080/api/recommend/list")
+            .get("http://localhost:8080/api/recommend/listfood")
             .then((response) => {
             //성공적으로 데이터를 받아온 경우
             console.log("데이터요청 성공 : " + response.data);
             console.log("데이터요청 성공 : " + response.data.content);
-            this.recommendList = response.data.content;
+            this.recommendListFood = response.data.content;
             })
             .catch((error) => {
             //요청중 에러
