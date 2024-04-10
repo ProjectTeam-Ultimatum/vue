@@ -1,7 +1,4 @@
 <template>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-  </head>
   <p class="main-text">여행 <span class="highlight">후기</span> 게시판</p>
   <p class="sub-text">
     당신의 여행이 더욱 특별해질 수 있게 여행기록을 공유하세요
@@ -64,14 +61,21 @@
         </div>
       </div>
 
+      <!--게시글 반복 카드-->
       <div class="cards-container">
         <div
           v-for="review in displayReviews"
           :key="review.id"
           class="review-card"
         >
-          <!-- Review Image -->
-          <div class="review-image">
+          <!--모달창 불러오기-->
+          <ReviewModal
+            :review="selectedReview"
+            :isVisible="isModalVisible"
+            @close="closeModal()"
+          />
+          <!-- 이미지 -->
+          <div class="review-image" @click="openModal(review)">
             <img
               :src="
                 review.reviewImages.length > 0
@@ -81,7 +85,8 @@
               alt="Review Image"
             />
           </div>
-          <div class="review-content">
+          <!-- 게시글 콘텐츠 -->
+          <div class="review-content" @click="openModal(review)">
             <div class="card-main">
               <div class="review-title">
                 [{{ review.reviewLocation }}] {{ review.reviewTitle }}
@@ -122,11 +127,15 @@
 </template>
 
 <script>
+import ReviewModal from "@/components/ReviewModal.vue";
+
 /* eslint-disable */
 
 export default {
   name: "ReviewBoard",
-  components: {},
+  components: {
+    ReviewModal,
+  },
 
   data() {
     return {
@@ -137,6 +146,8 @@ export default {
       searchQuery: "",
       searchResults: [], //검색결과 저장 배열
       searchPerformed: false, //검색이 수행되었는지 여부를 추적하는 변수
+      isModalVisible: false, //모달 기본 닫혀있기
+      selectedReview: null,
     };
   },
   computed: {
@@ -145,7 +156,7 @@ export default {
       if (this.searchResults.length > 0) {
         return this.searchResults;
       } else if (this.selectedRegion) {
-        return this.filteredReviews;
+        return this.filteredReviews();
       } else {
         return this.allReviews;
       }
@@ -179,6 +190,13 @@ export default {
       } catch (error) {
         console.error("에러났어요 : " + error);
       }
+    },
+    openModal(review) {
+      this.selectedReview = review;
+      this.isModalVisible = true;
+    },
+    closeModal() {
+      this.isModalVisible = false;
     },
 
     performSearch() {
