@@ -3,10 +3,7 @@
   <p class="sub-text">
     당신의 여행이 더욱 특별해질 수 있게 여행기록을 공유하세요
   </p>
-  <!-- 검색창 -->
-  <input type="text" v-model="searchQuery" placeholder="검색어를 입력하세요" />
-  <!-- 검색 버튼 -->
-  <button @click="performSearch">검색</button>
+
   <div class="container">
     <div class="region-list">
       <div
@@ -47,50 +44,69 @@
     </div>
 
     <div class="reviews">
-      <div
-        v-for="review in filteredReviews"
-        :key="review.id"
-        class="review-card"
-      >
-        <!-- Review Image -->
-        <div class="review-image">
-          <img
-            :src="
-              review.reviewImages.length > 0
-                ? review.reviewImages[0].imageUri
-                : 'default-image-url'
-            "
-            alt="Review Image"
+      <div class="review-search">
+        <div class="search-input">
+          <!-- 검색창 -->
+          <input
+            id="input-default"
+            type="text"
+            v-model="searchQuery"
+            @keyup.enter="performSearch"
+            placeholder="검색어를 입력하세요"
           />
+          <!-- 검색 버튼 -->
+          <button class="search-button" type="submit" @click="performSearch">
+            검 색
+          </button>
         </div>
-        <div class="review-content">
-          <div class="card-main">
-            <div class="review-title">
-              [{{ review.reviewLocation }}] {{ review.reviewTitle }}
-            </div>
-            <div class="subtitle">{{ review.reviewSubtitle }}</div>
-            <div>{{ truncate(review.reviewContent, 50) }}</div>
+      </div>
+
+      <div class="cards-container">
+        <div
+          v-for="review in displayReviews"
+          :key="review.id"
+          class="review-card"
+        >
+          <!-- Review Image -->
+          <div class="review-image">
+            <img
+              :src="
+                review.reviewImages.length > 0
+                  ? review.reviewImages[0].imageUri
+                  : 'default-image-url'
+              "
+              alt="Review Image"
+            />
           </div>
-          <div class="review-footer">
-            <div class="footer-container">
-              <span class="likes" @click="incrementLikes(review)">
-                <font-awesome-icon
-                  :icon="['fas', 'heart']"
-                  size="lg"
-                  style="color: #e00b0b"
-                />
-                {{ review.reviewLike }}
-              </span>
-              <font-awesome-icon
-                :icon="['far', 'comment']"
-                size="lg"
-                flip="horizontal"
-              />
-              <span class="comment">. {{ review.replyCount }}</span>
+          <div class="review-content">
+            <div class="card-main">
+              <div class="review-title">
+                [{{ review.reviewLocation }}] {{ review.reviewTitle }}
+              </div>
+              <div class="subtitle">{{ review.reviewSubtitle }}</div>
+              <div>{{ truncate(review.reviewContent, 50) }}</div>
             </div>
-            <div class="footer-container">
-              <span class="date">{{ formatDate(review.reg_date) }}</span>
-              <span class="author">by auther</span>
+            <div class="review-footer">
+              <div class="footer-container">
+                <span class="likes" @click="incrementLikes(review)">
+                  <font-awesome-icon
+                    :icon="['fas', 'heart']"
+                    size="lg"
+                    style="color: #e00b0b"
+                  />
+                  {{ review.reviewLike }}
+                </span>
+                <font-awesome-icon
+                  :icon="['far', 'comment']"
+                  size="lg"
+                  flip="horizontal"
+                />
+                <span class="comment">. {{ review.replyCount }}</span>
+              </div>
+              <div class="footer-container">
+                <span class="date">{{ formatDate(review.reg_date) }}</span>
+                <span class="author">by auther</span>
+              </div>
             </div>
           </div>
         </div>
@@ -116,30 +132,28 @@ export default {
       totalPages: 10,
       selectedRegion: "", //기본값 전체로 설정
       searchQuery: "",
+      searchResults: [], //검색결과 저장 배열
+      searchPerformed: false, //검색이 수행되었는지 여부를 추적하는 변수
     };
   },
   computed: {
+    displayReviews() {
+      //검색 결과가 있을 경우 검색결과를, 그렇지 않을 경우 지역 필터링 결과 또는 전체 리뷰를 반환
+      if (this.searchResults.length > 0) {
+        return this.searchResults;
+      } else if (this.selectedRegion) {
+        return this.filteredReviews;
+      } else {
+        return this.allReviews;
+      }
+    },
+    // selectedRegion 값에 따라 allReviews를 필터링하여 결과를 반환합니다.
     filteredReviews() {
-      // 검색 쿼리와 선택된 지역에 따라 리뷰를 필터링
-      let result = this.allReviews;
-
       if (this.selectedRegion) {
-        result = result.filter(
+        return this.allReviews.filter(
           (review) => review.reviewLocation === this.selectedRegion
         );
       }
-
-      if (this.searchQuery) {
-        const searchLowerCase = this.searchQuery.toLowerCase();
-        result = result.filter(
-          (review) =>
-            review.reviewTitle.toLowerCase().includes(searchLowerCase) ||
-            review.reviewSubtitle.toLowerCase().includes(searchLowerCase) ||
-            review.reviewContent.toLowerCase().includes(searchLowerCase)
-        );
-      }
-
-      return result;
     },
   },
 
@@ -151,10 +165,8 @@ export default {
           page: this.page,
           size: 6,
           sort: "reviewId,desc", //정렬방식
+          reviewLocation: this.selectedRegion.trim(),
         };
-        if (this.selectedRegion) {
-          params.reviewLocation = this.selectedRegion.trim();
-        }
         const response = await this.$axios.get("/api/reviews", { params });
         //성공적으로 데이터를 받아온 경우
         console.log("데이터요청 성공 : " + response.data);
@@ -165,6 +177,28 @@ export default {
         console.error("에러났어요 : " + error);
       }
     },
+
+    performSearch() {
+      this.selectedRegion = "";
+      //검색 수행 여부를 항상 참으로 설정
+      this.searchPerformed = true;
+      // allReviews에서 검색어에 해당하는 리뷰를 필터링
+      if (this.searchQuery.trim()) {
+        const searchLowerCase = this.searchQuery.toLowerCase();
+        this.searchResults = this.allReviews.filter(
+          (review) =>
+            review.reviewTitle.toLowerCase().includes(searchLowerCase) ||
+            review.reviewSubtitle.toLowerCase().includes(searchLowerCase) ||
+            review.reviewContent.toLowerCase().includes(searchLowerCase)
+        );
+        if (this.searchResults.length === 0) {
+          alert("[" + this.searchQuery + "] 에 대한 검색 결과가 없습니다.");
+        }
+      } else {
+        this.searchResults = [];
+      }
+    },
+
     truncate(str, num) {
       if (str.length > num) {
         return str.slice(0, num) + "...";
@@ -203,12 +237,16 @@ export default {
     },
     selectRegion(region) {
       this.selectedRegion = region;
-      this.fetchData;
+      //검색 결과와 검색어 초기화
+      this.searchResults = [];
+      this.searchQuery = "";
+      //데이터 새로 가져오기
+      this.fetchData();
     },
   },
 
   mounted() {
-    this.fetchData(); //컴포넌트가 마운트 될 때 데이터를 가져옴
+    this.fetchData();
   },
 };
 </script>
