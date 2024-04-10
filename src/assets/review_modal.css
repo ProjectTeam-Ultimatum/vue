@@ -53,12 +53,12 @@
     margin-left: 15px;
     margin-right: 15px;
   }
-  /* .replies {
+  .replies {
     text-align: start;
     margin: 15px;
-    flex-direction: row;
+    
 
-  } */
+  }
   .replies-header {
     display: flex;
     justify-content: start;
@@ -66,9 +66,10 @@
   }
   .reply-date{
     font-size: 12px;
+    margin-left: 10px;
   }
 
   
   .reply-content{
-    margin-top: 10px;
+    text-align: start;
   }
