@@ -26,6 +26,8 @@
   margin-top: 50px;
   flex: 0.5; /*sidebar 가 차지할 공간 */
   flex-direction: column;
+  position: sticky;
+  top: 200px; /* 화면의 맨 위로부터 얼마나 떨어져 있어야 하는지를 지정 */
 
 }
 .region-item {
@@ -109,6 +111,7 @@
   flex-direction: column;
   margin-left: 20px;
   margin-right: 20px;
+  cursor: pointer;
 }
 .card-main {
   padding: 20px;
@@ -118,13 +121,14 @@
   font-size: 20px;
   font-weight: bold;
   margin-top: 10px;
-margin-bottom: 15px;
+  margin-bottom: 15px;
 }
 .subtitle{
   font-weight: bold;
   margin-bottom: 10px;
 }
 .review-image img {
+  cursor: pointer;
   width: 100%;
   height: 100%;
   object-fit: cover;

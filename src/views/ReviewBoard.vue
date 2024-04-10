@@ -86,13 +86,17 @@
             />
           </div>
           <!-- 게시글 콘텐츠 -->
-          <div class="review-content" @click="openModal(review)">
+          <div class="review-content">
             <div class="card-main">
-              <div class="review-title">
+              <div class="review-title" @click="openModal(review)">
                 [{{ review.reviewLocation }}] {{ review.reviewTitle }}
               </div>
-              <div class="subtitle">{{ review.reviewSubtitle }}</div>
-              <div>{{ truncate(review.reviewContent, 50) }}</div>
+              <div class="subtitle" @click="openModal(review)">
+                {{ review.reviewSubtitle }}
+              </div>
+              <div @click="openModal(review)">
+                {{ truncate(review.reviewContent, 50) }}
+              </div>
             </div>
             <div class="review-footer">
               <div class="footer-container">
