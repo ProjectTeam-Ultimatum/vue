@@ -156,7 +156,7 @@ export default {
       if (this.searchResults.length > 0) {
         return this.searchResults;
       } else if (this.selectedRegion) {
-        return this.filteredReviews();
+        return this.filteredReviews;
       } else {
         return this.allReviews;
       }
