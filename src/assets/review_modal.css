@@ -32,12 +32,13 @@
     right: 23px; /* 오른쪽으로부터 10px */
     cursor: pointer; /* 마우스 오버 시 포인터 모양 변경 */
   }
-  
+
   .modal-content .review-title,
   .modal-content .subtitle,
   .modal-content .review-content {
     text-align: left; /* 텍스트를 중앙에 정렬 */
-    margin: 15px;
+    margin-left: 15px;
+    margin-right: 15px;
   }
   
   .slider-container {

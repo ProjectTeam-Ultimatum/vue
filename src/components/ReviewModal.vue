@@ -8,6 +8,28 @@
         [{{ review.reviewLocation }}] {{ review.reviewTitle }}
       </div>
       <div class="subtitle">{{ review.reviewSubtitle }}</div>
+      <div class="review-footer">
+        <div class="footer-container">
+          <span class="likes" @click="incrementLikes(review)">
+            <font-awesome-icon
+              :icon="['fas', 'heart']"
+              size="lg"
+              style="color: #e00b0b"
+            />
+            {{ review.reviewLike }}
+          </span>
+          <font-awesome-icon
+            :icon="['far', 'comment']"
+            size="lg"
+            flip="horizontal"
+          />
+          <span class="comment">. {{ review.replyCount }}</span>
+        </div>
+        <div class="footer-container">
+          <span class="date">{{ formatDate(review.reg_date) }}</span>
+          <span class="author">by auther</span>
+        </div>
+      </div>
 
       <div class="slider-container">
         <div class="click" @click="prevImage" v-if="currentImageIndex > 0">
