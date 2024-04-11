@@ -4,16 +4,25 @@
     <header class="chat-room-header">
       <div class="chat-room-title">{{ chatRoomName }}</div>
       <div class="user-profile">
-        <img src="../assets/profile.png" alt="User Avatar" class="user-avatar" />
-        <span class="user-name">배정현</span>
+        
             <input v-model="userId" placeholder="아이디 입력" />
     <!-- 입장 버튼 추가 -->
     <button @click="enterChatRoom">입장</button>
       </div>
     </header>
 
+    <!-- 메인 콘텐츠 영역 -->
+    <div class="main-content">
+    <!-- 왼쪽 패널 -->
+    <aside class="left-panel">
+    <!-- 왼쪽 내용 -->
+    <h2>채팅방 목록</h2>
+    </aside>
+
+    
+    <!-- 가운데 패널 -->
+    <section class="center-panel">
     <!-- 채팅 메시지 목록 -->
-    <section class="chat-messages">
       <ul>
         <li v-for="message in messages" :key="message.id" class="message-item">
           <span class="message-sender">{{ message.senderId }}:</span>
@@ -21,6 +30,18 @@
         </li>
       </ul>
     </section>
+
+    <!-- 오른쪽 패널 -->
+    <aside class="right-panel">
+    <!-- 오른쪽 내용 -->
+    <img src="../assets/profile.png" alt="User Avatar" class="user-avatar" />
+        <p class="user-name">배정현</p>
+        <p class="user-detail">신뢰도</p>
+        <p class="user-detail">나이</p>
+        <p class="user-detail">여행 스타일</p>
+    </aside>
+    </div>
+
 
     <!-- 메시지 입력 영역 -->
     <footer class="message-input-area">
@@ -138,11 +159,18 @@ export default {
 };
 </script>
 <style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
 /* 전체 채팅방 컨테이너 */
 .chat-room-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 90vh; /* 화면의 전체 높이 */
 }
 
 /* 채팅방 헤더 스타일 */
@@ -155,6 +183,44 @@ export default {
   border-bottom: 1px solid #ddd;
 }
 
+/* 채팅방 헤더 스타일 */
+.chat-room-header {
+  /* 상단 헤더 스타일링 */
+}
+
+.center-panel ul {
+  list-style-type: none; /* 기본적으로 설정된 목록 스타일의 점을 제거 */
+  padding-left: 0; /* 목록 앞의 기본 패딩도 제거 */
+}
+
+/* 메인 콘텐츠 영역을 3개의 섹션으로 나누기 */
+.main-content {
+  display: flex;
+  flex-grow: 1; /* 헤더 아래의 남은 공간을 모두 사용 */
+}
+
+/* 왼쪽, 가운데, 오른쪽 섹션 스타일링 */
+.left-panel, .center-panel, .right-panel {
+  flex: 1; /* 각각의 패널이 동일한 너비를 가지도록 */
+  padding: 10px; /* 패딩을 추가하여 내용과 경계 사이에 여백을 만듦 */
+  overflow-y: auto; /* 내용이 많을 경우 스크롤바를 표시 */
+}
+
+.left-panel {
+  flex: 0.5;
+  border-right: 1px solid #ddd; /* 오른쪽에 경계선 추가 */
+}
+
+.center-panel {
+  flex: 2.2;
+  border-right: 1px solid #ddd; /* 오른쪽에 경계선 추가 */
+}
+
+.right-panel {
+  flex: 0.8;
+}
+
+
 .chat-room-title {
   font-size: 1.5em;
 }
@@ -165,14 +231,21 @@ export default {
 }
 
 .user-avatar {
-  width: 40px;
-  height: 40px;
+  width: 130px;
+  height: 130px;
   border-radius: 50%;
   margin-right: 10px;
+  margin-top: 40px;
+  margin-bottom: 20px;
 }
 
 .user-name {
-  font-size: 1em;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+.user-detail{
+  font-size: 0.8em;
+  color: #5c5c5c;
 }
 
 /* 채팅 메시지 목록 스타일 */
@@ -201,6 +274,9 @@ export default {
   padding: 16px;
   background-color: #f5f5f5;
   border-top: 1px solid #ddd;
+  border-left: 1px solid #dddd;
+  width: 85%;
+  margin-left:14.8%;
 }
 
 .message-form {
