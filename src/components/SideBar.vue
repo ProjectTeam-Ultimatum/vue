@@ -75,14 +75,18 @@ data() {
     addressCopy: '', // 초기화를 제거합니다.
     title: '',
     grade: 0,
-    review: ''
+    review: '',
+    lonCopy: 0.0,
+    latCopy: 0.0
   };
 },
 mounted() {
   // EventBus를 통해 mapClick 이벤트를 수신하는 리스너를 등록합니다.
-  EventBus.$on('mapClick', (address) => {
-    this.addressCopy = address; // 클릭 이벤트 발생시 주소 정보를 받아서 입력란에 출력
-  });
+  EventBus.$on('mapClick', ({ address, lon, lat }) => { 
+  this.addressCopy = address;
+  this.lonCopy = lon;
+  this.latCopy = lat;
+});
 },
 methods: {
   showSideBar() {
@@ -92,15 +96,14 @@ methods: {
     this.$emit('update:address', event.target.value);
   },
   saveReview() {
-    console.log(this.grade)
     try{
     this.$axios.post('http://localhost:8081/api/map/saveMap', {
       title: this.title,
       addressCopy: this.addressCopy,
       grade: this.grade,
       review: this.review,
-      lon: this.$store.state.curLon,
-      lat: this.$stroe.state.curLat
+      lonCopy: this.lonCopy,
+      latCopy: this.latCopy
     }).then(response => {
       console.log('저장 성공:', response);
     })

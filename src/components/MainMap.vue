@@ -30,13 +30,14 @@ export default {
     return {
       olMap: undefined,
       address: '',
-      iconsSource: undefined
+      iconsSource: undefined,
+      locations: []
     }
   },
   mounted() {
-    const vectorSource = new OlVectorSource(EPSG_3857);
+  const vectorSource = new OlVectorSource(EPSG_3857);
   const vectorLayer = new OlVectorLayer({
-       source: vectorSource
+    source: vectorSource
  })
 this.olMap = new OlMap({
   target: this.$refs.map,
@@ -56,9 +57,12 @@ this.olMap = new OlMap({
     zoom: 11
   })
 });
-this.$store.dispatch('setReviews', this);
-
+EventBus.$on('getLocationsFromDB', (locations) => {
+      this.locations = locations;
+      this.addMapIcons(); // 가져온 위치 정보를 기반으로 지도에 아이콘을 추가합니다.
+    });
 this.olMap.on('click', async (e) => {
+  await this.addUiAddress(e.coordinate);
   await addUiAddress.call(this); // 화살표 함수를 사용하여 this 컨텍스트를 유지합니다.
     drawMapIcon();
     console.log(toLonLat(e.coordinate));
@@ -69,7 +73,9 @@ this.olMap.on('click', async (e) => {
     const addressInfo = await this.getAddress(lon, lat) // this 컨텍스트를 유지하기 위해 call(this)를 사용합니다.
     this.setUiAddress(addressInfo.data.display_name);
     this.getAddress(lon, lat).then((addressInfo) => {
-    EventBus.$emit('mapClick', addressInfo.data.display_name.split(', ').reverse().join(' '));
+    EventBus.$emit('mapClick',{address: addressInfo.data.display_name.split(', ').reverse().join(' '), lon: lon, lat: lat});
+    console.log("lon------" + lonLatArr[0])
+    console.log("lat------" + lonLatArr[1])
     });
   }
   function drawMapIcon() {
@@ -103,6 +109,31 @@ this.olMap.on('click', async (e) => {
   });
 },
 methods: {
+  async addUiAddress(coordinate) {
+      const lonLatArr = toLonLat(coordinate);
+      const lon = lonLatArr[0];
+      const lat = lonLatArr[1];
+      const addressInfo = await this.getAddress(lon, lat);
+      this.setUiAddress(addressInfo.data.display_name);
+      EventBus.$emit('mapClick', addressInfo.data.display_name.split(', ').reverse().join(' '));
+      this.drawMapIcon(coordinate);
+    },
+    drawMapIcon(coordinate) {
+      const vectorSource = this.olMap.getLayers().item(1).getSource(); // Get vector source from the second layer
+      vectorSource.clear();
+      const feature = new OlFeature({
+        geometry: new OlPoint(coordinate)
+      });
+      feature.setStyle(
+        new OlStyle({
+          image: new OlIcon({
+            scale: 0.7,
+            src: '//cdn.rawgit.com/jonataswalker/map-utils/master/images/marker.png'
+          })
+        })
+      );
+      vectorSource.addFeature(feature);
+    },
   getAddress (lon, lat) {
     return axios.get(
         'https://nominatim.openstreetmap.org/reverse',
@@ -117,40 +148,29 @@ methods: {
   setUiAddress(str) {
   this.address = str.split(', ').reverse().join(' ');
 },
-drawFeatures() {
-            if (this.iconsSource)
-                this.iconsSource.clear();
 
-            this.iconsSource = new OlVectorSource(EPSG_3857);
-            const iconsLayer = new OlVectorLayer({
-                source: this.iconsSource
-            });
-            const style = new OlStyle({
-                image: new OlIcon({
-                    scale: 0.8,
-                    src: require('@/assets/jjang.jpeg')
-                })
-            });
-            const features = this.reviews.map(review => {
-                const point = this.coordi4326To3857([review.lon, review.lat]);
-                const feature = new OlFeature({
-                    geometry: new OlPoint(point)
-                });
-                feature.set('title', review.title);
-                feature.set('grade', review.grade);
-                feature.set('address', review.address);
-                feature.set('review', review.review);
-                feature.set('reviewId', review.id);
-                feature.setStyle(style);
+addMapIcons() {
+  const vectorLayer = this.olMap.getLayers().item(1); // 두 번째 레이어 가져오기
+  const vectorSource = vectorLayer.getSource();
 
-                return feature;
-            })
-            this.iconsSource.addFeatures(features);
+  // DB에서 가져온 각 위치 정보에 대해 아이콘을 추가합니다.
+  this.locations.forEach(location => {
+    const feature = new OlFeature({
+      geometry: new OlPoint(fromLonLat([location.longitude, location.latitude]))
+    });
+    feature.setStyle(new OlStyle({
+      image: new OlIcon({
+        scale: 0.7,
+        src: '//cdn.rawgit.com/jonataswalker/map-utils/master/images/marker.png'
+      })
+    }));
 
-            this.olMap.addLayer(iconsLayer);
-        }
+    vectorSource.addFeature(feature);
+  });
 }
 
+  }
+  
 }
 </script>
 
