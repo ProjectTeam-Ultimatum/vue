@@ -33,18 +33,25 @@
     right: 23px; /* 오른쪽으로부터 10px */
     cursor: pointer; /* 마우스 오버 시 포인터 모양 변경 */
   }
+  .review-footer-modal{
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
 
   .modal-content .review-title,
-  .modal-content .subtitle,
-  .modal-content .review-content {
+  .modal-content .subtitle {
     text-align: left; /* 텍스트를 중앙에 정렬 */
-    margin-left: 15px;
-    margin-right: 15px;
+    margin-left: 25px;
+    margin-right: 25px;
   }
   .modal-content .review-content {
     text-align: left; /* 텍스트를 중앙에 정렬 */
-    margin-left: 15px;
-    margin-right: 15px;
+    margin-left: 25px;
+    margin-right: 25px;
     margin-top: 10px;
   }
   
@@ -55,11 +62,12 @@
   }
   
   .slider-container img {
-    max-width: 95%;
-    height: 450px;
+    width: 98%;
+    height: 550px;
     object-fit: cover;
-    margin-left: 15px;
-    margin-right: 15px;
+    margin:10px;
+    object-position: center;
+    
   }
   .replies {
     text-align: start;
