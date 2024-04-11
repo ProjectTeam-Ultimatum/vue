@@ -20,6 +20,7 @@ import OlFeature from 'ol/Feature.js';
 import OlPoint from 'ol/geom/Point.js';
 import OlStyle from 'ol/style/Style.js';
 import OlIcon from 'ol/style/Icon.js';
+import markerImage from '@/assets/images/jjang.png';
 
 const EPSG_3857 = 'EPSG:3857';
 
@@ -35,6 +36,8 @@ export default {
     }
   },
   mounted() {
+    
+     this.fetchLocations();
   const vectorSource = new OlVectorSource(EPSG_3857);
   const vectorLayer = new OlVectorLayer({
     source: vectorSource
@@ -46,6 +49,7 @@ this.olMap = new OlMap({
     zoom: false,
     rotate: false,
   }),
+  
   layers: [
     new OlLayerTile({
       source: new OSM()
@@ -107,6 +111,9 @@ this.olMap.on('click', async (e) => {
   geocoder.on('addresschosen', (evt) => {
     this.setUiAddress(evt.address.details.name);
   });
+  this.olMap.once('rendercomplete', () => {
+    this.fetchLocations(); // 지도 렌더링이 완료된 후에 위치 데이터를 가져오고 마커를 추가합니다.
+  });
 },
 methods: {
   async addUiAddress(coordinate) {
@@ -134,6 +141,18 @@ methods: {
       );
       vectorSource.addFeature(feature);
     },
+
+    async fetchLocations() {
+  try {
+    const response = await axios.get('http://localhost:8081/api/map/listMap');
+    this.locations = response.data; // 응답 데이터를 locations 배열에 저장
+    this.addMapIcons(); // 가져온 위치 정보를 기반으로 지도에 아이콘을 추가
+    } catch (error) {
+    console.error('Error fetching locations:', error);
+    }
+    console.log('Received locations:', this.locations);
+  },
+  
   getAddress (lon, lat) {
     return axios.get(
         'https://nominatim.openstreetmap.org/reverse',
@@ -156,15 +175,14 @@ addMapIcons() {
   // DB에서 가져온 각 위치 정보에 대해 아이콘을 추가합니다.
   this.locations.forEach(location => {
     const feature = new OlFeature({
-      geometry: new OlPoint(fromLonLat([location.longitude, location.latitude]))
+      geometry: new OlPoint(fromLonLat([location.lonCopy, location.latCopy]))
     });
     feature.setStyle(new OlStyle({
       image: new OlIcon({
-        scale: 0.7,
-        src: '//cdn.rawgit.com/jonataswalker/map-utils/master/images/marker.png'
+        scale: 0.05,
+        src: markerImage 
       })
     }));
-
     vectorSource.addFeature(feature);
   });
 }
