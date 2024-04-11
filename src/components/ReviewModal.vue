@@ -1,13 +1,27 @@
 <template>
   <div class="modal" v-if="isVisible">
-    <div class="cl-bt" @click="$emit('close')">
-      <font-awesome-icon :icon="['fas', 'xmark']" size="2xl" />
+    <div class="head-bts">
+      <div class="cl-bt" @click="$emit('close')" style="color: #6e6e6e">
+        <font-awesome-icon :icon="['fas', 'xmark']" size="2xl" />
+      </div>
+      <div class="update-delete">
+        <div class="update-button">
+          <span style="font-size: 12px"> 수정 </span
+          ><font-awesome-icon :icon="['far', 'pen-to-square']" size="xl" />
+        </div>
+        <div class="delete-button">
+          <span style="font-size: 12px"> 삭제 </span
+          ><font-awesome-icon :icon="['far', 'trash-can']" size="xl" />
+        </div>
+      </div>
     </div>
+
     <div class="modal-content">
-      <div class="review-title">
+      <div class="board-name">여행 후기 게시판 ></div>
+      <div class="review-title1">
         [{{ review.reviewLocation }}] {{ review.reviewTitle }}
       </div>
-      <div class="subtitle">{{ review.reviewSubtitle }}</div>
+      <div class="subtitle1">{{ review.reviewSubtitle }}</div>
       <div class="review-footer-modal">
         <div class="footer-container-modal">
           <span class="likes" @click="incrementLikes(review)">
@@ -23,7 +37,7 @@
             size="lg"
             flip="horizontal"
           />
-          <span class="comment">. {{ review.replyCount }}</span>
+          <span class="comment"> {{ review.replyCount }}</span>
         </div>
         <div class="footer-container-modal">
           <span class="date">{{ formatDate(review.reg_date) }}</span>
@@ -41,7 +55,7 @@
         </div>
       </div>
 
-      <div class="review-content">{{ review.reviewContent }}</div>
+      <div class="review-content1">{{ review.reviewContent }}</div>
 
       <div
         class="replies"

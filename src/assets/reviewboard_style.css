@@ -115,6 +115,7 @@
   margin-left: 20px;
   margin-right: 20px;
   cursor: pointer;
+  color: #6E6E6E;
   
 }
 .card-main {
@@ -122,14 +123,16 @@
   text-align: left;
 }
 .review-title{
-  font-size: 20px;
+  font-size: 23px;
   font-weight: bold;
   margin-top: 10px;
   margin-bottom: 15px;
+  color: #393939;
 }
 .subtitle{
   font-weight: bold;
   margin-bottom: 10px;
+  color: #6E6E6E;
 }
 .review-image img {
   cursor: pointer;
@@ -153,12 +156,15 @@
 .date {
   font-size: 0.9em;
   margin-right: 15px;
+  color: #1B1F23;
 }
 .likes {
   cursor: pointer;
   user-select: none; /* 텍스트 선택 방지 */
   margin-left: 15px;
   margin-right: 15px;
+  color: #1B1F23;
+  
 }
 .click{
   cursor: pointer;
