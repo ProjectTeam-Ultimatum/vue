@@ -8,8 +8,8 @@
         [{{ review.reviewLocation }}] {{ review.reviewTitle }}
       </div>
       <div class="subtitle">{{ review.reviewSubtitle }}</div>
-      <div class="review-footer">
-        <div class="footer-container">
+      <div class="review-footer-modal">
+        <div class="footer-container-modal">
           <span class="likes" @click="incrementLikes(review)">
             <font-awesome-icon
               :icon="['fas', 'heart']"
@@ -25,22 +25,18 @@
           />
           <span class="comment">. {{ review.replyCount }}</span>
         </div>
-        <div class="footer-container">
+        <div class="footer-container-modal">
           <span class="date">{{ formatDate(review.reg_date) }}</span>
           <span class="author">by auther</span>
         </div>
       </div>
 
       <div class="slider-container">
-        <div class="click" @click="prevImage" v-if="currentImageIndex > 0">
+        <div class="click" @click="prevImage">
           <font-awesome-icon :icon="['fas', 'chevron-left']" size="2xl" />
         </div>
         <img :src="currentImageUrl" alt="Images" />
-        <div
-          class="click"
-          @click="nextImage"
-          v-if="currentImageIndex < review.reviewImages.length - 1"
-        >
+        <div class="click" @click="nextImage">
           <font-awesome-icon :icon="['fas', 'chevron-right']" size="2xl" />
         </div>
       </div>

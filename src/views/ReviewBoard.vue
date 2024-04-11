@@ -95,7 +95,7 @@
                 {{ review.reviewSubtitle }}
               </div>
               <div @click="openModal(review)">
-                {{ truncate(review.reviewContent, 50) }}
+                {{ truncate(review.reviewContent, 90) }}
               </div>
             </div>
             <div class="review-footer">
