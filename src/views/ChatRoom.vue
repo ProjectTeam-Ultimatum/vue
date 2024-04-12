@@ -46,6 +46,7 @@
     <!-- 메시지 입력 영역 -->
     <footer class="message-input-area">
       <form @submit.prevent="sendMessage" class="message-form">
+        <input type="file" @change="handleFileUpload" class="file-input" />
         <input v-model="newMessage" placeholder="메시지를 입력하세요" class="input-field" />
         <button type="submit" class="send-button">보내기</button>
       </form>
@@ -75,6 +76,25 @@ export default {
     this.fetchMessages(); 
   },
   methods: {
+    // 이미지 파일 처리
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      this.$axios.post('http://localhost:8080/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+    .then(response => {
+      const imageUrl = response.data;
+      this.sendMessage(imageUrl);  // 이미지 URL을 채팅으로 전송
+    })
+    .catch(error => console.error("이미지 업로드 실패:", error));
+    },
     connectWebSocket() {
       // WebSocket 연결을 생성합니다.
       this.socket = new WebSocket(`ws://localhost:8080/ws/chat?chatRoomId=${this.chatRoomId}`);
@@ -124,17 +144,16 @@ export default {
           console.error("채팅방 메시지를 불러오는 중 오류가 발생했습니다:", error);
         });
     },
-    sendMessage() {
+    sendMessage(imageUrl = '') {
+      const messageData = {
+        messageType: "TALK",
+        chatRoomId: this.chatRoomId,
+        senderId: this.userId,
+        message: this.newMessage || imageUrl,
+      };
       if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-        const messageData = {
-          messageType: "TALK",
-          chatRoomId: this.chatRoomId,
-          senderId: this.userId, 
-          message: this.newMessage,
-        };
-        // WebSocket을 통해 서버로 메시지를 전송합니다.
         this.socket.send(JSON.stringify(messageData));
-        this.newMessage = ''; // 입력 필드 초기화
+        this.newMessage = '';  // 입력 필드 초기화
       } else {
         console.error("WebSocket 연결이 되어있지 않습니다.");
       }
@@ -165,6 +184,13 @@ html, body {
   height: 100%;
   width: 100%;
   box-sizing: border-box;
+}
+.file-input {
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
 }
 /* 전체 채팅방 컨테이너 */
 .chat-room-container {
