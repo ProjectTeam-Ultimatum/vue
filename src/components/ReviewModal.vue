@@ -59,7 +59,6 @@
       </div>
 
       <div class="review-content1" v-html="review.reviewContent" />
-      <!-- <div class="review-content1">{{ review.reviewContent }}</div> -->
 
       <div
         class="replies"

@@ -16,7 +16,7 @@
             v-model="editableReview.reviewLocation"
             class="form-control-location"
           >
-            <option value="">전체 지역</option>
+            <option value="전체 지역">전체 지역</option>
             <option value="제주 북부">제주 북부</option>
             <option value="제주 남부">제주 남부</option>
             <option value="제주 동부">제주 동부</option>
@@ -107,7 +107,7 @@ export default {
       editableReview: {
         reviewTitle: this.review.reviewTitle,
         reviewSubtitle: this.review.reviewSubtitle,
-        reviewLocation: this.reviewLocation,
+        reviewLocation: this.reviewLocation || "제주 전체",
         reviewImages: this.review.reviewImages,
         reviewContent: this.review.reviewContent,
       },
