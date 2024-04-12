@@ -31,6 +31,8 @@
             v-model="editableReview.reviewSubtitle"
             class="form-control"
           />
+          <!--tiptap3 Editor-->
+          <editor-content :editor="editor" />
         </div>
         <div class="form-group">
           <label for="content">내용</label>
@@ -56,8 +58,8 @@
             :key="image.reviewImageId || 'new-' + index"
             class="image-preview"
           >
-            <span class="image-name">{{ image.imageName }}</span>
             <span class="image-name">{{ newReviewImages }}</span>
+            <span class="image-name">{{ image.imageName }}</span>
 
             <button
               type="button"
@@ -74,9 +76,9 @@
             @click="$emit('cancel')"
             class="btn btn-secondary"
           >
-            취소
+            취 소
           </button>
-          <button type="submit" class="btn btn-primary">저장</button>
+          <button type="submit" class="btn btn-primary">저 장</button>
         </div>
       </form>
     </div>
@@ -84,9 +86,14 @@
 </template>
 
 <script>
+import { EditorContent, Editor } from "@tiptap/vue-3";
+import StarterKit from "@tiptap/starter-kit";
 /* eslint-disable */
 export default {
   name: "UpdateReview",
+  component: {
+    EditorContent,
+  },
   props: {
     isModalEditing: {
       type: Boolean,
@@ -103,11 +110,20 @@ export default {
         reviewTitle: this.review.reviewTitle,
         reviewSubtitle: this.review.reviewSubtitle,
         reviewLocation: this.reviewLocation,
-        reviewContent: this.review.reviewContent,
         reviewImages: this.review.reviewImages,
       },
       newReviewImages: [], // 새로 업로드할 이미지들을 저장할 배열
+      editor: null,
     };
+  },
+  mounted() {
+    this.editor = new Editor({
+      content: this.review.reviewContent,
+      extensions: [StarterKit],
+    });
+  },
+  beforeUnmount() {
+    this.editor.destroy();
   },
   methods: {
     submitForm() {
@@ -143,7 +159,7 @@ export default {
       const formData = new FormData();
       formData.append("reviewTitle", this.editableReview.reviewTitle);
       formData.append("reviewSubtitle", this.editableReview.reviewSubtitle);
-      formData.append("reviewContent", this.editableReview.reviewContent);
+      formData.append("reviewContent", this.editor.getHTML());
       formData.append("reviewLocation", this.editableReview.reviewLocation);
 
       // 새로운 이미지와 기존 이미지를 formData에 추가하는 코드

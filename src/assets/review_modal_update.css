@@ -60,17 +60,17 @@
     border-radius: 5px;
   }
   .form-control-title {
-    width: 69%;
-    height: 32px;
+    width: 65%;
     border-radius: 5px;
-  
+  padding: 10px;
+  margin-right: 2px;
     border: 1px solid #ccc;
   }
   .form-control-location {
-    width: 10%;
-    height: 35px;
+    width: 13%;
+    height: 37px;
     border-radius: 5px;
-  
+    padding: 10px;
     border: 1px solid #ccc;
   }
   .form-control-textarea {
@@ -100,11 +100,15 @@
   }
   
   .btn-secondary {
-    background-color: #ccc;
+    border: 1px solid #ffc83b;
+    color: #ffc83b;
+    font-weight: bold;
+    background-color: white;
   }
   
   .btn-primary {
-    background-color: #007bff;
+    background-color: #1275D6;
     color: white;
+    font-weight: bold;
   }
   
