@@ -81,12 +81,14 @@ data() {
   };
 },
 mounted() {
-  // EventBus를 통해 mapClick 이벤트를 수신하는 리스너를 등록합니다.
-  EventBus.$on('mapClick', ({ address, lon, lat }) => { 
-  this.addressCopy = address;
-  this.lonCopy = lon;
-  this.latCopy = lat;
-});
+  EventBus.$on('mapClick', ({ title, address, grade, review, lon, lat }) => {
+    this.title = title || '';
+    this.addressCopy = address || '';
+    this.grade = grade || 0;
+    this.review = review || '';
+    this.lonCopy = lon;
+    this.latCopy = lat;
+  });
 },
 methods: {
   showSideBar() {

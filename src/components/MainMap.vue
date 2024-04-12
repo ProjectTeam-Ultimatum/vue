@@ -32,14 +32,15 @@ export default {
       olMap: undefined,
       address: '',
       iconsSource: undefined,
-      locations: []
+      locations: [],
+      vectorSource: undefined,
     }
   },
   mounted() {
-    
-     this.fetchLocations();
-  const vectorSource = new OlVectorSource(EPSG_3857);
-  const vectorLayer = new OlVectorLayer({
+    this.vectorSource = new OlVectorSource();
+    this.fetchLocations();
+    const vectorSource = new OlVectorSource(EPSG_3857);
+    const vectorLayer = new OlVectorLayer({
     source: vectorSource
  })
 this.olMap = new OlMap({
@@ -61,42 +62,53 @@ this.olMap = new OlMap({
     zoom: 11
   })
 });
-EventBus.$on('getLocationsFromDB', (locations) => {
-      this.locations = locations;
-      this.addMapIcons(); // 가져온 위치 정보를 기반으로 지도에 아이콘을 추가합니다.
-    });
 this.olMap.on('click', async (e) => {
-  await this.addUiAddress(e.coordinate);
-  await addUiAddress.call(this); // 화살표 함수를 사용하여 this 컨텍스트를 유지합니다.
-    drawMapIcon();
-    console.log(toLonLat(e.coordinate));
-    async function addUiAddress() {
-    const lonLatArr = toLonLat(e.coordinate);
-    const lon = lonLatArr[0];
-    const lat = lonLatArr[1];
-    const addressInfo = await this.getAddress(lon, lat) // this 컨텍스트를 유지하기 위해 call(this)를 사용합니다.
-    this.setUiAddress(addressInfo.data.display_name);
-    this.getAddress(lon, lat).then((addressInfo) => {
-    EventBus.$emit('mapClick',{address: addressInfo.data.display_name.split(', ').reverse().join(' '), lon: lon, lat: lat});
-    console.log("lon------" + lonLatArr[0])
-    console.log("lat------" + lonLatArr[1])
-    });
-  }
-  function drawMapIcon() {
-        vectorSource.clear();
-        geocoder.getSource().clear();
-        const feature = new OlFeature({
-            geometry: new OlPoint(e.coordinate)
+  geocoder.getSource().clear();
+
+  const [lon, lat] = toLonLat(e.coordinate);
+  const addressInfo = await this.getAddress(lon, lat);
+  if (addressInfo) {
+    const displayAddress = this.getUiAddress(addressInfo.data.display_name);
+    this.$store.commit('setCurAddress', displayAddress);
+    this.$store.commit('setLonLat', { lon, lat });
+
+    const point = fromLonLat([lon, lat]);
+    const featureId = `feature-${lon}-${lat}`;  // Example of generating a unique feature ID
+    let feature = this.vectorSource.getFeatureById(featureId);
+
+    if (!feature) {
+      feature = new OlFeature({
+        geometry: new OlPoint(point),
+        id: featureId
+      });
+      feature.setStyle(new OlStyle({
+        image: new OlIcon({
+          scale: 0.7,
+          src: '//cdn.rawgit.com/jonataswalker/map-utils/master/images/marker.png'
         })
-        feature.setStyle(new OlStyle({
-            image: new OlIcon({
-                scale: 0.7,
-                src: '//cdn.rawgit.com/jonataswalker/map-utils/master/images/marker.png'
-            })
-        }))
-        vectorSource.addFeature(feature);    
+      }));
+      this.vectorSource.addFeature(feature);
+    } else {
+      // Optionally update the feature if needed
+      feature.setGeometry(new OlPoint(point));  // Update geometry or other properties
     }
+
+    // Emit data only if the feature is newly added or needs to be updated
+    EventBus.$emit('mapClick', {
+      title: this.$store.state.curTitle || '',
+      address: displayAddress,
+      grade: this.$store.state.curGrade || 0,
+      review: this.$store.state.curReview || '',
+      lon: lon,
+      lat: lat
+    });
+  } else {
+    console.error('Failed to fetch address information');
+  }
 });
+
+
+
 
   const geocoder = new Geocoder('nominatim', {
     provider: 'osm',
@@ -116,6 +128,9 @@ this.olMap.on('click', async (e) => {
   });
 },
 methods: {
+  getUiAddress(str) {
+        return str.split(', ').reverse().join(' ');
+    },
   async addUiAddress(coordinate) {
       const lonLatArr = toLonLat(coordinate);
       const lon = lonLatArr[0];
