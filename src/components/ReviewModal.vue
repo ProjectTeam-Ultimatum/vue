@@ -1,14 +1,17 @@
 <template>
-  <div class="modal" v-if="isVisible">
+  <div class="modal" v-if="isModalVisible">
+    <!-- 조회 모달창 -->
+
     <div class="head-bts">
       <div class="cl-bt" @click="$emit('close')" style="color: #6e6e6e">
         <font-awesome-icon :icon="['fas', 'xmark']" size="2xl" />
       </div>
       <div class="update-delete">
-        <div class="update-button">
+        <div class="update-button" @click="editReview">
           <span style="font-size: 12px"> 수정 </span
           ><font-awesome-icon :icon="['far', 'pen-to-square']" size="xl" />
         </div>
+
         <div class="delete-button">
           <span style="font-size: 12px"> 삭제 </span
           ><font-awesome-icon :icon="['far', 'trash-can']" size="xl" />
@@ -70,22 +73,24 @@
           <div>{{ reply.reviewReplyContent }}</div>
         </div>
       </div>
-
-      <!-- 닫기 버튼-->
     </div>
   </div>
 </template>
 
 <script>
+import UpdateReview from "./UpdateReview.vue";
 /* eslint-disable */
 
 export default {
+  components: {
+    UpdateReview,
+  },
   props: {
     review: {
       type: Object,
       required: true,
     },
-    isVisible: {
+    isModalVisible: {
       type: Boolean,
       required: true,
     },
@@ -93,6 +98,7 @@ export default {
   data() {
     return {
       currentImageIndex: 0,
+      selectedReview: null, //선택된 리뷰 ID
     };
   },
   computed: {
@@ -108,7 +114,7 @@ export default {
     },
   },
   watch: {
-    isVisible(newValue) {
+    isModalVisible(newValue) {
       if (newValue) {
         document.body.style.overflow = "hidden"; // 모달이 열릴 때 스크롤 비활성화
       } else {
@@ -116,12 +122,13 @@ export default {
       }
     },
   },
-  // 모달 컴포넌트가 제거될 때도 스크롤을 복구합니다.
-  beforeUnmount() {
-    document.body.style.overflow = "";
-  },
 
   methods: {
+    editReview() {
+      //부모컴포넌트에 edit 이벤트를 발생 시키고 현재 리뷰 id를 전달
+      this.$emit("edit", this.review.reviewId);
+    },
+
     nextImage() {
       if (this.currentImageIndex < this.review.reviewImages.length - 1) {
         this.currentImageIndex++;

@@ -60,7 +60,23 @@
           </button>
         </div>
       </div>
-
+      <!--조회 모달창 -->
+      <ReviewModal
+        v-if="selectedReview && isModalVisible && !isModalEditing"
+        :isModalVisible="isModalVisible"
+        :review="selectedReview"
+        @close="closeModal()"
+        @edit="startEditing"
+      />
+      <!-- 수정 모달창 -->
+      <UpdateReview
+        v-if="isModalEditing"
+        :isModalEditing="isModalEditing"
+        :review="selectedReview"
+        @save="saveChanges"
+        @cancel="cancelEditing"
+        @close="closeModal()"
+      />
       <!--게시글 반복 카드-->
       <div class="cards-container">
         <div
@@ -68,12 +84,6 @@
           :key="review.id"
           class="review-card"
         >
-          <!--모달창 불러오기-->
-          <ReviewModal
-            :review="selectedReview"
-            :isVisible="isModalVisible"
-            @close="closeModal()"
-          />
           <!-- 이미지 -->
           <div class="review-image" @click="openModal(review)">
             <img
@@ -132,6 +142,7 @@
 
 <script>
 import ReviewModal from "@/components/ReviewModal.vue";
+import UpdateReview from "@/components/UpdateReview.vue";
 
 /* eslint-disable */
 
@@ -139,6 +150,7 @@ export default {
   name: "ReviewBoard",
   components: {
     ReviewModal,
+    UpdateReview,
   },
 
   data() {
@@ -152,6 +164,7 @@ export default {
       searchPerformed: false, //검색이 수행되었는지 여부를 추적하는 변수
       isModalVisible: false, //모달 기본 닫혀있기
       selectedReview: null,
+      isModalEditing: false,
     };
   },
   computed: {
@@ -191,18 +204,49 @@ export default {
         console.log(this.allReviews);
         this.allReviews = response.data.content;
         this.totalPages = response.data.totalPages;
+        // this.isModalVisible = false;
+        // this.isModalEditing = false;
       } catch (error) {
         console.error("에러났어요 : " + error);
       }
     },
-    openModal(review) {
-      this.selectedReview = review;
-      this.isModalVisible = true;
+    async openModal(review) {
+      try {
+        const response = await this.$axios.get(
+          `/api/reviews/${review.reviewId}`
+        );
+        this.selectedReview = response.data;
+        this.isModalVisible = true;
+        this.isModalEditing = false;
+        console.log(
+          "selectedReview : " +
+            this.selectedReview +
+            response.data +
+            review.reviewId
+        );
+      } catch (error) {
+        console.error("리뷰 상세 정보를 가져오는 중 에러 발생 :  ", error);
+      }
+    },
+
+    startEditing(review) {
+      this.currentReviewId = review;
+      this.isModalEditing = true;
+      this.isModalVisible = false;
+    },
+    saveChanges(updateReview) {
+      // 업데이트 로직...
+      this.isModalEditinglse; // 수정 모드 종료
+      this.isModalVisible = true; // 조회 모달 창 표시
+    },
+    cancelEditing() {
+      this.isModalEditing = false; // 수정 모드 종료
+      this.isModalVisible = true; // 조회 모달 창 표시
     },
     closeModal() {
       this.isModalVisible = false;
+      this.isModalEditing = false;
     },
-
     performSearch() {
       this.selectedRegion = "";
       //검색 수행 여부를 항상 참으로 설정
