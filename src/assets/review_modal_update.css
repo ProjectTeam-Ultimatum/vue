@@ -56,29 +56,22 @@
   .form-control {
     width: 80%; /* 입력 필드 너비 */
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #E1E1E1;
     border-radius: 5px;
   }
   .form-control-title {
     width: 65%;
     border-radius: 5px;
-  padding: 10px;
-  margin-right: 2px;
-    border: 1px solid #ccc;
+    padding: 10px;
+    margin-right: 2px;
+    border: 1px solid #E1E1E1;
   }
   .form-control-location {
     width: 13%;
     height: 37px;
     border-radius: 5px;
     padding: 10px;
-    border: 1px solid #ccc;
-  }
-  .form-control-textarea {
-    width: 80%; /* 입력 필드 너비 */
-    height: 300px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: 1px solid #E1E1E1;
   }
   
   .form-control-file {

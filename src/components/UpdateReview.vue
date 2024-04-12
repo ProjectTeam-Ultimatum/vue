@@ -31,16 +31,15 @@
             v-model="editableReview.reviewSubtitle"
             class="form-control"
           />
-          <!--tiptap3 Editor-->
-          <editor-content :editor="editor" />
         </div>
         <div class="form-group">
-          <label for="content">내용</label>
-          <textarea
-            id="content"
-            v-model="editableReview.reviewContent"
-            class="form-control-textarea"
-          ></textarea>
+          <!--tiptap3 Editor-->
+          <link
+            href="https://cdn.jsdelivr.net/npm/remixicon@2.2.0/fonts/remixicon.css"
+            rel="stylesheet"
+          />
+
+          <AppTextEditor v-model="content" :max-limit="280" />
         </div>
         <div class="form-group">
           <label for="newImages">이미지 업로드</label>
@@ -85,15 +84,14 @@
   </div>
 </template>
 
-<script>
-import { EditorContent, Editor } from "@tiptap/vue-3";
-import StarterKit from "@tiptap/starter-kit";
+<script >
+import AppTextEditor from "./AppTextEditor";
+
 /* eslint-disable */
+
 export default {
   name: "UpdateReview",
-  component: {
-    EditorContent,
-  },
+  components: { AppTextEditor },
   props: {
     isModalEditing: {
       type: Boolean,
@@ -111,19 +109,11 @@ export default {
         reviewSubtitle: this.review.reviewSubtitle,
         reviewLocation: this.reviewLocation,
         reviewImages: this.review.reviewImages,
+        reviewContent: this.review.reviewContent,
       },
       newReviewImages: [], // 새로 업로드할 이미지들을 저장할 배열
-      editor: null,
-    };
-  },
-  mounted() {
-    this.editor = new Editor({
       content: this.review.reviewContent,
-      extensions: [StarterKit],
-    });
-  },
-  beforeUnmount() {
-    this.editor.destroy();
+    };
   },
   methods: {
     submitForm() {
@@ -138,7 +128,6 @@ export default {
         file: file, // 파일 데이터
         isNew: true, // 새로운 이미지임을 표시
       }));
-
       // 현재 리뷰 이미지 배열에 새 이미지 데이터를 추가
       this.editableReview.reviewImages.push(...newImagesData);
     },
@@ -159,8 +148,8 @@ export default {
       const formData = new FormData();
       formData.append("reviewTitle", this.editableReview.reviewTitle);
       formData.append("reviewSubtitle", this.editableReview.reviewSubtitle);
-      formData.append("reviewContent", this.editor.getHTML());
       formData.append("reviewLocation", this.editableReview.reviewLocation);
+      formData.append("reviewContent", this.content);
 
       // 새로운 이미지와 기존 이미지를 formData에 추가하는 코드
       this.editableReview.reviewImages.forEach((image) => {
@@ -194,6 +183,6 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style>
 @import "../assets/review_modal_update.css";
 </style>

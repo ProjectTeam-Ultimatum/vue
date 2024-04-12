@@ -43,10 +43,6 @@
   color: #1275d6;
 }
 
-.reviews{
-
-
-}
 .review-search .search-input{
   display: flex;
   width:100%;
@@ -142,6 +138,16 @@
   height: 100%;
   object-fit: cover;
   margin-bottom: 30px;
+}
+.truncate {
+  width: 100%; /* 최대 너비 설정 */
+  white-space: normal; /* 텍스트가 줄바꿈되지 않도록 설정 */
+  overflow: hidden; /* 내용이 넘칠 경우 숨김 */
+  text-overflow: ellipsis; /* 넘친 텍스트는 말줄임표로 표시 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 최대 표시할 줄의 수 */
+  -webkit-box-orient: vertical;
+  line-height: 1; /* 줄 간격 조절 */
 }
 
 .review-footer {

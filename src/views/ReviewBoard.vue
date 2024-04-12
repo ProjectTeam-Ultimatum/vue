@@ -104,9 +104,11 @@
               <div class="subtitle" @click="openModal(review)">
                 {{ review.reviewSubtitle }}
               </div>
-              <div @click="openModal(review)">
-                {{ truncate(review.reviewContent, 90) }}
-              </div>
+              <div
+                class="truncate"
+                @click="openModal(review)"
+                v-html="review.reviewContent"
+              />
             </div>
             <div class="review-footer">
               <div class="footer-container">
@@ -268,13 +270,6 @@ export default {
       }
     },
 
-    truncate(str, num) {
-      if (str.length > num) {
-        return str.slice(0, num) + "...";
-      } else {
-        return str;
-      }
-    },
     async incrementLikes(review) {
       // 좋아요를 증가시키는 로직
       review.reviewLike += 1;
