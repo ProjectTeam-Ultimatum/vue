@@ -51,7 +51,7 @@
         fetchData() {
         this.loading = true; // 데이터 요청 시작 시 로딩 상태 활성화
         this.$axios
-            .get("http://localhost:8080/api/recommend/listplace")
+            .get("http://localhost:8080/api/recommend/place")
             .then((response) => {
             //성공적으로 데이터를 받아온 경우
             console.log("데이터요청 성공 : " + response.data);
