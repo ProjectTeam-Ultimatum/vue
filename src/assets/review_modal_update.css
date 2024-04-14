@@ -104,4 +104,20 @@
     color: white;
     font-weight: bold;
   }
+
+  .image-preview-container{
+    padding: 25px;
+    border: 1px solid #E1E1E1;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    overflow-y: scroll;
+    height: 100px;
+    
+  }
+  .image-preview{
+    display: flex;
+    flex-direction: row;
+    font-size: 13px;
+    margin-bottom: 3px;
+  }
   

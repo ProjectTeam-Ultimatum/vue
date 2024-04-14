@@ -33,15 +33,6 @@
           />
         </div>
         <div class="form-group">
-          <!--tiptap3 Editor-->
-          <link
-            href="https://cdn.jsdelivr.net/npm/remixicon@2.2.0/fonts/remixicon.css"
-            rel="stylesheet"
-          />
-
-          <AppTextEditor v-model="content" :max-limit="280" />
-        </div>
-        <div class="form-group">
           <label for="newImages">이미지 업로드</label>
           <input
             id="newImages"
@@ -57,17 +48,29 @@
             :key="image.reviewImageId || 'new-' + index"
             class="image-preview"
           >
-            <span class="image-name">{{ newReviewImages }}</span>
             <span class="image-name">{{ image.imageName }}</span>
 
-            <button
-              type="button"
-              @click="removeImage(index, image.reviewImageId)"
+            <div
               class="btn-remove"
+              @click="
+                image.isNew
+                  ? removeNewImage(index)
+                  : removeExistingImage(index, image.reviewImageId)
+              "
+              style="color: #6e6e6e"
             >
-              삭제
-            </button>
+              <font-awesome-icon :icon="['fas', 'xmark']" />
+            </div>
           </div>
+        </div>
+        <div class="form-group">
+          <!--tiptap3 Editor-->
+          <link
+            href="https://cdn.jsdelivr.net/npm/remixicon@2.2.0/fonts/remixicon.css"
+            rel="stylesheet"
+          />
+
+          <AppTextEditor v-model="content" :max-limit="280" />
         </div>
         <div class="form-actions">
           <button
@@ -113,7 +116,7 @@ export default {
       },
       newReviewImages: [], // 새로 업로드할 이미지들을 저장할 배열
       content: this.review.reviewContent,
-      deleteImageIds: [], //삭제할 이미지의 id를 저장할 배열
+      deleteImageIds: [],
     };
   },
   methods: {
@@ -133,16 +136,14 @@ export default {
       this.editableReview.reviewImages.push(...newImagesData);
     },
 
-    removeImage(index) {
-      // 새 이미지를 newReviewImages 배열에서 제거합니다.
-      // 이 경우에는 서버에 이미지 데이터가 없으므로 클라이언트 측 배열에서만 제거하면 됩니다.
-      const newImageIndex = this.editableReview.reviewImages.findIndex(
-        (image) => image.isNew
-      );
-      if (newImageIndex !== -1) {
-        this.editableReview.reviewImages.splice(newImageIndex, 1);
-        this.deleteImageIds.push(image.reviewImageId);
-      }
+    removeNewImage(index) {
+      // 새 이미지를 배열에서 제거합니다.
+      this.editableReview.reviewImages.splice(index, 1);
+    },
+    removeExistingImage(index, imageId) {
+      // 기존 이미지 ID를 삭제 목록 배열에 추가
+      this.deleteImageIds.push(imageId);
+      // 이미지 미리보기 배열에서 해당 이미지 객체 제거
       this.editableReview.reviewImages.splice(index, 1);
     },
 
