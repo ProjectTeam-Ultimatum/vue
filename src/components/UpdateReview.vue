@@ -62,7 +62,7 @@
 
             <button
               type="button"
-              @click="removeImage(index)"
+              @click="removeImage(index, image.reviewImageId)"
               class="btn-remove"
             >
               삭제
@@ -113,6 +113,7 @@ export default {
       },
       newReviewImages: [], // 새로 업로드할 이미지들을 저장할 배열
       content: this.review.reviewContent,
+      deleteImageIds: [], //삭제할 이미지의 id를 저장할 배열
     };
   },
   methods: {
@@ -140,6 +141,7 @@ export default {
       );
       if (newImageIndex !== -1) {
         this.editableReview.reviewImages.splice(newImageIndex, 1);
+        this.deleteImageIds.push(image.reviewImageId);
       }
       this.editableReview.reviewImages.splice(index, 1);
     },
@@ -155,8 +157,11 @@ export default {
       this.editableReview.reviewImages.forEach((image) => {
         if (image.isNew) {
           // 새로운 이미지 파일 추가
-          formData.append("images", image.file);
+          formData.append("newImages", image.file);
         }
+      });
+      this.deleteImageIds.forEach((id) => {
+        formData.append("deleteImages", id);
       });
       // FormData 내용 검사
       for (var pair of formData.entries()) {

@@ -195,6 +195,8 @@ export default {
 #text-editor {
   border: 1px solid #e1e1e1;
   border-radius: 5px;
+  width: 100%;
+  padding: 20px;
 
   .toolbar {
     display: flex;

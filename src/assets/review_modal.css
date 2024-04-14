@@ -104,9 +104,16 @@
   }
   .replies {
     text-align: start;
-    margin: 35px;
-    
-
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-top: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #E1E1E1;
+  }
+  .replyer {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #1B1F23;
   }
   .replies-header {
     display: flex;
@@ -114,6 +121,7 @@
     text-align: start;
   }
   .reply-date{
+    color: #919191;
     font-size: 12px;
     margin-left: 10px;
   }
@@ -121,6 +129,89 @@
 
   .reply-content{
     text-align: start;
+    font-size: 12px;
+    margin-left: 15px;
+    color: #393939;
+  }
+  .reply-main{
+    display: flex;
+    justify-content: space-between;
+  }
+  .reply-control {
+    display: flex;
+    text-align: right;
+    justify-content: right;
+  }
+  .reply-update, .reply-delete{
+    font-size: 12px;
+  margin-inline: 5px;
+  color: #919191;
+  cursor: pointer;
+  }
+  .reply-content-input {
+    padding: 10px;
+    width: 80%;
+  border-radius: 10px;
+border: 1px solid #E1E1E1
+
+  }
+  .reply-update-save {
+    width: 45px;
+    font-size: 12px;
+  margin-right: 5px;
+  color: white;
+  cursor: point;
+  border: 1px solid #1275D6;
+  border-radius: 10px;
+  background-color: #1275D6;
+  }
+  .reply-update-cancel{
+    width: 45px;
+
+    border: 1px solid #ffc83b;
+    color: #ffc83b;
+    background-color: white;
+  border-radius: 10px;
+
+  }
+
+
+  .new-reply{
+    margin: 20px;
+  }
+.reply-writer{
+  width: 15%;
+    margin-right: 5px;
+    border-radius: 10px ;
+    border: 1px solid #E1E1E1;
+    padding: 13px;
+}
+  .reply-writing {
+    width: 60%;
+    margin-right: 5px;
+    border-radius: 10px ;
+    border: 1px solid #E1E1E1;
+    padding: 13px;
+  }
+  .new-reply input::placeholder{
+    color: #68C7FF;
+  }
+  .new-reply button {
+    padding: 13px;
+    border-radius: 10px;
+    border: 1px solid #1275D6;
+    background-color: white;
+    width: 10%;
+    color: #1275D6;
+  }
+  .new-reply button:active {
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #1275D6;
+    background-color: #1275D6;
+    width: 10%;
+    color: white;
+    cursor: pointer;
   }
 
 

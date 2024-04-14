@@ -12,7 +12,7 @@
           ><font-awesome-icon :icon="['far', 'pen-to-square']" size="xl" />
         </div>
 
-        <div class="delete-button">
+        <div class="delete-button" @click="deleteReview(review.reviewId)">
           <span style="font-size: 12px"> 삭제 </span
           ><font-awesome-icon :icon="['far', 'trash-can']" size="xl" />
         </div>
@@ -59,7 +59,7 @@
       </div>
 
       <div class="review-content1" v-html="review.reviewContent" />
-
+      <!-- 댓글 -->
       <div
         class="replies"
         v-for="(reply, index) in review.replies"
@@ -69,10 +69,55 @@
           <div class="replyer">{{ reply.reviewReplyer }}</div>
           <div class="reply-date">{{ formatDate(reply.reg_date) }}</div>
         </div>
-        <div class="reply-content">
-          <div>{{ reply.reviewReplyContent }}</div>
+        <div class="reply">
+          <div v-if="!reply.isEditing" class="reply-main">
+            <div class="reply-content">{{ reply.reviewReplyContent }}</div>
+            <div class="reply-control">
+              <div class="reply-update" @click="editReply(reply.reviewReplyId)">
+                수정
+              </div>
+              <div
+                class="reply-delete"
+                @click="deleteReply(reply.reviewReplyId)"
+              >
+                삭제
+              </div>
+            </div>
+          </div>
+          <div v-else class="reply-main">
+            <input
+              class="reply-content-input"
+              v-model="reply.editingContent"
+              @keyup.enter="updateReply(reply)"
+            />
+            <div class="reply-control">
+              <button class="reply-update-save" @click="updateReply(reply)">
+                저장
+              </button>
+              <button
+                class="reply-update-cancel"
+                @click="reply.isEditing = false"
+              >
+                취소
+              </button>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
+    <div class="new-reply">
+      <input
+        class="reply-writer"
+        v-model="reviewReplyer"
+        placeholder="닉네임을 입력하세요"
+      />
+      <input
+        class="reply-writing"
+        v-model="reviewReplyContent"
+        @keyup.enter="postReply"
+        placeholder="댓글을 입력해주세요.."
+      />
+      <button @click="postReply">등 록</button>
     </div>
   </div>
 </template>
@@ -99,6 +144,8 @@ export default {
     return {
       currentImageIndex: 0,
       selectedReview: null, //선택된 리뷰 ID
+      reviewReplyContent: "", //댓글 내용
+      reviewReplyer: "",
     };
   },
   computed: {
@@ -124,9 +171,90 @@ export default {
   },
 
   methods: {
+    //댓글작성 메소드
+    async postReply() {
+      if (!this.reviewReplyContent.trim() && !this.reviewReplyer.trim()) {
+        alert("댓글 내용을 입력하세요");
+        return;
+      }
+      try {
+        const response = await this.$axios.post(
+          `/api/reviews/${this.review.reviewId}/reply`,
+          {
+            reviewReplyer: this.reviewReplyer,
+            reviewReplyContent: this.reviewReplyContent,
+          }
+        );
+        alert("댓글이 등록되었습니다.");
+        this.reviewReplyer = "";
+        this.reviewReplyContent = "";
+        //부모컴포넌트에 review객체를 보내고 새로고침 요청
+        this.$emit("refresh-modal", this.review);
+      } catch (error) {
+        console.error("댓글 작성 실패 : ", error);
+      }
+    },
+
     editReview() {
       //부모컴포넌트에 edit 이벤트를 발생 시키고 현재 리뷰 id를 전달
       this.$emit("edit", this.review.reviewId);
+    },
+
+    async deleteReview(reviewId) {
+      if (confirm("게시글을 정말 삭제하시겠습니까?")) {
+        try {
+          await this.$axios.delete(`/api/reviews/${reviewId}`);
+          alert("게시글이 삭제 되었습니다.");
+          this.$emit("close");
+          this.$emit("deleted");
+        } catch (error) {
+          console.error("리뷰 삭제에 실패하였습니다: ", error);
+        }
+      }
+    },
+    editReply(replyId) {
+      // 댓글 ID를 사용하여 현재 댓글 객체를 찾습니다.
+      const reply = this.review.replies.find(
+        (r) => r.reviewReplyId === replyId
+      );
+
+      // 댓글 객체를 찾았다면 수정 상태로 전환합니다.
+      if (reply) {
+        // 다른 댓글들의 수정 상태를 해제합니다.
+        this.review.replies.forEach((r) => {
+          r.isEditing = false;
+        });
+
+        // 현재 댓글의 편집 상태를 true로 설정하고, 현재 내용을 복사합니다.
+        reply.isEditing = true;
+        reply.editingContent = reply.reviewReplyContent;
+      } else {
+        console.error("해당하는 댓글을 찾을 수 없습니다.");
+      }
+    },
+
+    async updateReply(reply) {
+      try {
+        await this.$axios.put(`/api/reviews/${reply.reviewReplyId}/reply`, {
+          reviewReplyContent: reply.editingContent,
+        });
+        reply.reviewReplyContent = reply.editingContent;
+        reply.isEditing = false;
+        alert("댓글이 수정되었습니다.");
+      } catch (error) {
+        console.error("댓글 수정에 실패하였습니다: ", error);
+      }
+    },
+    async deleteReply(replyId) {
+      if (confirm("댓글을 정말 삭제하시겠습니까?")) {
+        try {
+          await this.$axios.delete(`/api/reviews/${replyId}/reply`);
+          alert("댓글이 삭제되었습니다.");
+          this.$emit("refresh-modal", this.review);
+        } catch (error) {
+          console.error("댓글 삭제에 실패하였습니다: ", error);
+        }
+      }
     },
 
     nextImage() {

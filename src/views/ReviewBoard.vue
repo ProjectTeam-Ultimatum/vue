@@ -65,6 +65,7 @@
         v-if="selectedReview && isModalVisible && !isModalEditing"
         :isModalVisible="isModalVisible"
         :review="selectedReview"
+        @refresh-modal="openModal"
         @close="closeModal()"
         @edit="startEditing"
       />
@@ -76,6 +77,7 @@
         @save="saveChanges"
         @cancel="cancelEditing"
         @close="closeModal()"
+        @deleted="fetchData"
       />
       <!--게시글 반복 카드-->
       <div class="cards-container">
@@ -167,6 +169,7 @@ export default {
       isModalVisible: false, //모달 기본 닫혀있기
       selectedReview: null,
       isModalEditing: false,
+      replies: null,
     };
   },
   computed: {
@@ -226,20 +229,26 @@ export default {
             response.data +
             review.reviewId
         );
+
+        const repliesResponse = await this.$axios.get(
+          `/api/reviews/${review.reviewId}/replies`
+        );
+        this.selectedReview.replies = repliesResponse.data;
+        console.log("replies :", this.selectedReview.replies);
       } catch (error) {
         console.error("리뷰 상세 정보를 가져오는 중 에러 발생 :  ", error);
       }
     },
 
-    startEditing(review) {
-      this.currentReviewId = review;
+    startEditing() {
       this.isModalEditing = true;
       this.isModalVisible = false;
     },
-    saveChanges(updateReview) {
+    saveChanges() {
       // 업데이트 로직...
       this.isModalEditinglse; // 수정 모드 종료
       this.isModalVisible = true; // 조회 모달 창 표시
+      this.refreshList();
     },
     cancelEditing() {
       this.isModalEditing = false; // 수정 모드 종료
@@ -248,6 +257,10 @@ export default {
     closeModal() {
       this.isModalVisible = false;
       this.isModalEditing = false;
+      this.refreshList();
+    },
+    async refreshList() {
+      await this.fetchData();
     },
     performSearch() {
       this.selectedRegion = "";
