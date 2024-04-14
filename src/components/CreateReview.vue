@@ -1,19 +1,19 @@
 <template>
-  <div class="modal" v-if="isModalEditing">
+  <div class="modal" v-if="isModalCreate">
     <div class="modal-body">
-      <h2>게시글 수정</h2>
+      <h2>게시글 작성</h2>
       <form @submit.prevent="submitForm" class="review-form">
         <div class="form-group">
           <label for="title">제목</label>
           <input
             id="title"
             type="text"
-            v-model="editableReview.reviewTitle"
+            v-model="review.reviewTitle"
             class="form-control-title"
           />
           <select
             id="location"
-            v-model="editableReview.reviewLocation"
+            v-model="review.reviewLocation"
             class="form-control-location"
           >
             <option value="전체 지역">전체 지역</option>
@@ -28,7 +28,7 @@
           <input
             id="subtitle"
             type="text"
-            v-model="editableReview.reviewSubtitle"
+            v-model="review.reviewSubtitle"
             class="form-control"
           />
         </div>
@@ -44,19 +44,15 @@
         </div>
         <div class="image-preview-container">
           <div
-            v-for="(image, index) in editableReview.reviewImages"
-            :key="image.reviewImageId || 'new-' + index"
+            v-for="(image, index) in review.reviewImages"
+            :key="'new-' + index"
             class="image-preview"
           >
             <span class="image-name">✓ {{ image.imageName }} </span>
 
             <div
               class="btn-remove"
-              @click="
-                image.isNew
-                  ? removeNewImage(index)
-                  : removeExistingImage(index, image.reviewImageId)
-              "
+              @click="removeNewImage(index)"
               style="color: #6e6e6e"
             >
               <font-awesome-icon :icon="['fas', 'xmark']" />
@@ -70,7 +66,7 @@
             rel="stylesheet"
           />
 
-          <AppTextEditor v-model="content" :max-limit="280" />
+          <AppTextEditor v-model="review.reviewContent" :max-limit="350" />
         </div>
         <div class="form-actions">
           <button
@@ -86,42 +82,35 @@
     </div>
   </div>
 </template>
-
-<script >
+  
+  <script >
 import AppTextEditor from "./AppTextEditor";
 
 /* eslint-disable */
 
 export default {
-  name: "UpdateReview",
+  name: "CreateReview",
   components: { AppTextEditor },
   props: {
-    isModalEditing: {
+    isModalCreate: {
       type: Boolean,
-      required: true,
-    },
-    review: {
-      type: Object,
       required: true,
     },
   },
   data() {
     return {
-      editableReview: {
-        reviewTitle: this.review.reviewTitle,
-        reviewSubtitle: this.review.reviewSubtitle,
-        reviewLocation: this.reviewLocation || "제주 전체",
-        reviewImages: this.review.reviewImages,
-        reviewContent: this.review.reviewContent,
+      review: {
+        reviewTitle: "",
+        reviewSubtitle: "",
+        reviewLocation: "제주 전체",
+        reviewContent: "",
+        reviewImages: [],
       },
-      newReviewImages: [], // 새로 업로드할 이미지들을 저장할 배열
-      content: this.review.reviewContent,
-      deleteImageIds: [],
     };
   },
   methods: {
     submitForm() {
-      this.updateReview();
+      this.createReview();
     },
     handleFiles(event) {
       // 새로 선택된 파일들을 배열로 변환
@@ -130,39 +119,29 @@ export default {
       const newImagesData = files.map((file) => ({
         imageName: file.name,
         file: file, // 파일 데이터
-        isNew: true, // 새로운 이미지임을 표시
+        isNew: true,
       }));
-      // 현재 리뷰 이미지 배열에 새 이미지 데이터를 추가
-      this.editableReview.reviewImages.push(...newImagesData);
+      this.review.reviewImages.push(...newImagesData); // 이미지 데이터를 reviewImages 배열에 추가합니다.
     },
 
     removeNewImage(index) {
       // 새 이미지를 배열에서 제거합니다.
-      this.editableReview.reviewImages.splice(index, 1);
-    },
-    removeExistingImage(index, imageId) {
-      // 기존 이미지 ID를 삭제 목록 배열에 추가
-      this.deleteImageIds.push(imageId);
-      // 이미지 미리보기 배열에서 해당 이미지 객체 제거
-      this.editableReview.reviewImages.splice(index, 1);
+      this.review.reviewImages.splice(index, 1);
     },
 
-    async updateReview() {
+    async createReview() {
       const formData = new FormData();
-      formData.append("reviewTitle", this.editableReview.reviewTitle);
-      formData.append("reviewSubtitle", this.editableReview.reviewSubtitle);
-      formData.append("reviewLocation", this.editableReview.reviewLocation);
-      formData.append("reviewContent", this.content);
+      formData.append("reviewTitle", this.review.reviewTitle);
+      formData.append("reviewSubtitle", this.review.reviewSubtitle);
+      formData.append("reviewLocation", this.review.reviewLocation);
+      formData.append("reviewContent", this.review.reviewContent);
 
       // 새로운 이미지와 기존 이미지를 formData에 추가하는 코드
-      this.editableReview.reviewImages.forEach((image) => {
+      this.review.reviewImages.forEach((image) => {
         if (image.isNew) {
           // 새로운 이미지 파일 추가
-          formData.append("newImages", image.file);
+          formData.append("reviewImages", image.file);
         }
-      });
-      this.deleteImageIds.forEach((id) => {
-        formData.append("deleteImages", id);
       });
       // FormData 내용 검사
       for (var pair of formData.entries()) {
@@ -170,16 +149,13 @@ export default {
       }
 
       try {
-        const response = await this.$axios.put(
-          `/api/reviews/${this.review.reviewId}`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
+        const response = await this.$axios.post(`/api/reviews`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
 
+        // this.$emit("create", response.data); // 리뷰 데이터를 이벤트로 전달
         this.$emit("close");
       } catch (error) {
         console.error("업데이트 실패 : ", error);
@@ -188,6 +164,7 @@ export default {
   },
 };
 </script>
-<style>
+  <style>
 @import "../assets/review_modal_update.css";
 </style>
+  

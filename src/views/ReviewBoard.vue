@@ -1,8 +1,20 @@
 <template>
-  <p class="main-text">여행 <span class="highlight">후기</span> 게시판</p>
+  <div class="main-text">여행 <span class="highlight">후기</span> 게시판</div>
   <p class="sub-text">
     당신의 여행이 더욱 특별해질 수 있게 여행기록을 공유하세요
   </p>
+  <div class="create-review" @click="createReview">
+    <span style="font-size: 12px"> 글쓰기 </span
+    ><font-awesome-icon :icon="['far', 'pen-to-square']" size="2xl" />
+  </div>
+  <!-- 수정 모달창 -->
+  <CreateReview
+    v-if="isModalCreate"
+    :isModalCreate="isModalCreate"
+    @cancel="cancelCreate"
+    @close="closeModal()"
+    @deleted="fetchData"
+  />
 
   <div class="container">
     <div class="region-list">
@@ -74,7 +86,6 @@
         v-if="isModalEditing"
         :isModalEditing="isModalEditing"
         :review="selectedReview"
-        @save="saveChanges"
         @cancel="cancelEditing"
         @close="closeModal()"
         @deleted="fetchData"
@@ -147,6 +158,7 @@
 <script>
 import ReviewModal from "@/components/ReviewModal.vue";
 import UpdateReview from "@/components/UpdateReview.vue";
+import CreateReview from "@/components/CreateReview.vue";
 
 /* eslint-disable */
 
@@ -155,6 +167,7 @@ export default {
   components: {
     ReviewModal,
     UpdateReview,
+    CreateReview,
   },
 
   data() {
@@ -170,6 +183,7 @@ export default {
       selectedReview: null,
       isModalEditing: false,
       replies: null,
+      isModalCreate: false,
     };
   },
   computed: {
@@ -239,16 +253,22 @@ export default {
         console.error("리뷰 상세 정보를 가져오는 중 에러 발생 :  ", error);
       }
     },
+    createReview() {
+      this.isModalCreate = true;
+    },
 
     startEditing() {
       this.isModalEditing = true;
       this.isModalVisible = false;
     },
-    saveChanges() {
-      // 업데이트 로직...
-      this.isModalEditinglse; // 수정 모드 종료
-      this.isModalVisible = true; // 조회 모달 창 표시
-      this.refreshList();
+    // saveChanges() {
+    //   // 업데이트 로직...
+    //   this.isModalEditing = false; // 수정 모드 종료
+    //   this.isModalVisible = true; // 조회 모달 창 표시
+    //   this.refreshList();
+    // },
+    cancelCreate() {
+      this.isModalCreate = false;
     },
     cancelEditing() {
       this.isModalEditing = false; // 수정 모드 종료
@@ -257,6 +277,7 @@ export default {
     closeModal() {
       this.isModalVisible = false;
       this.isModalEditing = false;
+      this.isModalCreate = false;
       this.refreshList();
     },
     async refreshList() {

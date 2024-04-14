@@ -106,13 +106,14 @@
   }
 
   .image-preview-container{
-    padding: 25px;
+    padding-left: 25px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     border: 1px solid #E1E1E1;
     border-radius: 5px;
     margin-bottom: 20px;
     overflow-y: scroll;
-    height: 100px;
-    
+    height: 80px;
   }
   .image-preview{
     display: flex;
