@@ -262,12 +262,6 @@ export default {
       this.isModalEditing = true;
       this.isModalVisible = false;
     },
-    // saveChanges() {
-    //   // 업데이트 로직...
-    //   this.isModalEditing = false; // 수정 모드 종료
-    //   this.isModalVisible = true; // 조회 모달 창 표시
-    //   this.refreshList();
-    // },
     cancelCreate() {
       this.isModalCreate = false;
     },
@@ -336,11 +330,10 @@ export default {
     },
     selectRegion(region) {
       this.selectedRegion = region;
-      this.page = 0;
-
       //검색 결과와 검색어 초기화
       this.searchResults = [];
       this.searchQuery = "";
+      this.page = 0;
       //데이터 새로 가져오기
       this.fetchData();
     },
