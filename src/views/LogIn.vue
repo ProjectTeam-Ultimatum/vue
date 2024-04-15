@@ -28,26 +28,26 @@
       };
     },
     methods: {
-        login() {
-        const data = {
-            memberEmail: this.username,
-            memberPassword: this.password
-        };
-        axios.post('/login', data)
-            .then(response => {
-            const jwtToken = response.headers['authorization'] || response.headers['Authorization'];
-            if (jwtToken) {
-            localStorage.setItem('Authorization', jwtToken);
-            this.$router.push('/'); // 홈으로 리디렉트
-            } else {
-            alert('JWT 토큰을 받지 못했습니다.');
-            }
-        })
-        .catch(error => {
-            console.error('Login error:', error);
-            alert('로그인 실패: ' + error.message);
-            });
-        },
+      login() {
+  const data = {
+    memberEmail: this.username,
+    memberPassword: this.password
+  };
+  axios.post('/login', data)
+    .then(response => {
+      const jwtToken = response.headers['authorization'] || response.headers['Authorization'];
+      if (jwtToken) {
+        localStorage.setItem('Authorization', jwtToken);
+        this.$router.push('/'); // 홈으로 리디렉트
+      } else {
+        alert('JWT 토큰을 받지 못했습니다.');
+      }
+    })
+    .catch(error => {
+      console.error('Login error:', error);
+      alert('로그인 실패: ' + error.message);
+    });
+}
     }
   }
   </script>
