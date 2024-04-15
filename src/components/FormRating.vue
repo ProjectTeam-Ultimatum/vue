@@ -14,7 +14,7 @@
   <script>
   export default {
     props: {
-      grade: {
+      recommend_place_star: {
         type: Number,
         default: 0
       },
@@ -25,26 +25,26 @@
     },
     mounted() {
     // 부모 컴포넌트로부터 전달된 초기값 설정
-    this.internalValue = this.grade;
+    this.internalValue = this.recommend_place_star;
   },
     data() {
       return {
         stars: 5,
-        internalValue: this.grade
+        internalValue: this.recommend_place_star
       };
     },
     methods: {
-      rate(grade) {
+      rate(recommend_place_star) {
       if (!this.readOnly) {
-        this.internalValue = grade;
-        this.$emit('update:grade', grade);
+        this.internalValue = recommend_place_star;
+        this.$emit('update:recommend_place_star', recommend_place_star);
       }
     }
   },
     watch: {
-    grade(newgrade) {
+      recommend_place_star(newrecommend_place_star) {
       // 외부에서 전달된 등급이 변경되면 내부 등급을 업데이트합니다.
-      this.internalValue = newgrade;
+      this.internalValue = newrecommend_place_star;
     }
   }
   };

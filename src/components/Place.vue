@@ -26,7 +26,7 @@ const EPSG_3857 = 'EPSG:3857';
 
 
 export default {
-  name: 'MainMap',
+  name: 'Place',
   data() {
     return {
       olMap: undefined,

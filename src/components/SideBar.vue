@@ -10,12 +10,12 @@
     >
       <div class="side-bar">
         <div class="title-area">
-          <textarea v-model="title" placeholder="맛집 이름을 입력해주세요."></textarea>
+          <textarea v-model="recommend_place_title" placeholder="맛집 이름을 입력해주세요."></textarea>
         </div>
 
         <div class="image-area">
           <div class="iw-file-input">
-            <img :src="image" alt="Uploaded Image" v-if="image"/>
+            <img :src="recommend_place_img_path" alt="Uploaded Image" v-if="recommend_place_img_path"/>
           </div>
         </div>
 
@@ -23,7 +23,7 @@
     <font-awesome-icon icon="fa-solid fa-pen" />
     <Input
     placeholder="위치 정보 직접 입력하기"
-    :value="addressCopy"
+    :value="recommend_place_address"
     @input="updateAddress"
   />
   </div>
@@ -33,21 +33,21 @@
   </a>
 
   <ul class="dropdown-menu">
-    <li><a class="dropdown-item" href="place">놀거리</a></li>
-    <li><a class="dropdown-item" href="hotel">숙소</a></li>
-    <li><a class="dropdown-item" href="food">음식</a></li>
-    <li><a class="dropdown-item" href="event">축제</a></li>
+    <li><a class="dropdown-item" href="#" @click="placecategory">놀거리</a></li>
+    <li><a class="dropdown-item" href="#" @click="hotelcategory">숙소</a></li>
+    <li><a class="dropdown-item" href="#" @click="foodcategory">음식</a></li>
+    <li><a class="dropdown-item" href="#" @click="eventcategory">축제</a></li>
   </ul>
 </div>
   <div class="rate-area">
-    <FormRating :value="parseInt(grade)" @update:grade="grade = $event" />
-    <FormRating :grade="grade" :readOnly="true"/>
+    <FormRating :value="parseInt(recommend_place_star)" @update:recommend_place_star="recommend_place_star = $event" />
+    <FormRating :recommend_place_star="recommend_place_star" :readOnly="true"/>
       </div>
         <div class="review-area">
           <textarea
               ref="textarea"
               placeholder="후기를 입력해주세요."
-              v-model="review"
+              v-model="recommend_place_introduction"
           ></textarea>
         </div>
         <div class="bottom-btn-area">
@@ -87,26 +87,31 @@ props: {
 data() {
   return {
     isVisibleSideBar: true,
-    addressCopy: '', // 초기화를 제거합니다.
-    title: '',
-    grade: 0,
-    review: '',
-    lonCopy: 0.0,
-    latCopy: 0.0,
-    image: ''
+    recommend_place_address: '', // 초기화를 제거합니다.
+    recommend_place_title: '',
+    recommend_place_star: 0,
+    recommend_place_introduction: '',
+    recommend_place_longitude: 0.0,
+    recommend_place_latitude: 0.0,
+    recommend_place_img_path: '',
+    placecategory: '',
+    hotelcategory: '',
+    foodcategory: '',
+    eventcategory: ''
   };
 },
 mounted() {
     EventBus.$on('mapClick', (data) => {
-        this.title = data.title || '';
-        this.addressCopy = data.address || '';
-        this.grade = data.grade || 0;
-        this.review = data.review || '';
-        this.lonCopy = data.lon;
-        this.latCopy = data.lat;
-        this.image = data.image || ''; // 이미지 데이터를 처리
-        console.log("grade: ", data.grade);
+        this.recommend_place_title = data.recommend_place_title || '';
+        this.recommend_place_address = data.recommend_place_address || '';
+        this.recommend_place_star = data.recommend_place_star || 0;
+        this.recommend_place_introduction = data.recommend_place_introduction || '';
+        this.recommend_place_longitude = data.lon;
+        this.recommend_place_latitude = data.lat;
+        this.recommend_place_img_path = data.recommend_place_img_path || ''; // 이미지 데이터를 처리
+        console.log("grade: ", data.recommend_place_star);
     });
+    
 },
 
 methods: {
@@ -123,13 +128,13 @@ methods: {
   saveReview() {
     try{
     this.$axios.post('http://localhost:8081/api/map/saveMap', {
-      title: this.title,
-      addressCopy: this.addressCopy,
-      grade: this.grade,
-      review: this.review,
-      lonCopy: this.lonCopy,
-      latCopy: this.latCopy,
-      image: this.image
+      recommend_place_title: this.recommend_place_title,
+      recommend_place_address: this.recommend_place_address,
+      recommend_place_star: this.recommend_place_star,
+      recommend_place_introduction: this.recommend_place_introduction,
+      recommend_place_longitude: this.recommend_place_longitude,
+      recommend_place_latitude: this.recommend_place_latitude,
+      recommend_place_img_path: this.recommend_place_img_path
     }).then(response => {
       console.log('저장 성공:', response);
     })
