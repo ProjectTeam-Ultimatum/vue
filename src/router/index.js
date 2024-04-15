@@ -4,9 +4,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ReviewBoard from '../views/ReviewBoard.vue'
-import RecommendFood from '../components/RecommendFood.vue' 
+// import RecommendFood from '../components/RecommendFood.vue' 
 import RecommendListFood from '../components/RecommendListFood.vue' 
-import RecommendHotel from '../components/RecommendHotel.vue' 
+import RecommendListHotel from '../components/RecommendListHotel.vue' 
+import RecommendListPlace from '../components/RecommendListPlace.vue' 
+import RecommendListEvent from '../components/RecommendListEvent.vue' 
 import RecommendList from '../views/RecommendList.vue'
 //import RecommendList from '../views/RecommendListPlace.vue' 
 
@@ -27,19 +29,24 @@ const routes = [
     component: RecommendList
   },
   {
-    path: '/food',
-    name: 'food',
-    component: RecommendFood
-  },
-  {
     path: '/listfood',
     name: 'listfood',
     component: RecommendListFood
   },
   {
-    path: '/hotel',
-    name: 'hotel',
-    component: RecommendHotel
+    path: '/listhotel',
+    name: 'listhotel',
+    component: RecommendListHotel
+  },
+  {
+    path: '/listplace',
+    name: 'listplace',
+    component: RecommendListPlace
+  },
+  {
+    path: '/listevent',
+    name: 'listevent',
+    component: RecommendListEvent
   },
   {
     path: '/about',

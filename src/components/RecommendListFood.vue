@@ -19,6 +19,16 @@
         <button type="button" class="btn btn-outline-primary"
             :class="{ 'active': selectedTag === '카페' }"
             @click="selectTag('카페')">카페</button>
+        <button type="button" class="btn btn-outline-primary"
+        :class="{ 'active': selectedTag === '디저트' }"
+        @click="selectTag('디저트')">디저트</button>
+        <button type="button" class="btn btn-outline-primary"
+        :class="{ 'active': selectedTag === '혼저옵서개' }"
+        @click="selectTag('혼저옵서개')">혼저옵서개</button>
+        <button type="button" class="btn btn-outline-primary"
+        :class="{ 'active': selectedTag === '반려동물동반입장' }"
+        @click="selectTag('반려동물동반입장')">반려동물동반입장</button>
+            
       </div>
         <div class="card-wrap">
         <!-- <div v-for="list in recommendList" :key="list.id"> -->
@@ -52,7 +62,7 @@
   <script>
   /* eslint-disable */
   export default {
-    name: 'RecommendListCard',
+    name: 'RecommendListHotel',
     props:{
       region: {
         type: String,
@@ -85,13 +95,17 @@
                 // 태그가 3개 이상인 경우, 처음 3개만 선택
                 item.recommendFoodTag = tags.slice(0, 3).join(', ');
             }
+            // recommendFoodTag의 길이가 6을 초과하는 경우, 줄임 처리
+            if (item.recommendFoodTag.length > 14) {
+                item.recommendFoodTag = item.recommendFoodTag.slice(0, 14) + '.';
+            }
             // 음식점 소개가 24글자 이상인 경우, 줄임말 처리
-            if (item.recommendFoodIntroduction.length > 34) {
-                item.recommendFoodIntroduction = item.recommendFoodIntroduction.substring(0, 34) + '...';
+            if (item.recommendFoodIntroduction.length > 30) {
+                item.recommendFoodIntroduction = item.recommendFoodIntroduction.substring(0, 30) + '...';
             }
             // 음식점 이름 줄이기 
-            if (item.recommendFoodTitle.length > 9) {
-              item.recommendFoodTitle = item.recommendFoodTitle.substring(0, 9) + '.';
+            if (item.recommendFoodTitle.length > 6) {
+              item.recommendFoodTitle = item.recommendFoodTitle.substring(0, 6) + '.';
             }
             return item;
         });
@@ -142,16 +156,6 @@ selectTag(tag) { //태그 필터링
       });
     }
   },
-// watch: {
-//   region(newVal, oldVal) {
-//     console.log('Prop region changed from', oldVal, 'to', newVal);
-//     this.fetchData(); // 지역이 바뀔 때마다 데이터를 다시 가져옵니다.
-//   },
-//   filteredFoods() {
-//         if (!this.selectedTag) return this.recommendListFood; // 태그가 선택되지 않았다면 모든 목록 반환
-//         return this.recommendListFood.filter(food => food.recommendFoodTag.includes(this.selectedTag));
-//     }
-// },
 mounted() {
         this.fetchData(); //컴포넌트가 마운트 될 때 데이터를 가져옴
     },
