@@ -26,7 +26,11 @@
       <ul>
         <li v-for="message in messages" :key="message.id" class="message-item">
           <span class="message-sender">{{ message.senderId }}:</span>
-          <span class="message-content">{{ message.message }}</span>
+          <!-- 이미지 URL이면 img 태그로, 그렇지 않으면 span으로 메시지를 보여줍니다. -->
+          <span v-if="isImageUrl(message.message)" class="message-content">
+            <img :src="message.message" alt="Image" style="max-width: 200px; max-height: 200px;">
+          </span>
+          <span v-else class="message-content">{{ message.message }}</span>
         </li>
       </ul>
     </section>
@@ -46,7 +50,10 @@
     <!-- 메시지 입력 영역 -->
     <footer class="message-input-area">
       <form @submit.prevent="sendMessage" class="message-form">
-        <input type="file" @change="handleFileUpload" class="file-input" />
+        <label for="file-upload" class="custom-file-upload">
+        이미지 전송
+        </label>
+        <input id="file-upload" type="file" @change="handleFileUpload" class="file-input" style="display: none;"/>
         <input v-model="newMessage" placeholder="메시지를 입력하세요" class="input-field" />
         <button type="submit" class="send-button">보내기</button>
       </form>
@@ -144,6 +151,7 @@ export default {
           console.error("채팅방 메시지를 불러오는 중 오류가 발생했습니다:", error);
         });
     },
+    // 웹소켓 메세지 전송 메소드 
     sendMessage(imageUrl = '') {
       const messageData = {
         messageType: "TALK",
@@ -157,6 +165,10 @@ export default {
       } else {
         console.error("WebSocket 연결이 되어있지 않습니다.");
       }
+    },
+    // 이미지 url 이 실제 사진으로 보이게 하는 메소드
+    isImageUrl(message) {
+      return message.startsWith("http") && (message.endsWith(".png") || message.endsWith(".jpg") || message.endsWith(".jpeg") || message.endsWith(".gif"));
     },
     enterChatRoom() {
     // WebSocket이 열려있는지 확인하고, 열려있다면 서버에 입장 신호만 전송합니다.
@@ -185,18 +197,43 @@ html, body {
   width: 100%;
   box-sizing: border-box;
 }
+
+/* 전체 채팅방 컨테이너 */
+.chat-room-container {
+  display: flex;
+  flex-direction: column;
+  height: 90vh; /* 화면의 전체 높이 */
+}
+
+/* 채팅메시지 이미지 크기 */
+.message-content img {
+  max-width: 100%;  /* 이미지가 채팅창 너비를 넘지 않도록 설정 */
+  height: auto;  /* 이미지 비율을 유지하면서 너비에 맞춤 */
+}
+
+/* 이미지 업로드 버튼 */
+.custom-file-upload {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+/* 이미지 업로드 버튼 */
+.custom-file-upload:hover {
+  background-color: #0056b3;
+
+}
+
+/* 이미지 업로드 버튼 */
 .file-input {
   margin-right: 10px;
   border: 1px solid #ccc;
   display: inline-block;
   padding: 6px 12px;
   cursor: pointer;
-}
-/* 전체 채팅방 컨테이너 */
-.chat-room-container {
-  display: flex;
-  flex-direction: column;
-  height: 90vh; /* 화면의 전체 높이 */
 }
 
 /* 채팅방 헤더 스타일 */
@@ -211,9 +248,11 @@ html, body {
 
 /* 채팅방 헤더 스타일 */
 .chat-room-header {
+
   /* 상단 헤더 스타일링 */
 }
 
+/* 채팅 메시지 스타일 */
 .center-panel ul {
   list-style-type: none; /* 기본적으로 설정된 목록 스타일의 점을 제거 */
   padding-left: 0; /* 목록 앞의 기본 패딩도 제거 */
@@ -232,30 +271,35 @@ html, body {
   overflow-y: auto; /* 내용이 많을 경우 스크롤바를 표시 */
 }
 
+/* 왼쪽 세션 */
 .left-panel {
   flex: 0.5;
   border-right: 1px solid #ddd; /* 오른쪽에 경계선 추가 */
 }
 
+/* 가운데 세션 */
 .center-panel {
   flex: 2.2;
   border-right: 1px solid #ddd; /* 오른쪽에 경계선 추가 */
 }
 
+/* 오른쪽 세션 */
 .right-panel {
   flex: 0.8;
 }
 
-
+/* 채팅방 이름 스타일 */
 .chat-room-title {
   font-size: 1.5em;
 }
 
+/* 아이디 로그인 스타일 */
 .user-profile {
   display: flex;
   align-items: center;
 }
 
+/* 유저 프로필 스타일 */
 .user-avatar {
   width: 130px;
   height: 130px;
@@ -265,32 +309,30 @@ html, body {
   margin-bottom: 20px;
 }
 
+/* 유저 이름 스타일 */
 .user-name {
   font-size: 1.5em;
   font-weight: bold;
 }
+
+/* 유저 추가정보 스타일 */
 .user-detail{
   font-size: 0.8em;
   color: #5c5c5c;
 }
 
-/* 채팅 메시지 목록 스타일 */
-.chat-messages {
-  flex-grow: 1;
-  overflow-y: auto;
-  padding: 16px;
-  background-color: #e9e9e9;
-}
-
+/* 채팅메시지 스타일 */
 .message-item {
   margin-bottom: 10px;
 }
 
+/* 채팅메시지 유저아이디 스타일 */
 .message-sender {
   font-weight: bold;
   margin-right: 5px;
 }
 
+/* 채팅메시지 내용 스타일*/
 .message-content {
   word-break: break-word;
 }
@@ -305,10 +347,12 @@ html, body {
   margin-left:14.8%;
 }
 
+/* 메시지 이미지 전송 폼 스타일 */
 .message-form {
   display: flex;
 }
 
+/* 메시지 (텍스트) 입력 영역 스타일 */
 .input-field {
   flex-grow: 1;
   padding: 10px;
@@ -317,6 +361,7 @@ html, body {
   border-radius: 4px;
 }
 
+/* 메시지 전송 버튼 스타일 */
 .send-button {
   padding: 10px 20px;
   background-color: #007bff;

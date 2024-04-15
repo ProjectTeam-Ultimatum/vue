@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import ReviewBoard from '../views/ReviewBoard.vue'
 import ChattingView from '../views/ChattingView.vue'
 import ChatRoom from '../views/ChatRoom.vue';
+import BudgetView from '../views/BudgetView.vue';
 
 
 const routes = [
@@ -26,6 +27,11 @@ const routes = [
     name: 'ChatRoom',
     component: ChatRoom,
     props: true // 컴포넌트에 URL 파라미터를 props로 전달
+  },
+  {
+    path: '/budget',
+    name: 'budget',
+    component: BudgetView
   },
 
   {
