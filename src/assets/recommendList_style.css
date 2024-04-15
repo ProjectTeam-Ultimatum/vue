@@ -138,3 +138,8 @@ body {
   .like-icon{
     color:rgb(255, 106, 0)
   }
+
+  .pagination-wrap{
+    display: flex;
+    justify-content: center;
+  }

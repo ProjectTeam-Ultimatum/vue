@@ -56,13 +56,43 @@
         </div>
         </div>
         </div>
+        <div class="pagination-wrap">
+        <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        <li class="page-item" :class="{ disabled: currentPage === 1 }">
+          <a class="page-link" href="#" aria-label="Previous" @click.prevent="goToPrevPage">
+            <span aria-hidden="true">&laquo;</span>
+            <span class="sr-only">Previous</span>
+          </a>
+        </li>
+        <li class="page-item" v-for="pageNumber in totalPages" :key="pageNumber"
+            :class="{ active: pageNumber === currentPage }">
+          <a class="page-link" href="#" @click.prevent="goToPage(pageNumber)">
+            {{ pageNumber }}
+          </a>
+        </li>
+        <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+          <a class="page-link" href="#" aria-label="Next" @click.prevent="goToNextPage">
+            <span aria-hidden="true">&raquo;</span>
+            <span class="sr-only">Next</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
     </div>
 </template>
   
   <script>
   /* eslint-disable */
+
+  // import Pagination from 'Pagination.vue';
+
   export default {
-    name: 'RecommendListHotel',
+    name: 'RecommendListFood',
+    // components: {
+    //   Pagination
+    // },
     props:{
       region: {
         type: String,
@@ -70,21 +100,34 @@
       }
     },
     data(){
-        return{
-          recommendListFood: [], // 복수형으로 변경하여 여러 후기 데이터를 담을 수 있도록 함
-            loading: false, // 로딩 상태를 나타내는 데이터 추가
-            isLiked: false, 
-            selectedTag: null, // 선택된 태그를 추적하기 위한 속성
-        };
-    },
+        return {
+      loading: false,
+      selectedRegion: '',
+      recommendListFood: [],
+      page: 1,
+      totalPages: 0
+    };
+  },
     //created, mounted
     methods: {
+      
         //api axios 요청
         fetchData() {
     this.loading = true; // 데이터 요청 시작 시 로딩 상태 활성화
-    this.$axios
-    .get("http://localhost:8080/api/recommend/listfood")
+
+    const params = {
+        page: this.page - 1,  // Ensure page is zero-indexed if backend expects it
+        size: 12,
+        sort: "recommendFoodId,desc",
+        region: this.selectedRegion.trim(),
+      };
+
+    // Axios 요청에 params 적용
+    this.$axios.get("http://localhost:8080/api/recommend/listfood", { params })
     .then((response) => {
+      this.recommendListFood = response.data.content;
+          this.totalPages = response.data.totalPages;  // Set total pages from response
+          this.loading = false;
         // 성공적으로 데이터를 받아온 경우
         console.log("데이터요청 성공1 : ", response.data);
         console.log("데이터요청 성공2 : ", response.data.content);
