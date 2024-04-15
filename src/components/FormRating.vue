@@ -5,6 +5,7 @@
         :key="index"
         @click="rate(index + 1)"
         :class="{ 'filled': index < internalValue }"
+        :style="{ cursor: readOnly ? 'default' : 'pointer' }"
       >
       </span>
     </div>
@@ -16,7 +17,11 @@
       grade: {
         type: Number,
         default: 0
-      }
+      },
+      readOnly: {
+      type: Boolean,
+      default: false
+    }
     },
     mounted() {
     // 부모 컴포넌트로부터 전달된 초기값 설정
@@ -25,18 +30,17 @@
     data() {
       return {
         stars: 5,
-        internalValue: 0
+        internalValue: this.grade
       };
     },
     methods: {
       rate(grade) {
-        console.log(grade)
-        // 사용자가 별을 클릭했을 때 호출됩니다.
-        // 부모 컴포넌트로 등급을 전달합니다.
+      if (!this.readOnly) {
         this.internalValue = grade;
         this.$emit('update:grade', grade);
       }
-    },
+    }
+  },
     watch: {
     grade(newgrade) {
       // 외부에서 전달된 등급이 변경되면 내부 등급을 업데이트합니다.

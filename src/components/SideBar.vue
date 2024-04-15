@@ -12,11 +12,13 @@
         <div class="title-area">
           <textarea v-model="title" placeholder="맛집 이름을 입력해주세요."></textarea>
         </div>
+
         <div class="image-area">
           <div class="iw-file-input">
-            사진을 업로드 해주세요
+            <img :src="image" alt="Uploaded Image" v-if="image"/>
           </div>
         </div>
+
         <div class="location-info-area">
     <font-awesome-icon icon="fa-solid fa-pen" />
     <Input
@@ -25,8 +27,21 @@
     @input="updateAddress"
   />
   </div>
+  <div class="dropdown">
+  <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    장소 정하기
+  </a>
+
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="place">놀거리</a></li>
+    <li><a class="dropdown-item" href="hotel">숙소</a></li>
+    <li><a class="dropdown-item" href="food">음식</a></li>
+    <li><a class="dropdown-item" href="event">축제</a></li>
+  </ul>
+</div>
   <div class="rate-area">
     <FormRating :value="parseInt(grade)" @update:grade="grade = $event" />
+    <FormRating :grade="grade" :readOnly="true"/>
       </div>
         <div class="review-area">
           <textarea
@@ -77,20 +92,28 @@ data() {
     grade: 0,
     review: '',
     lonCopy: 0.0,
-    latCopy: 0.0
+    latCopy: 0.0,
+    image: ''
   };
 },
 mounted() {
-  EventBus.$on('mapClick', ({ title, address, grade, review, lon, lat }) => {
-    this.title = title || '';
-    this.addressCopy = address || '';
-    this.grade = grade || 0;
-    this.review = review || '';
-    this.lonCopy = lon;
-    this.latCopy = lat;
-  });
+    EventBus.$on('mapClick', (data) => {
+        this.title = data.title || '';
+        this.addressCopy = data.address || '';
+        this.grade = data.grade || 0;
+        this.review = data.review || '';
+        this.lonCopy = data.lon;
+        this.latCopy = data.lat;
+        this.image = data.image || ''; // 이미지 데이터를 처리
+        console.log("grade: ", data.grade);
+    });
 },
+
 methods: {
+  onChangeFiles(e) {
+    this.fileList.push(...e.target.files);
+    console.log(this.fileList);
+  },
   showSideBar() {
     this.isVisibleSideBar = !this.isVisibleSideBar;
   },
@@ -105,7 +128,8 @@ methods: {
       grade: this.grade,
       review: this.review,
       lonCopy: this.lonCopy,
-      latCopy: this.latCopy
+      latCopy: this.latCopy,
+      image: this.image
     }).then(response => {
       console.log('저장 성공:', response);
     })
