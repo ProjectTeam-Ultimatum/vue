@@ -18,7 +18,6 @@ export default {
       reviews: [
         {
           id: 1,
-        
           title: "멋진 풍경과 함게한 제주도 여행",
           image: "hanra.jpeg",
           likes: 200,
@@ -27,16 +26,6 @@ export default {
           author: "김여행",
           date: "2024-04-01",
         
-        },
-        {
-          id: 2,
-          title: "가족과 함께한 행복한 시간",
-          image: "logo.png",
-          likes: 4,
-          comments: 10,
-          body: "가족들과 함께한 제주도 여행은 정말 특별하고 의미 있는 시간이었습니다.",
-          author: "이가족",
-          date: "2024-03-28",
         },
       ], //후기 데이터 가져오는 로직
     };
