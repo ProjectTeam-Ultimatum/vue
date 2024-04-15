@@ -76,8 +76,8 @@
     .get("http://localhost:8080/api/recommend/listfood")
     .then((response) => {
         // 성공적으로 데이터를 받아온 경우
-        console.log("데이터요청 성공 : ", response.data);
-        console.log("데이터요청 성공 : ", response.data.content);
+        console.log("데이터요청 성공1 : ", response.data);
+        console.log("데이터요청 성공2 : ", response.data.content);
         this.recommendListFood = response.data.content.map(item => {
             // 각 항목의 태그를 처리
             const tags = item.recommendFoodTag.split(',');
