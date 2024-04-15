@@ -44,9 +44,17 @@
     </div>
 
     <div class="reviews">
-      <div class="create-review" @click="createReview">
-        <span style="font-size: 12px"> 글쓰기 </span
-        ><font-awesome-icon :icon="['far', 'pen-to-square']" size="xl" />
+      <div class="create-review">
+        <div>
+          <span @click="createReview" style="font-size: 12px; cursor: pointer">
+            글쓰기 </span
+          ><font-awesome-icon
+            :icon="['far', 'pen-to-square']"
+            size="xl"
+            style="cursor: pointer"
+            @click="createReview"
+          />
+        </div>
       </div>
       <!-- 리뷰쓰기 모달창 -->
       <CreateReview
@@ -192,18 +200,17 @@ export default {
       if (this.searchResults.length > 0) {
         return this.searchResults;
       } else if (this.selectedRegion) {
-        return this.filteredReviews;
+        return this.filteredReviewsByRegion;
       } else {
         return this.allReviews;
       }
     },
-    // selectedRegion 값에 따라 allReviews를 필터링하여 결과를 반환합니다.
-    filteredReviews() {
-      if (this.selectedRegion) {
-        return this.allReviews.filter(
-          (review) => review.reviewLocation === this.selectedRegion
-        );
-      }
+    filteredReviewsByRegion() {
+      return this.selectedRegion
+        ? this.allReviews.filter(
+            (review) => review.reviewLocation === this.selectedRegion
+          )
+        : this.allReviews;
     },
   },
 
@@ -213,16 +220,17 @@ export default {
       try {
         const params = {
           page: this.page,
-          size: 6,
-          sort: "reviewId,desc", //정렬방식
-          reviewLocation: this.selectedRegion.trim(),
+          size: 6, // 페이지 당 표시할 리뷰 수
+          reviewLocation: this.selectedRegion, // 선택된 지역을 파라미터로 추가
         };
-        const response = await this.$axios.get("/api/reviews", { params });
+        const response = await this.$axios.get("/api/reviews", {
+          params,
+        });
         //성공적으로 데이터를 받아온 경우
         console.log("데이터요청 성공 : " + response.data);
         console.log(this.allReviews);
         this.allReviews = response.data.content;
-        this.totalPages = response.data.totalPages;
+        this.totalPages = response.data.totalPages; // 백엔드로부터 전체 페이지 수 받기
         this.isModalVisible = false;
         this.isModalEditing = false;
         this.isModalCreate = false;
@@ -319,10 +327,7 @@ export default {
     // 날짜를 인자로 받아서 원하는 형태의 문자열로 변환하여 반환
     formatDate(dateString) {
       const date = new Date(dateString);
-      const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, "0");
-      const day = date.getDate().toString().padStart(2, "0");
-      return `${year}-${month}-${day}`;
+      return date.toISOString().substring(0, 10); // YYYY-MM-DD 형식으로 반환
     },
     changePage(page) {
       this.page = page;
@@ -330,12 +335,10 @@ export default {
     },
     selectRegion(region) {
       this.selectedRegion = region;
-      //검색 결과와 검색어 초기화
-      this.searchResults = [];
-      this.searchQuery = "";
-      this.page = 0;
-      //데이터 새로 가져오기
-      this.fetchData();
+      this.page = 0; // 페이지 번호를 초기화
+      this.searchResults = []; // 검색 결과 초기화
+      this.searchQuery = ""; // 검색어 초기화
+      this.fetchData(); // 새로운 데이터 로딩
     },
   },
 
