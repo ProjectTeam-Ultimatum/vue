@@ -44,9 +44,17 @@
     </div>
 
     <div class="reviews">
-      <div class="create-review" @click="createReview">
-        <span style="font-size: 12px"> 글쓰기 </span
-        ><font-awesome-icon :icon="['far', 'pen-to-square']" size="xl" />
+      <div class="create-review">
+        <div>
+          <span @click="createReview" style="font-size: 12px; cursor: pointer">
+            글쓰기 </span
+          ><font-awesome-icon
+            :icon="['far', 'pen-to-square']"
+            size="xl"
+            style="cursor: pointer"
+            @click="createReview"
+          />
+        </div>
       </div>
       <!-- 리뷰쓰기 모달창 -->
       <CreateReview
@@ -174,7 +182,7 @@ export default {
     return {
       allReviews: [], // 복수형으로 변경하여 여러 후기 데이터를 담을 수 있도록 함
       page: 0,
-      totalPages: 10,
+      totalPages: 0,
       selectedRegion: "", //기본값 전체로 설정
       searchQuery: "",
       searchResults: [], //검색결과 저장 배열
@@ -192,18 +200,17 @@ export default {
       if (this.searchResults.length > 0) {
         return this.searchResults;
       } else if (this.selectedRegion) {
-        return this.filteredReviews;
+        return this.filteredReviewsByRegion;
       } else {
         return this.allReviews;
       }
     },
-    // selectedRegion 값에 따라 allReviews를 필터링하여 결과를 반환합니다.
-    filteredReviews() {
-      if (this.selectedRegion) {
-        return this.allReviews.filter(
-          (review) => review.reviewLocation === this.selectedRegion
-        );
-      }
+    filteredReviewsByRegion() {
+      return this.selectedRegion
+        ? this.allReviews.filter(
+            (review) => review.reviewLocation === this.selectedRegion
+          )
+        : this.allReviews;
     },
   },
 
@@ -213,16 +220,18 @@ export default {
       try {
         const params = {
           page: this.page,
-          size: 6,
-          sort: "reviewId,desc", //정렬방식
-          reviewLocation: this.selectedRegion.trim(),
+          size: 6, // 페이지 당 표시할 리뷰 수
+          reviewLocation: this.selectedRegion, // 선택된 지역을 파라미터로 추가
+          keyword: this.searchQuery,
         };
-        const response = await this.$axios.get("/api/reviews", { params });
+        const response = await this.$axios.get("/api/reviews", {
+          params,
+        });
         //성공적으로 데이터를 받아온 경우
         console.log("데이터요청 성공 : " + response.data);
         console.log(this.allReviews);
         this.allReviews = response.data.content;
-        this.totalPages = response.data.totalPages;
+        this.totalPages = response.data.totalPages; // 백엔드로부터 전체 페이지 수 받기
         this.isModalVisible = false;
         this.isModalEditing = false;
         this.isModalCreate = false;
@@ -279,24 +288,13 @@ export default {
       await this.fetchData();
     },
     performSearch() {
-      this.selectedRegion = "";
-      //검색 수행 여부를 항상 참으로 설정
-      this.searchPerformed = true;
-      // allReviews에서 검색어에 해당하는 리뷰를 필터링
-      if (this.searchQuery.trim()) {
-        const searchLowerCase = this.searchQuery.toLowerCase();
-        this.searchResults = this.allReviews.filter(
-          (review) =>
-            review.reviewTitle.toLowerCase().includes(searchLowerCase) ||
-            review.reviewSubtitle.toLowerCase().includes(searchLowerCase) ||
-            review.reviewContent.toLowerCase().includes(searchLowerCase)
-        );
-        if (this.searchResults.length === 0) {
-          alert("[" + this.searchQuery + "] 에 대한 검색 결과가 없습니다.");
-        }
-      } else {
-        this.searchResults = [];
+      this.selectedRegion = ""; // 검색 시 지역 선택 초기화
+      if (!this.searchQuery && !this.selectedRegion) {
+        alert("검색어 또는 지역을 입력하세요.");
+        return;
       }
+      this.page = 0; // 검색 시 페이지 초기화
+      this.fetchData();
     },
 
     async incrementLikes(review) {
@@ -319,23 +317,17 @@ export default {
     // 날짜를 인자로 받아서 원하는 형태의 문자열로 변환하여 반환
     formatDate(dateString) {
       const date = new Date(dateString);
-      const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, "0");
-      const day = date.getDate().toString().padStart(2, "0");
-      return `${year}-${month}-${day}`;
+      return date.toISOString().substring(0, 10); // YYYY-MM-DD 형식으로 반환
     },
     changePage(page) {
       this.page = page;
       this.fetchData();
     },
     selectRegion(region) {
-      this.selectedRegion = region;
-      //검색 결과와 검색어 초기화
-      this.searchResults = [];
       this.searchQuery = "";
-      this.page = 0;
-      //데이터 새로 가져오기
-      this.fetchData();
+      this.selectedRegion = region;
+      this.page = 0; // 페이지 번호를 초기화
+      this.fetchData(); // 새로운 데이터 로딩
     },
   },
 
