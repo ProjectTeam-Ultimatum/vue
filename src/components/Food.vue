@@ -26,17 +26,17 @@ const EPSG_3857 = 'EPSG:3857';
 
 
 export default {
-  name: 'place_category',
+  name: 'food_category',
   data() {
     return {
       olMap: undefined,
-      recommend_place_address: '',
+      recommend_food_address: '',
       iconsSource: undefined,
       locations: [],
       vectorSource: undefined,
-      recommend_place_title: '',
-      recommend_place_star: 0,
-      recommend_place_introduction: ''
+      recommend_food_title: '',
+      recommend_food_star: 0,
+      recommend_food_introduction: ''
     }
   },
   mounted() {
@@ -68,7 +68,7 @@ this.olMap = new OlMap({
 this.olMap.on('click', async (e) => {
   geocoder.getSource().clear();
   this.clearLocationData();
-  console.log(this.recommend_place_address);
+  console.log(this.recommend_food_address);
   const [lon, lat] = toLonLat(e.coordinate);
   const addressInfo = await this.getAddress(lon, lat);
   if (addressInfo) {
@@ -97,13 +97,13 @@ this.olMap.on('click', async (e) => {
 
     // Emit data only if the feature is newly added or needs to be updated
     EventBus.$emit('mapClick', {
-      recommend_place_title: this.recommend_place_title,
-      recommend_place_address: displayAddress,
-      recommend_place_star: this.recommend_place_star,
-      recommend_place_introduction: this.recommend_place_introduction,
+      recommend_food_title: this.recommend_food_title,
+      recommend_food_address: displayAddress,
+      recommend_food_star: this.recommend_food_star,
+      recommend_food_introduction: this.recommend_food_introduction,
       lon: lon,
       lat: lat,
-      recommend_place_img_path: this.recommend_place_img_path
+      recommend_food_img_path: this.recommend_food_img_path
     });
   } else {
     console.error('Failed to fetch address information');
@@ -148,11 +148,11 @@ this.olMap.on('click', async (e) => {
 methods: {
   clearLocationData() {
     // UI에 표시된 정보 초기화
-    this.recommend_place_title = '';
-    this.recommend_place_address = '';
-    this.recommend_place_star = null;
-    this.recommend_place_introduction = '';
-    this.recommend_place_img_path = '';
+    this.recommend_food_title = '';
+    this.recommend_food_address = '';
+    this.recommend_food_star = null;
+    this.recommend_food_introduction = '';
+    this.recommend_food_img_path = '';
   },
   coordi4326To3857([lon, lat]) {
       // 좌표 변환 로직 구현
@@ -223,7 +223,7 @@ addMapIcons() {
   // DB에서 가져온 각 위치 정보에 대해 아이콘을 추가합니다.
   this.locations.forEach(location => {
     const feature = new OlFeature({
-      geometry: new OlPoint(fromLonLat([location.recommend_place_longitude, location.recommend_place_latitude]))
+      geometry: new OlPoint(fromLonLat([location.recommend_food_longitude, location.recommend_food_latitude]))
       ,id: location.id
     });
     feature.setStyle(new OlStyle({
@@ -250,11 +250,11 @@ addMapIcons() {
 },
 displayLocationData(data) {
     // DB에서 가져온 데이터를 UI에 표시
-    this.recommend_place_title = data.recommend_place_title;
-    this.recommend_place_address = data.recommend_place_address;
-    this.recommend_place_star = data.recommend_place_star;
-    this.recommend_place_introduction = data.recommend_place_introduction;
-    this.recommend_place_img_path = data.recommend_place_img_path;
+    this.recommend_food_title = data.recommend_food_title;
+    this.recommend_food_address = data.recommend_food_address;
+    this.recommend_food_star = data.recommend_food_star;
+    this.recommend_food_introduction = data.recommend_food_introduction;
+    this.recommend_food_img_path = data.recommend_food_img_path;
     // 이외에 필요한 UI 업데이트 로직
   }
 

@@ -72,7 +72,7 @@ import VueResizable from 'vue-resizable';
 import { EventBus } from '@/EventBus'; // EventBus를 가져옵니다.
 import FormRating from './FormRating';
 
-
+//event와 food, hotel를 위에 place처럼 쓴다음 if문을 걸어줘야 할거 같음//
 
 export default {
 name: 'SideBar',
@@ -94,10 +94,6 @@ data() {
     recommend_place_longitude: 0.0,
     recommend_place_latitude: 0.0,
     recommend_place_img_path: '',
-    placecategory: '',
-    hotelcategory: '',
-    foodcategory: '',
-    eventcategory: ''
   };
 },
 mounted() {
@@ -115,6 +111,18 @@ mounted() {
 },
 
 methods: {
+  placecategory() {
+    this.$router.push('/place');
+  },
+  hotelcategory() {
+    this.$router.push('/hotel');
+  },
+  eventcategory() {
+    this.$router.push('/event');
+  },
+  foodcategory() {
+    this.$router.push('/food');
+  },
   onChangeFiles(e) {
     this.fileList.push(...e.target.files);
     console.log(this.fileList);
@@ -126,6 +134,8 @@ methods: {
     this.$emit('update:address', event.target.value);
   },
   saveReview() {
+    const currentUrl = window.location.href;
+    if(currentUrl === 'http://localhost:8080'){
     try{
     this.$axios.post('http://localhost:8081/api/map/saveMap', {
       recommend_place_title: this.recommend_place_title,
@@ -140,9 +150,25 @@ methods: {
     })
   }catch(error){
     console.error("저장하기 에러" + error);
+  }}
+  if( currentUrl == 'http://localhost:8080/event')
+  try{
+    this.$axios.post('http://localhost:8081/api/map/saveevent', {
+      recommend_event_title: this.recommend_event_title,
+      recommend_event_address: this.recommend_event_address,
+      recommend_event_star: this.recommend_event_star,
+      recommend_event_introduction: this.recommend_event_introduction,
+      recommend_event_longitude: this.recommend_event_longitude,
+      recommend_event_latitude: this.recommend_event_latitude,
+      recommend_event_img_path: this.recommend_place_img_path
+    }).then(response => {
+      console.log('저장 성공:', response);
+    })
+  }catch(error){
+    console.error("저장하기 에러" + error);
   }
-  } 
 },
+  } 
 }
 </script>
 
