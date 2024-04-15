@@ -3,18 +3,6 @@
   <p class="sub-text">
     당신의 여행이 더욱 특별해질 수 있게 여행기록을 공유하세요
   </p>
-  <div class="create-review" @click="createReview">
-    <span style="font-size: 12px"> 글쓰기 </span
-    ><font-awesome-icon :icon="['far', 'pen-to-square']" size="2xl" />
-  </div>
-  <!-- 수정 모달창 -->
-  <CreateReview
-    v-if="isModalCreate"
-    :isModalCreate="isModalCreate"
-    @cancel="cancelCreate"
-    @close="closeModal()"
-    @deleted="fetchData"
-  />
 
   <div class="container">
     <div class="region-list">
@@ -56,6 +44,18 @@
     </div>
 
     <div class="reviews">
+      <div class="create-review" @click="createReview">
+        <span style="font-size: 12px"> 글쓰기 </span
+        ><font-awesome-icon :icon="['far', 'pen-to-square']" size="xl" />
+      </div>
+      <!-- 리뷰쓰기 모달창 -->
+      <CreateReview
+        v-if="isModalCreate"
+        :isModalCreate="isModalCreate"
+        @cancel="cancelCreate"
+        @close="closeModal()"
+        @deleted="fetchData"
+      />
       <div class="review-search">
         <div class="search-input">
           <!-- 검색창 -->
@@ -223,8 +223,9 @@ export default {
         console.log(this.allReviews);
         this.allReviews = response.data.content;
         this.totalPages = response.data.totalPages;
-        // this.isModalVisible = false;
-        // this.isModalEditing = false;
+        this.isModalVisible = false;
+        this.isModalEditing = false;
+        this.isModalCreate = false;
       } catch (error) {
         console.error("에러났어요 : " + error);
       }
@@ -335,6 +336,8 @@ export default {
     },
     selectRegion(region) {
       this.selectedRegion = region;
+      this.page = 0;
+
       //검색 결과와 검색어 초기화
       this.searchResults = [];
       this.searchQuery = "";

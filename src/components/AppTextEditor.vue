@@ -9,7 +9,7 @@
             :key="index"
             :class="{ active: editor.isActive('heading', { level: index }) }"
             :style="{ fontSize: 20 - index + 'px' }"
-            @click="onHeadingClick(index)"
+            @click="onHeadingClick(index, $event)"
             role="button"
           >
             {{ index }}
@@ -21,14 +21,14 @@
         v-for="({ slug, option, active, icon }, index) in textActions"
         :key="index"
         :class="{ active: editor.isActive(active) }"
-        @click="onActionClick(slug, option)"
+        @click="onActionClick(slug, option, $event)"
       >
         <i :class="icon"></i>
       </button>
     </div>
-
-    <editor-content :editor="editor" />
-
+    <div class="content-main">
+      <editor-content :editor="editor" />
+    </div>
     <div v-if="editor" class="footer">
       <span class="characters-count" :class="maxLimit ? limitWarning : ''">
         {{ charactersCount }}
@@ -138,7 +138,8 @@ export default {
     },
   },
   methods: {
-    onActionClick(slug, option = null) {
+    onActionClick(slug, option = null, event) {
+      event.preventDefault(); // 폼 제출 방지
       const vm = this.editor.chain().focus();
       const actionTriggers = {
         bold: () => vm.toggleBold().run(),
@@ -160,7 +161,8 @@ export default {
 
       actionTriggers[slug]();
     },
-    onHeadingClick(index) {
+    onHeadingClick(index, event) {
+      event.preventDefault(); // 폼 제출 방지
       const vm = this.editor.chain().focus();
       vm.toggleHeading({ level: index }).run();
     },
@@ -195,14 +197,16 @@ export default {
 #text-editor {
   border: 1px solid #e1e1e1;
   border-radius: 5px;
-  width: 100%;
-  padding: 20px;
 
   .toolbar {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     border-bottom: 1px solid #e1e1e1;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 
     > button {
       display: flex;
@@ -295,12 +299,17 @@ export default {
     }
   }
 
-  .ProseMirror {
+  .content-main {
+    padding: 20px;
     height: 300px;
-    overflow-y: auto;
+    overflow-y: scroll;
+  }
+
+  .ProseMirror {
     padding-left: 0.5em;
     padding-right: 0.5em;
     outline: none;
+    width: 100%;
 
     > p:first-child {
       margin-top: 0.5em;

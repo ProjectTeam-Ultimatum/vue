@@ -66,7 +66,7 @@
             rel="stylesheet"
           />
 
-          <AppTextEditor v-model="review.reviewContent" :max-limit="350" />
+          <AppTextEditor v-model="review.reviewContent" :max-limit="500" />
         </div>
         <div class="form-actions">
           <button

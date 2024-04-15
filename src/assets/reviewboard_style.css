@@ -1,4 +1,10 @@
-
+.create-review{
+  justify-content: end;
+  text-align: end;
+  margin-bottom: 10px;
+  color: #919191;
+  cursor: pointer;
+}
 
 
   
@@ -18,8 +24,7 @@
   align-items: flex-start; /* 컨텐츠를 상단에 정렬 */
   gap: 0px; /* 컬럼사이 간격 */
   justify-content: center;
-  /* margin-left: 250px;
-  margin-right: 250px; */
+  margin-bottom: 20px;
 }
 
 .region-list {

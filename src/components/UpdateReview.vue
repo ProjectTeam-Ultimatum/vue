@@ -70,7 +70,7 @@
             rel="stylesheet"
           />
 
-          <AppTextEditor v-model="content" :max-limit="280" />
+          <AppTextEditor v-model="content" :max-limit="500" />
         </div>
         <div class="form-actions">
           <button
