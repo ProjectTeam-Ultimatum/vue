@@ -5,7 +5,7 @@
 
     <!-- 모달 창 -->
     <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
-      <div class="modal-content">
+      <div class="login-modal-content">
         <span class="close" @click="closeModal">&times;</span>
         <h1 class="modal-title">{{ currentView === 'login' ? '로그인' : '회원가입' }}</h1>
 
@@ -209,7 +209,7 @@ export default {
   justify-content: center;
 }
 
-.modal-content {
+.login-modal-content {
   background: white;
   padding: 20px;
   border-radius: 5px;
@@ -251,7 +251,7 @@ export default {
   flex-direction: column;
   align-items: flex-start; /* 요소들을 컨테이너의 왼쪽 가장자리에 정렬합니다. */
   margin-bottom: 10px;
-  width: 70%;
+  width: 80%;
 }
 
 .form-group label {
@@ -279,7 +279,7 @@ export default {
 .password-toggle-icon {
   cursor: pointer;
   position: absolute; /* 컨테이너 내에서 절대 위치를 사용 */
-  right: 10px; /* 오른쪽 끝에서 10px의 간격을 둠 */
+  right: 30px; /* 오른쪽 끝에서 10px의 간격을 둠 */
   bottom: 20px;
 }
 

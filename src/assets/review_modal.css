@@ -1,6 +1,4 @@
-
-
-.modal {
+.review-modal {
     position: fixed; /* 화면에 고정 */
     top: 50%; /* 상단에서 50% 위치 */
     left: 50%; /* 좌측에서 50% 위치 */

@@ -28,3 +28,4 @@ axios.interceptors.request.use(function (config) {
     return config;
 });
 
+app.config.globalProperties.$axios = axios; 
