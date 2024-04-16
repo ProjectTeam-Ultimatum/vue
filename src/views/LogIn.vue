@@ -1,69 +1,73 @@
 <template>
   <div class="login-container">
-    <!-- 트리거 버튼 -->
-    <button class="login-trigger" @click="showModal = true">로그인</button>
-
-    <!-- 로그아웃 버튼 -->
+    <button class="login-trigger" @click="showModal = true; currentView = 'login'">로그인</button>
     <button class="logout-button" @click="logout" v-if="isAuthenticated">로그아웃</button>
 
-    <div v-if="showSignupModal" class="modal-overlay" @click.self="showSignupModal = false">
-        <div class="signup-container">
-        <h1>회원가입</h1>
-        <form @submit.prevent="register">
-          <div>
-            <label for="name">이름:</label>
+    <!-- 모달 창 -->
+    <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+      <div class="modal-content">
+        <span class="close" @click="closeModal">&times;</span>
+        <h1 class="modal-title">{{ currentView === 'login' ? '로그인' : '회원가입' }}</h1>
+
+        <!-- 로그인 폼 -->
+        <form v-if="currentView === 'login'" @submit.prevent="login" class="login-form">
+          <!-- 로그인 필드 -->
+          <div class="form-group">
+            <label for="email">이메일</label>
+            <input type="text" id="username" v-model="username" placeholder="이메일" required>
+          </div>
+          <div class="form-group">
+            <label for="password">비밀번호</label>
+            <div class="password-container">
+              <input :type="passwordFieldType" id="password" v-model="password" placeholder="비밀번호" required>
+              <span class="password-toggle-icon" @click="togglePasswordVisibility">&#128065;</span>
+            </div>
+            <div>
+              <p style="font-size: 12px;">비밀번호를 잊으셨나요?</p>
+            </div>
+          </div>
+          <button type="submit" class="submit-button">로그인</button>
+          <p>OR</p>
+          <button class="google-signin">카카오 계정으로 로그인하기</button>
+          <p class="signup-prompt">아직 회원이 아니신가요? <a @click="switchView('signup')">회원가입 하기</a></p>
+        </form>
+
+        <!-- 회원가입 폼 -->
+        <form v-else @submit.prevent="register" class="signup-form">
+          <div class="form-group">
+            <label for="name">이름</label>
             <input type="text" id="name" v-model="name" required>
           </div>
-          <div>
-            <label for="email">이메일:</label>
+          <div class="form-group">
+            <label for="email">이메일</label>
             <input type="email" id="email" v-model="email" required>
           </div>
-          <div>
-            <label for="password">비밀번호:</label>
+          <div class="form-group">
+            <label for="password">비밀번호</label>
             <input type="password" id="password" v-model="password" required>
           </div>
-          <div>
-            <label for="age">나이:</label>
+          <div class="form-group">
+            <label for="age">나이</label>
             <input type="number" id="age" v-model="age" required>
           </div>
-          <div>
-            <label for="gender">성별:</label>
-            <select v-model="gender" required>
+          <div class="form-group">
+            <label for="gender">성별</label>
+            <select id="gender" v-model="gender" required>
               <option value="M">남성</option>
               <option value="F">여성</option>
             </select>
           </div>
-          <div>
-            <label for="address">주소:</label>
+          <div class="form-group">
+            <label for="address">주소</label>
             <input type="text" id="address" v-model="address" required>
           </div>
-          <button type="submit">회원가입</button>
-        </form>
-      </div>
-    </div>
-
-    <!-- 모달 창 -->
-    <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
-      <div class="modal-content">
-        <span class="close" @click="showModal = false">&times;</span>
-        <h1 class="modal-title">로그인</h1>
-        <form @submit.prevent="login" class="login-form">
-          <div class="form-group">
-            <input type="text" id="username" v-model="username" placeholder="이메일" required>
-          </div>
-           <div class="form-group">
-            <input :type="passwordFieldType" id="password" v-model="password" placeholder="비밀번호" required>
-            <span class="password-toggle-icon" @click="togglePasswordVisibility">&#128065;
-            </span>
-          </div>
-          <button type="submit" class="submit-button">로그인</button>
-          <button class="google-signin">카카오 계정으로 로그인하기</button>
-          <p class="signup-prompt">아직 회원이 아니신가요? <a @click="switchToSignup">회원가입 하기</a></p>
+          <button type="submit" class="submit-button">회원가입</button>
         </form>
       </div>
     </div>
   </div>
 </template>
+
 
 <script>
 import axios from 'axios';
@@ -74,6 +78,7 @@ export default {
       username: '',
       password: '',
       showModal: false,
+      currentView: 'login', // 현재 보여줄 뷰
       passwordFieldType: 'password',
       showSignupModal: false, // 회원가입 모달을 관리할 새로운 데이터 속성
       name: '',
@@ -111,10 +116,11 @@ export default {
         });
     },
     logout() {
-     // 로컬 스토리지에서 토큰 제거
-    localStorage.removeItem('Authorization');
-    // 사용자를 로그인 페이지로 리디렉션
-    this.$router.push('/login');
+      // 로컬 스토리지에서 토큰 제거
+      localStorage.removeItem('Authorization');
+      // 로그아웃 성공 메시지 표시 후 페이지 새로 고침
+      alert('로그아웃 되었습니다.');
+      location.reload(); // 페이지 새로고침
     },
     togglePasswordVisibility() {
       this.passwordFieldType =
@@ -137,13 +143,21 @@ export default {
         axios.post('/api/v1/join', data)
           .then(response => {
             alert(response.data); // 성공 메시지 출력
+            this.closeModal(); // 모달 창 닫기
             this.$router.push('/login'); // 로그인 페이지로 이동
           })
           .catch(error => {
             console.error('Registration failed:', error);
             alert('회원가입 실패: ' + error.response.data);
-          });
-      }
+        });
+    },
+    switchView(view) {
+     this.currentView = view; // 현재 뷰 전환
+    },
+    closeModal() {
+      this.showModal = false;
+      this.currentView = 'login'; // 모달을 닫을 때 로그인 뷰로 리셋
+    },
   }
 }
 </script>
@@ -178,6 +192,9 @@ export default {
 .google-signin {
   background-color: #f9e000; /* Google Red */
   color: white;
+  width: 70%;
+  margin-bottom: 10px;
+  padding: 15px 20px;
 }
 
 .modal-overlay {
@@ -210,15 +227,35 @@ export default {
 .modal-title {
   font-size: 24px;
   margin-bottom: 20px;
+  margin-top: 70px;
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
+  align-items: center; /* 모든 자식 요소를 중앙 정렬 */
+  width: 400px;
+  height: 500px;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 모든 자식 요소를 중앙 정렬 */
+  width: 400px;
+  height: 550px;
 }
 
 .form-group {
-  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* 요소들을 컨테이너의 왼쪽 가장자리에 정렬합니다. */
+  margin-bottom: 10px;
+  width: 70%;
+}
+
+.form-group label {
+  margin-bottom: 5px; /* 라벨과 입력 필드 사이에 약간의 간격을 추가 */
 }
 
 .form-group input {
@@ -226,56 +263,45 @@ export default {
   border: 1px solid #ccc;
   border-radius: 5px;
   width: calc(100% - 22px); /* Adjust for padding */
+  margin-bottom: 10px;
 }
 
+.password-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+
 .password-toggle-icon {
-  position: absolute;
-  right: 30px;
-  top: 145px;
   cursor: pointer;
+  position: absolute; /* 컨테이너 내에서 절대 위치를 사용 */
+  right: 10px; /* 오른쪽 끝에서 10px의 간격을 둠 */
+  bottom: 20px;
 }
 
 .submit-button {
   background-color: #68C7FF;
   color: white;
-  padding: 10px 20px;
+  padding: 15px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  width: 70%;
+  margin-bottom: 10px;
+  margin-top: 20px;
 }
 
 .signup-prompt {
   text-align: center;
-  margin-top: 20px;
+  margin-top: 40px;
+  width: 80%;
 }
 
 .signup-prompt a {
   color: #008CBA;
-}
-.signup-container {
-  max-width: 700px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  background: white;
-  padding: 20px;
-  border-radius: 5px;
-  position: relative;
-}
-
-.signup-container input,
-.signup-container select,
-.signup-container button {
-  padding: 10px;
-  margin-bottom: 15px; /* 간격 조정 */
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  width: 90%; /* 전체 너비 */
-}
-
-.signup-container button {
-  background-color: #68C7FF; /* 로그인 버튼과 동일한 색상 */
-  color: white;
   cursor: pointer;
 }
+
 </style>
