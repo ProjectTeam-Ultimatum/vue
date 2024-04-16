@@ -166,6 +166,7 @@ export default {
   },
 };
 </script>
+
 <style>
 @import "@/assets/css/review_modal_update.css";
 </style>
