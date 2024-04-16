@@ -173,10 +173,9 @@
 </template>
 
 <script>
-import ReviewModal from "@/components/ReviewModal.vue";
-import UpdateReview from "@/components/UpdateReview.vue";
-import CreateReview from "@/components/CreateReview.vue";
-
+import ReviewModal from "@/components/Review/ReviewModal.vue";
+import UpdateReview from "@/components/Review/UpdateReview.vue";
+import CreateReview from "@/components/Review/CreateReview.vue";
 /* eslint-disable */
 
 export default {
@@ -357,5 +356,5 @@ export default {
 </script>
 
 <style scoped>
-@import "../assets/reviewboard_style.css";
+@import "@/assets/css/reviewboard_style.css";
 </style>

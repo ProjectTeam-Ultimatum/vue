@@ -153,7 +153,7 @@
 </template>
 
 <script>
-import UpdateReview from "./UpdateReview.vue";
+import UpdateReview from "../Review/UpdateReview.vue";
 /* eslint-disable */
 
 export default {
@@ -307,7 +307,7 @@ export default {
 </script>
 
 <style scoped>
-@import "../assets/review_modal.css";
+@import "@/assets/css/review_modal.css";
 
 .imageModal-overlay {
   position: fixed; /* 화면에 고정 */

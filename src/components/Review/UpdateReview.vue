@@ -1,20 +1,20 @@
 <template>
   <div class="update-modal-overlay">
-    <div class="update-modal" v-if="isModalCreate">
+    <div class="update-modal" v-if="isModalEditing">
       <div class="update-modal-body">
-        <h2>게시글 작성</h2>
+        <h2>게시글 수정</h2>
         <form @submit.prevent="submitForm" class="review-form">
           <div class="update-form-group">
             <label for="title">제목</label>
             <input
               id="title"
               type="text"
-              v-model="review.reviewTitle"
+              v-model="editableReview.reviewTitle"
               class="update-form-control-title"
             />
             <select
               id="location"
-              v-model="review.reviewLocation"
+              v-model="editableReview.reviewLocation"
               class="update-form-control-location"
             >
               <option value="전체 지역">전체 지역</option>
@@ -29,7 +29,7 @@
             <input
               id="subtitle"
               type="text"
-              v-model="review.reviewSubtitle"
+              v-model="editableReview.reviewSubtitle"
               class="update-form-control"
             />
           </div>
@@ -45,15 +45,19 @@
           </div>
           <div class="image-preview-container">
             <div
-              v-for="(image, index) in review.reviewImages"
-              :key="'new-' + index"
+              v-for="(image, index) in editableReview.reviewImages"
+              :key="image.reviewImageId || 'new-' + index"
               class="image-preview"
             >
               <span class="image-name">✓ {{ image.imageName }} </span>
 
               <div
                 class="btn-remove"
-                @click="removeNewImage(index)"
+                @click="
+                  image.isNew
+                    ? removeNewImage(index)
+                    : removeExistingImage(index, image.reviewImageId)
+                "
                 style="color: #6e6e6e"
               >
                 <font-awesome-icon :icon="['fas', 'xmark']" />
@@ -67,7 +71,7 @@
               rel="stylesheet"
             />
 
-            <AppTextEditor v-model="review.reviewContent" :max-limit="500" />
+            <AppTextEditor v-model="content" :max-limit="500" />
           </div>
           <div class="update-form-actions">
             <button
@@ -84,35 +88,52 @@
     </div>
   </div>
 </template>
-  
-  <script >
+
+<script >
 import AppTextEditor from "./AppTextEditor";
 
 /* eslint-disable */
 
 export default {
-  name: "CreateReview",
+  name: "UpdateReview",
   components: { AppTextEditor },
   props: {
-    isModalCreate: {
+    isModalEditing: {
       type: Boolean,
+      required: true,
+    },
+    review: {
+      type: Object,
       required: true,
     },
   },
   data() {
     return {
-      review: {
-        reviewTitle: "",
-        reviewSubtitle: "",
-        reviewLocation: "제주 전체",
-        reviewContent: "",
-        reviewImages: [],
+      editableReview: {
+        reviewTitle: this.review.reviewTitle,
+        reviewSubtitle: this.review.reviewSubtitle,
+        reviewLocation: this.reviewLocation || "제주 전체",
+        reviewImages: this.review.reviewImages,
+        reviewContent: this.review.reviewContent,
       },
+      newReviewImages: [], // 새로 업로드할 이미지들을 저장할 배열
+      content: this.review.reviewContent,
+      deleteImageIds: [],
     };
+  },
+  watch: {
+    isModalEditing(newValue) {
+      console.log("isModalEditing changed:", newValue);
+      if (newValue) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "";
+      }
+    },
   },
   methods: {
     submitForm() {
-      this.createReview();
+      this.updateReview();
     },
     handleFiles(event) {
       // 새로 선택된 파일들을 배열로 변환
@@ -121,29 +142,39 @@ export default {
       const newImagesData = files.map((file) => ({
         imageName: file.name,
         file: file, // 파일 데이터
-        isNew: true,
+        isNew: true, // 새로운 이미지임을 표시
       }));
-      this.review.reviewImages.push(...newImagesData); // 이미지 데이터를 reviewImages 배열에 추가합니다.
+      // 현재 리뷰 이미지 배열에 새 이미지 데이터를 추가
+      this.editableReview.reviewImages.push(...newImagesData);
     },
 
     removeNewImage(index) {
       // 새 이미지를 배열에서 제거합니다.
-      this.review.reviewImages.splice(index, 1);
+      this.editableReview.reviewImages.splice(index, 1);
+    },
+    removeExistingImage(index, imageId) {
+      // 기존 이미지 ID를 삭제 목록 배열에 추가
+      this.deleteImageIds.push(imageId);
+      // 이미지 미리보기 배열에서 해당 이미지 객체 제거
+      this.editableReview.reviewImages.splice(index, 1);
     },
 
-    async createReview() {
+    async updateReview() {
       const formData = new FormData();
-      formData.append("reviewTitle", this.review.reviewTitle);
-      formData.append("reviewSubtitle", this.review.reviewSubtitle);
-      formData.append("reviewLocation", this.review.reviewLocation);
-      formData.append("reviewContent", this.review.reviewContent);
+      formData.append("reviewTitle", this.editableReview.reviewTitle);
+      formData.append("reviewSubtitle", this.editableReview.reviewSubtitle);
+      formData.append("reviewLocation", this.editableReview.reviewLocation);
+      formData.append("reviewContent", this.content);
 
       // 새로운 이미지와 기존 이미지를 formData에 추가하는 코드
-      this.review.reviewImages.forEach((image) => {
+      this.editableReview.reviewImages.forEach((image) => {
         if (image.isNew) {
           // 새로운 이미지 파일 추가
-          formData.append("reviewImages", image.file);
+          formData.append("newImages", image.file);
         }
+      });
+      this.deleteImageIds.forEach((id) => {
+        formData.append("deleteImages", id);
       });
       // FormData 내용 검사
       for (var pair of formData.entries()) {
@@ -151,13 +182,16 @@ export default {
       }
 
       try {
-        const response = await this.$axios.post(`/api/reviews`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        const response = await this.$axios.put(
+          `/api/reviews/${this.review.reviewId}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
 
-        // this.$emit("create", response.data); // 리뷰 데이터를 이벤트로 전달
         this.$emit("close");
       } catch (error) {
         console.error("업데이트 실패 : ", error);
@@ -167,6 +201,18 @@ export default {
 };
 </script>
 <style>
-@import "../assets/review_modal_update.css";
+@import "@/assets/css/review_modal_update.css";
+.modal-overlay {
+  position: fixed; /* 화면에 고정 */
+  top: 50%;
+  left: 50%;
+  width: 100vw; /* 모달의 너비 */
+  height: 100vh; /* 모달의 높이 */
+  background-color: rgba(0, 0, 0, 0.6); /* 배경색 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* 다른 요소들 위에 나타나도록 z-index 설정 */
+  transform: translate(-50%, -50%); /* 중앙 정렬을 위해 변환 적용 */
+}
 </style>
-  
