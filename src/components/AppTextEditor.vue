@@ -309,7 +309,6 @@ export default {
     padding-left: 0.5em;
     padding-right: 0.5em;
     outline: none;
-    width: 100%;
 
     > p:first-child {
       margin-top: 0.5em;

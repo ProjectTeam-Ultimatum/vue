@@ -182,3 +182,42 @@
 .click{
   cursor: pointer;
 }
+
+/* 페이지네이션 */
+
+.pagination {
+  display: inline-flex; /* flex 컨테이너로 설정 */
+  align-items: center; /* 세로 중앙 정렬 */
+
+  justify-content: center;
+  margin-top: 30px; /* 페이지네이션 위쪽 여백 */
+  margin-bottom: 30px;
+ 
+
+}
+
+.page-item {
+  margin: 0 10px; /* 페이지 번호 간의 간격 */
+  cursor: pointer;
+  color: #393939; /* 기본 텍스트 색상 */
+  font-weight: bold; /* 글씨 두께 */
+}
+
+.page-item:hover {
+  color: #1275D6; /* 호버 시 색상 변경 */
+  text-decoration: underline; /* 호버 시 밑줄 */
+}
+
+.page-item.active {
+  display: flex;
+  color: #393939; /* 활성 페이지 색상 */
+  cursor: default;
+  text-decoration: none;
+  background-color: #68C7FF;
+  align-items: center; /* 세로 중앙 정렬 */
+  justify-content: center; /* 가로 중앙 정렬 */
+  border-radius: 5px;
+  width: 30px;
+  height: 30px;
+  transition: background-color 0.3s; /* 부드러운 색상 전환 */
+}

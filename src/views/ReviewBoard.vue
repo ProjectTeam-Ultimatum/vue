@@ -158,9 +158,17 @@
       </div>
     </div>
   </div>
-  <button v-for="n in totalPages" :key="n" @click="changePage(n - 1)">
-    {{ n }}
-  </button>
+  <div class="pagination">
+    <span
+      v-for="n in totalPages"
+      :key="n"
+      @click="changePage(n - 1)"
+      class="page-item"
+      :class="{ active: n === page + 1 }"
+    >
+      {{ n }}
+    </span>
+  </div>
 </template>
 
 <script>
