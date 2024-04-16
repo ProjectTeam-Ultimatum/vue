@@ -1,10 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import MainMap from '../components/MainMap.vue'
-import Place from '../components/Place.vue'
-import Hotel from '../components/Hotel.vue'
-import Event from '../components/Event.vue'
-import Food from '../components/Food.vue'
+import MainMap from '@/components/MainMap.vue'
 
 
 const routes = [
@@ -15,28 +11,8 @@ const routes = [
   },
   {
     path: '/mainmap',
-    name: 'MainMap',
+    name: 'mainmap',
     component: MainMap
-  },
-  {
-    path: '/place',
-    name: 'place_category',
-    component: Place
-  },
-  {
-    path: '/hotel',
-    name: 'hotel_category',
-    component: Hotel
-  },
-  {
-    path: '/event',
-    name: 'event_category',
-    component: Event
-  },
-  {
-    path: '/food',
-    name: 'food_category',
-    component: Food
   },
 ]
 

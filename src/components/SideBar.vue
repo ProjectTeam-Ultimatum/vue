@@ -10,12 +10,12 @@
     >
       <div class="side-bar">
         <div class="title-area">
-          <textarea v-model="recommend_place_title" placeholder="맛집 이름을 입력해주세요."></textarea>
+          <textarea v-model="title" placeholder="맛집 이름을 입력해주세요."></textarea>
         </div>
 
         <div class="image-area">
           <div class="iw-file-input">
-            <img :src="recommend_place_img_path" alt="Uploaded Image" v-if="recommend_place_img_path"/>
+            <img :src="image" alt="Uploaded Image" v-if="image"/>
           </div>
         </div>
 
@@ -23,31 +23,31 @@
     <font-awesome-icon icon="fa-solid fa-pen" />
     <Input
     placeholder="위치 정보 직접 입력하기"
-    :value="recommend_place_address"
+    :value="addressCopy"
     @input="updateAddress"
   />
   </div>
-  <div class="dropdown">
+  <!-- <div class="dropdown">
   <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     장소 정하기
   </a>
 
   <ul class="dropdown-menu">
-    <li><a class="dropdown-item" href="#" @click="placecategory">놀거리</a></li>
-    <li><a class="dropdown-item" href="#" @click="hotelcategory">숙소</a></li>
-    <li><a class="dropdown-item" href="#" @click="foodcategory">음식</a></li>
-    <li><a class="dropdown-item" href="#" @click="eventcategory">축제</a></li>
+    <li><a class="dropdown-item" href="place">놀거리</a></li>
+    <li><a class="dropdown-item" href="hotel">숙소</a></li>
+    <li><a class="dropdown-item" href="food">음식</a></li>
+    <li><a class="dropdown-item" href="event">축제</a></li>
   </ul>
-</div>
+</div> -->
   <div class="rate-area">
-    <FormRating :value="parseInt(recommend_place_star)" @update:recommend_place_star="recommend_place_star = $event" />
-    <FormRating :recommend_place_star="recommend_place_star" :readOnly="true"/>
+    <FormRating :value="parseInt(grade)" @update:grade="grade = $event" />
+    <FormRating :grade="grade" :readOnly="true"/>
       </div>
         <div class="review-area">
           <textarea
               ref="textarea"
               placeholder="후기를 입력해주세요."
-              v-model="recommend_place_introduction"
+              v-model="review"
           ></textarea>
         </div>
         <div class="bottom-btn-area">
@@ -66,14 +66,10 @@
   </Button>
   </div>
 </template>
-
 <script>
 import VueResizable from 'vue-resizable';
 import { EventBus } from '@/EventBus'; // EventBus를 가져옵니다.
 import FormRating from './FormRating';
-
-//event와 food, hotel를 위에 place처럼 쓴다음 if문을 걸어줘야 할거 같음//
-
 export default {
 name: 'SideBar',
 components: {
@@ -87,42 +83,28 @@ props: {
 data() {
   return {
     isVisibleSideBar: true,
-    recommend_place_address: '', // 초기화를 제거합니다.
-    recommend_place_title: '',
-    recommend_place_star: 0,
-    recommend_place_introduction: '',
-    recommend_place_longitude: 0.0,
-    recommend_place_latitude: 0.0,
-    recommend_place_img_path: '',
+    addressCopy: '', // 초기화를 제거합니다.
+    title: '',
+    grade: 0,
+    review: '',
+    lonCopy: 0.0,
+    latCopy: 0.0,
+    image: ''
   };
 },
 mounted() {
     EventBus.$on('mapClick', (data) => {
-        this.recommend_place_title = data.recommend_place_title || '';
-        this.recommend_place_address = data.recommend_place_address || '';
-        this.recommend_place_star = data.recommend_place_star || 0;
-        this.recommend_place_introduction = data.recommend_place_introduction || '';
-        this.recommend_place_longitude = data.lon;
-        this.recommend_place_latitude = data.lat;
-        this.recommend_place_img_path = data.recommend_place_img_path || ''; // 이미지 데이터를 처리
-        console.log("grade: ", data.recommend_place_star);
+        this.title = data.title || '';
+        this.addressCopy = data.address || '';
+        this.grade = data.grade || 0;
+        this.review = data.review || '';
+        this.lonCopy = data.lonCopy;
+        this.latCopy = data.latCopy;
+        this.image = data.image || ''; // 이미지 데이터를 처리
+        console.log("grade: ", data.grade);
     });
-    
 },
-
 methods: {
-  placecategory() {
-    this.$router.push('/place');
-  },
-  hotelcategory() {
-    this.$router.push('/hotel');
-  },
-  eventcategory() {
-    this.$router.push('/event');
-  },
-  foodcategory() {
-    this.$router.push('/food');
-  },
   onChangeFiles(e) {
     this.fileList.push(...e.target.files);
     console.log(this.fileList);
@@ -134,49 +116,29 @@ methods: {
     this.$emit('update:address', event.target.value);
   },
   saveReview() {
-    const currentUrl = window.location.href;
-    if(currentUrl === 'http://localhost:8080'){
     try{
     this.$axios.post('http://localhost:8081/api/map/saveMap', {
-      recommend_place_title: this.recommend_place_title,
-      recommend_place_address: this.recommend_place_address,
-      recommend_place_star: this.recommend_place_star,
-      recommend_place_introduction: this.recommend_place_introduction,
-      recommend_place_longitude: this.recommend_place_longitude,
-      recommend_place_latitude: this.recommend_place_latitude,
-      recommend_place_img_path: this.recommend_place_img_path
-    }).then(response => {
-      console.log('저장 성공:', response);
-    })
-  }catch(error){
-    console.error("저장하기 에러" + error);
-  }}
-  if( currentUrl == 'http://localhost:8080/event')
-  try{
-    this.$axios.post('http://localhost:8081/api/map/saveevent', {
-      recommend_event_title: this.recommend_event_title,
-      recommend_event_address: this.recommend_event_address,
-      recommend_event_star: this.recommend_event_star,
-      recommend_event_introduction: this.recommend_event_introduction,
-      recommend_event_longitude: this.recommend_event_longitude,
-      recommend_event_latitude: this.recommend_event_latitude,
-      recommend_event_img_path: this.recommend_place_img_path
+      title: this.title,
+      addressCopy: this.addressCopy,
+      grade: this.grade,
+      review: this.review,
+      lonCopy: this.lonCopy,
+      latCopy: this.latCopy,
+      image: this.image
     }).then(response => {
       console.log('저장 성공:', response);
     })
   }catch(error){
     console.error("저장하기 에러" + error);
   }
-},
   } 
+},
 }
 </script>
-
 <style lang="scss" scoped>
 .side-bar-wrapper {
   display: flex;
   color: #fff;
-
   > .resizable-side-bar {
     > .side-bar {
       background-color: rgba(0, 0, 0, 0.5);
@@ -186,10 +148,8 @@ methods: {
       right: 0;
       bottom: 0;
       padding: 10px;
-
       > .title-area {
         padding: 20px 10px;
-
         input, input::placeholder, input:focus {
           font-size: 2rem;
           font-weight: bold;
@@ -199,10 +159,8 @@ methods: {
           border: none;
         }
       }
-
       > .image-area {
         padding: 0 10px;
-
         > .iw-file-input {
           display: flex;
           justify-content: center;
@@ -214,10 +172,8 @@ methods: {
           background-color: rgb(255, 255, 255, 0.5);
         }
       }
-
       > .location-info-area {
         padding: 10px;
-
         input, input::placeholder, input:focus {
           font-size: 1rem;
           color: #fff;
@@ -226,11 +182,9 @@ methods: {
           border: none;
         }
       }
-
       > .rate-area {
         padding: 0 20px;
         text-align: center;
-
         output {
           font-size: 2rem;
           color: #ffdd00;
@@ -239,10 +193,8 @@ methods: {
           box-shadow: none;
         }
       }
-
       > .review-area {
         padding: 20px 10px;
-
         textarea, textarea::placeholder {
           min-height: 300px;
           resize: none;
@@ -251,22 +203,18 @@ methods: {
           border: none;
           box-shadow: none;
         }
-
         /* width */
         ::-webkit-scrollbar {
           width: 10px;
         }
-
         /* Track */
         ::-webkit-scrollbar-track {
           background: #f1f1f1;
         }
-
         /* Handle */
         ::-webkit-scrollbar-thumb {
           background: #888;
         }
-
         /* Handle on hover */
         ::-webkit-scrollbar-thumb:hover {
           background: #555;
@@ -274,7 +222,6 @@ methods: {
       }
     }
   }
-
   > .side-bar-active-btn {
     flex-shrink: 0;
     display: flex;
@@ -293,7 +240,6 @@ methods: {
 > .bottom-btn-area {
   text-align: right;
   padding-right: 10px;
-
   > .save-btn {
       color: #fff;
       font-weight: bold;
