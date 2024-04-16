@@ -280,6 +280,6 @@ export default {
 </script>
 
 <style scoped>
-@import "../assets/reviewboard_style.css";
-@import "../assets/review_modal.css";
+@import "@/assets/css/reviewboard_style.css";
+@import "@/assets/css/review_modal.css";
 </style>

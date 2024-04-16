@@ -38,7 +38,7 @@
     <!-- 오른쪽 패널 -->
     <aside class="right-panel">
     <!-- 오른쪽 내용 -->
-    <img src="../assets/profile.png" alt="User Avatar" class="user-avatar" />
+    <img src="@/assets/images/profile.png" alt="User Avatar" class="user-avatar" />
         <p class="user-name">배정현</p>
         <p class="user-detail">신뢰도</p>
         <p class="user-detail">나이</p>
