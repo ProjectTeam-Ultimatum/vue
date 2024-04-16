@@ -256,6 +256,8 @@ export default {
 
 .form-group label {
   margin-bottom: 5px; /* 라벨과 입력 필드 사이에 약간의 간격을 추가 */
+  width: 100px;
+  text-align: start;
 }
 
 .form-group input {
