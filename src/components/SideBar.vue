@@ -27,18 +27,22 @@
     @input="updateAddress"
   />
   </div>
-  <!-- <div class="dropdown">
+
+  <!-- <di>
+    <input placeholder="category" :value="category">
+  </di> -->
+  <div class="dropdown">
   <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    장소 정하기
+    {{ category || '장소 정하기'  }}
   </a>
 
   <ul class="dropdown-menu">
-    <li><a class="dropdown-item" href="place">놀거리</a></li>
-    <li><a class="dropdown-item" href="hotel">숙소</a></li>
-    <li><a class="dropdown-item" href="food">음식</a></li>
-    <li><a class="dropdown-item" href="event">축제</a></li>
-  </ul>
-</div> -->
+      <li><a class="dropdown-item" href="#" @click="selectCategory('놀거리')">놀거리</a></li>
+      <li><a class="dropdown-item" href="#" @click="selectCategory('숙소')">숙소</a></li>
+      <li><a class="dropdown-item" href="#" @click="selectCategory('음식')">음식</a></li>
+      <li><a class="dropdown-item" href="#" @click="selectCategory('축제')">축제</a></li>
+    </ul>
+</div>
   <div class="rate-area">
     <FormRating :value="parseInt(grade)" @update:grade="grade = $event" />
     <FormRating :grade="grade" :readOnly="true"/>
@@ -89,7 +93,8 @@ data() {
     review: '',
     lonCopy: 0.0,
     latCopy: 0.0,
-    image: ''
+    image: '',
+    category: null,
   };
 },
 mounted() {
@@ -100,11 +105,15 @@ mounted() {
         this.review = data.review || '';
         this.lonCopy = data.lonCopy;
         this.latCopy = data.latCopy;
-        this.image = data.image || ''; // 이미지 데이터를 처리
-        console.log("grade: ", data.grade);
+        this.image = data.image || '';
+        this.category = data.category || '';
+        console.log("category: ", data.category);
     });
 },
 methods: {
+  selectCategory(category) {
+      this.category = category; // 사용자가 선택한 카테고리를 저장
+  },
   onChangeFiles(e) {
     this.fileList.push(...e.target.files);
     console.log(this.fileList);
@@ -116,6 +125,7 @@ methods: {
     this.$emit('update:address', event.target.value);
   },
   saveReview() {
+    console.log("Saving with category:", this.category);
     try{
     this.$axios.post('http://localhost:8081/api/map/saveMap', {
       title: this.title,
@@ -124,7 +134,8 @@ methods: {
       review: this.review,
       lonCopy: this.lonCopy,
       latCopy: this.latCopy,
-      image: this.image
+      image: this.image,
+      category: this.category
     }).then(response => {
       console.log('저장 성공:', response);
     })

@@ -37,7 +37,8 @@ export default {
       vectorSource: undefined,
       title: '',
       grade: 0,
-      review: ''
+      review: '',
+      category: ''
     }
   },
   mounted() {
@@ -100,7 +101,8 @@ this.olMap.on('click', async (e) => {
       review: this.review,
       lonCopy: lon,
       latCopy: lat,
-      image: this.image
+      image: this.image,
+      category: this.category
     });
   } else {
     console.error('Failed to fetch address information');
@@ -146,6 +148,7 @@ methods: {
     this.grade = null;
     this.review = '';
     this.image = '';
+    this.category = '';
   },
   coordi4326To3857([lon, lat]) {
       // 좌표 변환 로직 구현
@@ -265,6 +268,7 @@ displayLocationData(data) {
     this.grade = data.grade;
     this.review = data.review;
     this.image = data.image;
+    this.category = data.category;
     // 이외에 필요한 UI 업데이트 로직
   }
   }
