@@ -1,34 +1,41 @@
 <template>
   <div class="imageModal-overlay" @click="closeModal">
-    <div class="modal" v-if="isModalVisible">
+    <div class="review-modal" v-if="isModalVisible">
       <!-- 조회 모달창 -->
 
-      <div class="head-bts">
-        <div class="cl-bt" @click="$emit('close')" style="color: #6e6e6e">
+      <div class="review-head-bts">
+        <div
+          class="review-cl-bt"
+          @click="$emit('close')"
+          style="color: #6e6e6e"
+        >
           <font-awesome-icon :icon="['fas', 'xmark']" size="2xl" />
         </div>
-        <div class="update-delete">
-          <div class="update-button" @click="editReview">
+        <div class="review-update-delete">
+          <div class="review-update-button" @click="editReview">
             <span style="font-size: 12px"> 수정 </span
             ><font-awesome-icon :icon="['far', 'pen-to-square']" size="xl" />
           </div>
 
-          <div class="delete-button" @click="deleteReview(review.reviewId)">
+          <div
+            class="review-delete-button"
+            @click="deleteReview(review.reviewId)"
+          >
             <span style="font-size: 12px"> 삭제 </span
             ><font-awesome-icon :icon="['far', 'trash-can']" size="xl" />
           </div>
         </div>
       </div>
 
-      <div class="modal-content">
-        <div class="board-name">여행 후기 게시판 ></div>
-        <div class="review-title1">
+      <div class="review-modal-content">
+        <div class="review-board-name">여행 후기 게시판 ></div>
+        <div class="review-title">
           [{{ review.reviewLocation }}] {{ review.reviewTitle }}
         </div>
-        <div class="subtitle1">{{ review.reviewSubtitle }}</div>
+        <div class="review-subtitle">{{ review.reviewSubtitle }}</div>
         <div class="review-footer-modal">
-          <div class="footer-container-modal">
-            <span class="likes" @click="incrementLikes(review)">
+          <div class="review-footer-container-modal">
+            <span class="review-likes" @click="incrementLikes(review)">
               <font-awesome-icon
                 :icon="['fas', 'heart']"
                 size="lg"
@@ -36,25 +43,19 @@
               />
               {{ review.reviewLike }}
             </span>
-            <font-awesome-icon
-              :icon="['far', 'comment']"
-              size="lg"
-              flip="horizontal"
-            />
-            <span class="comment"> {{ review.replyCount }}</span>
           </div>
-          <div class="footer-container-modal">
-            <span class="date">{{ formatDate(review.reg_date) }}</span>
-            <span class="author">by auther</span>
+          <div class="review-footer-container-modal">
+            <span class="review-date">{{ formatDate(review.reg_date) }}</span>
+            <span class="review-author">by auther</span>
           </div>
         </div>
 
-        <div class="slider-container">
-          <div class="click" @click="prevImage">
+        <div class="review-slider-container">
+          <div class="review-click" @click="prevImage">
             <font-awesome-icon :icon="['fas', 'chevron-left']" size="2xl" />
           </div>
           <img :src="currentImageUrl" alt="Images" @click="openImageModal" />
-          <div class="click" @click="nextImage">
+          <div class="review-click" @click="nextImage">
             <font-awesome-icon :icon="['fas', 'chevron-right']" size="2xl" />
           </div>
         </div>
@@ -68,7 +69,7 @@
           <div class="imageModal-content">
             <div class="head-bts">
               <div
-                class="cl-bt"
+                class="review-cl-bt"
                 @click="closeImageModal"
                 style="color: #6e6e6e"
               >
@@ -79,47 +80,51 @@
           </div>
         </div>
 
-        <div class="review-content1" v-html="review.reviewContent" />
+        <div class="review-modal-main" v-html="review.reviewContent" />
         <!-- 댓글 -->
         <div
-          class="replies"
+          class="review-replies"
           v-for="(reply, index) in review.replies"
           :key="index"
         >
-          <div class="replies-header">
-            <div class="replyer">{{ reply.reviewReplyer }}</div>
-            <div class="reply-date">{{ formatDate(reply.reg_date) }}</div>
+          <div class="review-replies-header">
+            <div class="review-replyer">{{ reply.reviewReplyer }}</div>
+            <div class="review-reply-date">
+              {{ formatDate(reply.reg_date) }}
+            </div>
           </div>
-          <div class="reply">
+          <div class="review-reply">
             <div v-if="!reply.isEditing" class="reply-main">
-              <div class="reply-content">{{ reply.reviewReplyContent }}</div>
-              <div class="reply-control">
+              <div class="review-reply-content">
+                {{ reply.reviewReplyContent }}
+              </div>
+              <div class="review-reply-control">
                 <div
-                  class="reply-update"
+                  class="review-reply-update"
                   @click="editReply(reply.reviewReplyId)"
                 >
                   수정
                 </div>
                 <div
-                  class="reply-delete"
+                  class="review-reply-delete"
                   @click="deleteReply(reply.reviewReplyId)"
                 >
                   삭제
                 </div>
               </div>
             </div>
-            <div v-else class="reply-main">
+            <div v-else class="review-reply-main">
               <input
                 class="reply-content-input"
                 v-model="reply.editingContent"
                 @keyup.enter="updateReply(reply)"
               />
-              <div class="reply-control">
+              <div class="review-reply-control">
                 <button class="reply-update-save" @click="updateReply(reply)">
                   저장
                 </button>
                 <button
-                  class="reply-update-cancel"
+                  class="review-reply-update-cancel"
                   @click="reply.isEditing = false"
                 >
                   취소
@@ -129,14 +134,14 @@
           </div>
         </div>
       </div>
-      <div class="new-reply">
+      <div class="review-new-reply">
         <input
-          class="reply-writer"
+          class="review-reply-writer"
           v-model="reviewReplyer"
           placeholder="닉네임을 입력하세요"
         />
         <input
-          class="reply-writing"
+          class="review-reply-writing"
           v-model="reviewReplyContent"
           @keyup.enter="postReply"
           placeholder="댓글을 입력해주세요.."
@@ -302,7 +307,6 @@ export default {
 </script>
 
 <style scoped>
-@import "../assets/reviewboard_style.css";
 @import "../assets/review_modal.css";
 
 .imageModal-overlay {
