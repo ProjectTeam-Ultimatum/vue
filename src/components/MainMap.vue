@@ -19,7 +19,12 @@ import OlFeature from 'ol/Feature.js';
 import OlPoint from 'ol/geom/Point.js';
 import OlStyle from 'ol/style/Style.js';
 import OlIcon from 'ol/style/Icon.js';
+
 import markerImage from '@/assets/images/jjang.png';
+
+import OlLineString from 'ol/geom/LineString';
+import { Stroke } from 'ol/style';
+
 const EPSG_3857 = 'EPSG:3857';
 export default {
   name: 'MainMap',
@@ -205,12 +210,19 @@ methods: {
 addMapIcons() {
   const vectorLayer = this.olMap.getLayers().item(1); // 두 번째 레이어 가져오기
   const vectorSource = vectorLayer.getSource();
+  const coordinates = [];
+
   // DB에서 가져온 각 위치 정보에 대해 아이콘을 추가합니다.
   this.locations.forEach(location => {
+
+    const point = fromLonLat([location.lonCopy, location.latCopy]);
+      coordinates.push(point);
+
     const feature = new OlFeature({
       geometry: new OlPoint(fromLonLat([location.lonCopy, location.latCopy]))
       ,id: location.id
     });
+
     feature.setStyle(new OlStyle({
       image: new OlIcon({
         scale: 0.05,
@@ -220,6 +232,21 @@ addMapIcons() {
     feature.set('data', location);
     vectorSource.addFeature(feature);
   });
+  if (coordinates.length > 1) {
+      const lineFeature = new OlFeature({
+        geometry: new OlLineString(coordinates)
+      });
+
+      lineFeature.setStyle(new OlStyle({
+        stroke: new Stroke({
+          color: '#ffcc33',
+          width: 2
+        })
+      }));
+
+      vectorSource.addFeature(lineFeature);
+    }
+
   this.olMap.on('click', (evt) => {
       const feature = this.olMap.forEachFeatureAtPixel(evt.pixel, (feature) => {
         return feature;
