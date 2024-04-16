@@ -189,5 +189,5 @@ export default {
 };
 </script>
 <style>
-@import "../assets/review_modal_update.css";
+@import "@/assets/css/review_modal_update.css";
 </style>

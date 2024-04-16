@@ -42,6 +42,6 @@ export default {
   width: 700px;
   height: 700px;
   text-align: center;
-  background-image: url('../assets/blackpig.jpg');
+  background-image: url('@/assets/images/blackpig.jpg');
 }
 </style>

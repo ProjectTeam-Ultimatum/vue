@@ -15,7 +15,7 @@
     <h2>채팅방 게시하기<font-awesome-icon icon="fa-solid fa-pen-to-square" /></h2>
     <div class="modal-header">
       <div class="profile-picture">
-        <img src="../assets/profile.png" alt="Profile Picture">
+        <img src="@/assets/images/profile.png" alt="Profile Picture">
       </div>
       <p class="name-input">배정현</p>
     </div>
@@ -122,7 +122,7 @@
       <!-- 채팅방 카드 목록 -->
       <div v-for="room in filteredChatRooms" :key="room.chatRoomId" class="card-container">
   <div class="profile-picture">
-    <img src="../assets/hanra.jpeg" alt="Profile Picture" >
+    <img src="@/assets/images/hanra.jpeg" alt="Profile Picture" >
     <p class="profile-name">배정현</p> <!-- 여기에 사용자 이름을 추가 -->
     <p class="profile-detail">21살</p>
   </div>
