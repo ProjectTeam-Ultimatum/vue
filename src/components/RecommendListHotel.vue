@@ -1,7 +1,16 @@
 <template>
   <div>
-    <div>
-      <button type="button" class="btn btn-outline-primary"
+    <div class="recomemnd_info">
+        <div class="info_contents">
+          <div>
+            <h4 style="font-weight: 900;">제주도 숙박 리스트</h4>
+            <span style="font-weight: 900;">숙박 추천 태그</span>
+          </div>
+          <div class="tag-wrap">
+            <button type="button" class="btn btn-outline-primary"
+                  :class="{ 'active': selectedTag === '' }"
+                  @click="selectTag('')">전체</button>
+                  <button type="button" class="btn btn-outline-primary"
           :class="{ 'active': selectedTag === '친구' }"
           @click="selectTag('친구')">친구</button>
       <button type="button" class="btn btn-outline-primary"
@@ -37,44 +46,61 @@
       <button type="button" class="btn btn-outline-primary"
       :class="{ 'active': selectedTag === '반려동물동반입장' }"
       @click="selectTag('반려동물동반입장')">반려동물동반입장</button>
-      <button type="button" class="btn btn-outline-primary"
-      :class="{ 'active': selectedTag === '혼저옵서개' }"
-      @click="selectTag('혼저옵서개')">혼저옵서개</button>
-          
-    </div>
-      <div class="card-wrap">
-      <!-- <div v-for="list in recommendList" :key="list.id"> -->
-        <div :key="i" v-for="(hotel, i) in filteredHotels">
-        <div class="card">
-          <div class="card-image">
-              <img :src="hotel.recommendHotelImgPath || 'default-image-url'" alt="Review Image">
-
-          <div class="score">{{ hotel.recommendHotelStar }}</div>
           </div>
-        <div class="card-content">
-          <div class="card-title-wrap">
-            <div class="card-title">{{ hotel.recommendHotelTitle }}</div>
-            <!-- 영업시간 -->
-            <div class="card-info">
-              <span class="status" :class="getStatusClass(hotel.recommendHotelClosetime)">
-                  {{ getStatusMessage(hotel.recommendHotelClosetime) }}
-              </span>
+        </div>
+        <div>
+          <img alt="map" src="../assets/map.png" style="width:160px">
+        </div>
+    </div>
+    <div class="content_list">
+        <div style="width: 820px; margin: 16px auto; text-align:left;">
+            <span class="headline2" >제주도 쉬어갈 곳</span>
+            <span style="margin-left: 5px;">제주랑 고객님들이 엄선한 놀거리 입니다</span>
+        </div>
+        <div class="card-wrap">
+        <!-- <div v-for="list in recommendList" :key="list.id"> -->
+          <div :key="i" v-for="(hotel, i) in filteredHotels">
+            <div class="card">
+              <div class="card-image">
+                <img :src="hotel.recommendHotelImgPath || 'default-image-url'" alt="Review Image">
+                <!-- <div class="score">{{ hotel.recommendHotelStar }}</div> -->
+              </div>
+              <div class="card-content">
+                <div class="card-title-wrap">
+                  <div class="card-title">{{ hotel.recommendHotelTitle }}</div>
+                  <!-- 영업시간 -->
+                  <div class="card-info">
+                    <span class="status" :class="getStatusClass(hotel.recommendHotelClosetime)">
+                        {{ getStatusMessage(hotel.recommendHotelClosetime) }}
+                    </span>
+                  </div>
+                </div>
+                <div class="card-option-blue">{{ hotel.recommendHotelRegion }}</div>
+                <div class="card-subtitle">{{ hotel.recommendHotelIntroduction }}</div>
+                <div class="card-option">{{ hotel.recommendHotelTag }}</div>
+              </div>
             </div>
           </div>
-          <div class="card-option-blue">{{ hotel.recommendHotelRegion }}</div>
-          <div class="card-subtitle">{{ hotel.recommendHotelIntroduction }}</div>
-          <div class="card-option">{{ hotel.recommendHotelTag }}</div>
         </div>
       </div>
-      </div>
-      </div>
+      <PaginationComponent
+          :total-pages="totalPages"
+          :current-page="page"
+          :current-tag="selectedTag"
+          @changePage="gotoPage"
+        />
   </div>
 </template>
 
 <script>
 /* eslint-disable */
+import PaginationComponent from './PaginationComponent.vue';
+
 export default {
   name: 'RecommendListHotel',
+  components: {
+    PaginationComponent
+  },
   props:{
     region: {
       type: String,
@@ -82,21 +108,37 @@ export default {
     }
   },
   data(){
-      return{
-        recommendListHotel: [], // 복수형으로 변경하여 여러 후기 데이터를 담을 수 있도록 함
-          loading: false, // 로딩 상태를 나타내는 데이터 추가
-          isLiked: false, 
-          selectedTag: null, // 선택된 태그를 추적하기 위한 속성
-      };
+    return {
+      loading: false,
+      selectedRegion: '',
+      recommendListHotel: [],
+      page: 1,
+      totalPages: 0
+    };
   },
   //created, mounted
   methods: {
+    gotoPage(pageNumber) {
+      this.page = pageNumber;
+      this.fetchData();
+    },
       //api axios 요청
       fetchData() {
   this.loading = true; // 데이터 요청 시작 시 로딩 상태 활성화
-  this.$axios
-  .get("http://localhost:8080/api/recommend/listhotel")
+
+  const params = {
+      page: this.page - 1,  // Ensure page is zero-indexed if backend expects it
+      size: 12,
+      sort: "recommendHotelId,desc",
+      region: this.selectedRegion.trim(),
+    };
+
+  // Axios 요청에 params 적용
+  this.$axios.get("http://localhost:8080/api/recommend/listhotel", { params })
   .then((response) => {
+    this.recommendListHotel = response.data.content;
+        this.totalPages = response.data.totalPages;  // Set total pages from response
+        this.loading = false;
       // 성공적으로 데이터를 받아온 경우
       console.log("데이터요청 성공1 : ", response.data);
       console.log("데이터요청 성공2 : ", response.data.content);
