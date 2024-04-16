@@ -197,6 +197,7 @@ export default {
 #text-editor {
   border: 1px solid #e1e1e1;
   border-radius: 5px;
+  width: 100%;
 
   .toolbar {
     display: flex;
@@ -301,7 +302,7 @@ export default {
 
   .content-main {
     padding: 20px;
-    height: 300px;
+    height: 20vh;
     overflow-y: scroll;
   }
 
@@ -309,7 +310,7 @@ export default {
     padding-left: 0.5em;
     padding-right: 0.5em;
     outline: none;
-    width: 100%;
+    width: 80%;
 
     > p:first-child {
       margin-top: 0.5em;

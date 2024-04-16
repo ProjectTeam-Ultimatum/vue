@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ReviewBoard from '../views/ReviewBoard.vue'
 import UpdateReview from '../components/UpdateReview.vue'
+import LogIn from '@/views/LogIn.vue'
 
 
 
@@ -16,6 +17,11 @@ const routes = [
     path: '/reviews',
     name: 'reviews',
     component: ReviewBoard
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: LogIn
   },
 
   {

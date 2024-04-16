@@ -1,123 +1,148 @@
 <template>
-  <div class="modal" v-if="isModalVisible">
-    <!-- 조회 모달창 -->
+  <div class="imageModal-overlay" @click="closeModal">
+    <div class="modal" v-if="isModalVisible">
+      <!-- 조회 모달창 -->
 
-    <div class="head-bts">
-      <div class="cl-bt" @click="$emit('close')" style="color: #6e6e6e">
-        <font-awesome-icon :icon="['fas', 'xmark']" size="2xl" />
-      </div>
-      <div class="update-delete">
-        <div class="update-button" @click="editReview">
-          <span style="font-size: 12px"> 수정 </span
-          ><font-awesome-icon :icon="['far', 'pen-to-square']" size="xl" />
+      <div class="head-bts">
+        <div class="cl-bt" @click="$emit('close')" style="color: #6e6e6e">
+          <font-awesome-icon :icon="['fas', 'xmark']" size="2xl" />
         </div>
+        <div class="update-delete">
+          <div class="update-button" @click="editReview">
+            <span style="font-size: 12px"> 수정 </span
+            ><font-awesome-icon :icon="['far', 'pen-to-square']" size="xl" />
+          </div>
 
-        <div class="delete-button" @click="deleteReview(review.reviewId)">
-          <span style="font-size: 12px"> 삭제 </span
-          ><font-awesome-icon :icon="['far', 'trash-can']" size="xl" />
+          <div class="delete-button" @click="deleteReview(review.reviewId)">
+            <span style="font-size: 12px"> 삭제 </span
+            ><font-awesome-icon :icon="['far', 'trash-can']" size="xl" />
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="modal-content">
-      <div class="board-name">여행 후기 게시판 ></div>
-      <div class="review-title1">
-        [{{ review.reviewLocation }}] {{ review.reviewTitle }}
-      </div>
-      <div class="subtitle1">{{ review.reviewSubtitle }}</div>
-      <div class="review-footer-modal">
-        <div class="footer-container-modal">
-          <span class="likes" @click="incrementLikes(review)">
+      <div class="modal-content">
+        <div class="board-name">여행 후기 게시판 ></div>
+        <div class="review-title1">
+          [{{ review.reviewLocation }}] {{ review.reviewTitle }}
+        </div>
+        <div class="subtitle1">{{ review.reviewSubtitle }}</div>
+        <div class="review-footer-modal">
+          <div class="footer-container-modal">
+            <span class="likes" @click="incrementLikes(review)">
+              <font-awesome-icon
+                :icon="['fas', 'heart']"
+                size="lg"
+                style="color: #e00b0b"
+              />
+              {{ review.reviewLike }}
+            </span>
             <font-awesome-icon
-              :icon="['fas', 'heart']"
+              :icon="['far', 'comment']"
               size="lg"
-              style="color: #e00b0b"
+              flip="horizontal"
             />
-            {{ review.reviewLike }}
-          </span>
-          <font-awesome-icon
-            :icon="['far', 'comment']"
-            size="lg"
-            flip="horizontal"
-          />
-          <span class="comment"> {{ review.replyCount }}</span>
+            <span class="comment"> {{ review.replyCount }}</span>
+          </div>
+          <div class="footer-container-modal">
+            <span class="date">{{ formatDate(review.reg_date) }}</span>
+            <span class="author">by auther</span>
+          </div>
         </div>
-        <div class="footer-container-modal">
-          <span class="date">{{ formatDate(review.reg_date) }}</span>
-          <span class="author">by auther</span>
-        </div>
-      </div>
 
-      <div class="slider-container">
-        <div class="click" @click="prevImage">
-          <font-awesome-icon :icon="['fas', 'chevron-left']" size="2xl" />
+        <div class="slider-container">
+          <div class="click" @click="prevImage">
+            <font-awesome-icon :icon="['fas', 'chevron-left']" size="2xl" />
+          </div>
+          <img :src="currentImageUrl" alt="Images" @click="openImageModal" />
+          <div class="click" @click="nextImage">
+            <font-awesome-icon :icon="['fas', 'chevron-right']" size="2xl" />
+          </div>
         </div>
-        <img :src="currentImageUrl" alt="Images" />
-        <div class="click" @click="nextImage">
-          <font-awesome-icon :icon="['fas', 'chevron-right']" size="2xl" />
-        </div>
-      </div>
 
-      <div class="review-content1" v-html="review.reviewContent" />
-      <!-- 댓글 -->
-      <div
-        class="replies"
-        v-for="(reply, index) in review.replies"
-        :key="index"
-      >
-        <div class="replies-header">
-          <div class="replyer">{{ reply.reviewReplyer }}</div>
-          <div class="reply-date">{{ formatDate(reply.reg_date) }}</div>
-        </div>
-        <div class="reply">
-          <div v-if="!reply.isEditing" class="reply-main">
-            <div class="reply-content">{{ reply.reviewReplyContent }}</div>
-            <div class="reply-control">
-              <div class="reply-update" @click="editReply(reply.reviewReplyId)">
-                수정
-              </div>
+        <!-- 이미지 모달 -->
+        <div
+          v-if="isImageModalVisible"
+          class="imageModal-overlay"
+          @click.self="closeImageModal"
+        >
+          <div class="imageModal-content">
+            <div class="head-bts">
               <div
-                class="reply-delete"
-                @click="deleteReply(reply.reviewReplyId)"
+                class="cl-bt"
+                @click="closeImageModal"
+                style="color: #6e6e6e"
               >
-                삭제
+                <font-awesome-icon :icon="['fas', 'xmark']" size="2xl" />
               </div>
             </div>
+            <img :src="currentImageUrl" alt="Full size image" />
           </div>
-          <div v-else class="reply-main">
-            <input
-              class="reply-content-input"
-              v-model="reply.editingContent"
-              @keyup.enter="updateReply(reply)"
-            />
-            <div class="reply-control">
-              <button class="reply-update-save" @click="updateReply(reply)">
-                저장
-              </button>
-              <button
-                class="reply-update-cancel"
-                @click="reply.isEditing = false"
-              >
-                취소
-              </button>
+        </div>
+
+        <div class="review-content1" v-html="review.reviewContent" />
+        <!-- 댓글 -->
+        <div
+          class="replies"
+          v-for="(reply, index) in review.replies"
+          :key="index"
+        >
+          <div class="replies-header">
+            <div class="replyer">{{ reply.reviewReplyer }}</div>
+            <div class="reply-date">{{ formatDate(reply.reg_date) }}</div>
+          </div>
+          <div class="reply">
+            <div v-if="!reply.isEditing" class="reply-main">
+              <div class="reply-content">{{ reply.reviewReplyContent }}</div>
+              <div class="reply-control">
+                <div
+                  class="reply-update"
+                  @click="editReply(reply.reviewReplyId)"
+                >
+                  수정
+                </div>
+                <div
+                  class="reply-delete"
+                  @click="deleteReply(reply.reviewReplyId)"
+                >
+                  삭제
+                </div>
+              </div>
+            </div>
+            <div v-else class="reply-main">
+              <input
+                class="reply-content-input"
+                v-model="reply.editingContent"
+                @keyup.enter="updateReply(reply)"
+              />
+              <div class="reply-control">
+                <button class="reply-update-save" @click="updateReply(reply)">
+                  저장
+                </button>
+                <button
+                  class="reply-update-cancel"
+                  @click="reply.isEditing = false"
+                >
+                  취소
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="new-reply">
-      <input
-        class="reply-writer"
-        v-model="reviewReplyer"
-        placeholder="닉네임을 입력하세요"
-      />
-      <input
-        class="reply-writing"
-        v-model="reviewReplyContent"
-        @keyup.enter="postReply"
-        placeholder="댓글을 입력해주세요.."
-      />
-      <button @click="postReply">등 록</button>
+      <div class="new-reply">
+        <input
+          class="reply-writer"
+          v-model="reviewReplyer"
+          placeholder="닉네임을 입력하세요"
+        />
+        <input
+          class="reply-writing"
+          v-model="reviewReplyContent"
+          @keyup.enter="postReply"
+          placeholder="댓글을 입력해주세요.."
+        />
+        <button @click="postReply">등 록</button>
+      </div>
     </div>
   </div>
 </template>
@@ -146,6 +171,7 @@ export default {
       selectedReview: null, //선택된 리뷰 ID
       reviewReplyContent: "", //댓글 내용
       reviewReplyer: "",
+      isImageModalVisible: false,
     };
   },
   computed: {
@@ -158,15 +184,6 @@ export default {
         return this.review.reviewImages[this.currentImageIndex].imageUri;
       }
       return "default-image-url"; // 혹은 기본 이미지의 URL
-    },
-  },
-  watch: {
-    isModalVisible(newValue) {
-      if (newValue) {
-        document.body.style.overflow = "hidden"; // 모달이 열릴 때 스크롤 비활성화
-      } else {
-        document.body.style.overflow = ""; // 모달이 닫힐 때 원래 스크롤 상태로 복구
-      }
     },
   },
 
@@ -194,7 +211,12 @@ export default {
         console.error("댓글 작성 실패 : ", error);
       }
     },
-
+    openImageModal() {
+      this.isImageModalVisible = true;
+    },
+    closeImageModal() {
+      this.isImageModalVisible = false;
+    },
     editReview() {
       //부모컴포넌트에 edit 이벤트를 발생 시키고 현재 리뷰 id를 전달
       this.$emit("edit", this.review.reviewId);
@@ -282,4 +304,32 @@ export default {
 <style scoped>
 @import "../assets/reviewboard_style.css";
 @import "../assets/review_modal.css";
+
+.imageModal-overlay {
+  position: fixed; /* 화면에 고정 */
+  top: 50%;
+  left: 50%;
+  width: 100vw; /* 모달의 너비 */
+  height: 100vh; /* 모달의 높이 */
+  background-color: rgba(0, 0, 0, 0.6); /* 배경색 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* 다른 요소들 위에 나타나도록 z-index 설정 */
+  transform: translate(-50%, -50%); /* 중앙 정렬을 위해 변환 적용 */
+}
+
+.imageModal-content {
+  position: relative; /* 상대 위치 설정 */
+  max-width: 90vw; /* 화면 너비를 초과하지 않도록 */
+  max-height: 90vh; /* 화면 높이를 초과하지 않도록 */
+  display: flex; /* flex 컨테이너로 설정 */
+  justify-content: center; /* 가로 중앙 정렬 */
+  align-items: center; /* 세로 중앙 정렬 */
+}
+
+.imageModal-content img {
+  max-width: 100%; /* 이미지의 실제 크기를 유지하되, 컨테이너 너비를 초과하지 않도록 함 */
+  max-height: 100%; /* 이미지의 실제 크기를 유지하되, 컨테이너 높이를 초과하지 않도록 함 */
+}
 </style>

@@ -88,6 +88,7 @@
         @refresh-modal="openModal"
         @close="closeModal()"
         @edit="startEditing"
+        @click.self="closeModal()"
       />
       <!-- 수정 모달창 -->
       <UpdateReview
@@ -158,9 +159,17 @@
       </div>
     </div>
   </div>
-  <button v-for="n in totalPages" :key="n" @click="changePage(n - 1)">
-    {{ n }}
-  </button>
+  <div class="pagination">
+    <span
+      v-for="n in totalPages"
+      :key="n"
+      @click="changePage(n - 1)"
+      class="page-item"
+      :class="{ active: n === page + 1 }"
+    >
+      {{ n }}
+    </span>
+  </div>
 </template>
 
 <script>
@@ -211,6 +220,16 @@ export default {
             (review) => review.reviewLocation === this.selectedRegion
           )
         : this.allReviews;
+    },
+  },
+  watch: {
+    isModalVisible(newValue) {
+      console.log("isModalVisible changed:", newValue);
+      if (newValue) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "";
+      }
     },
   },
 

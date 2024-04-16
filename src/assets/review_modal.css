@@ -8,7 +8,7 @@
       -50%,
       -50%
     ); /* 정중앙 정렬을 위해 자기 크기의 반만큼 이동 */
-    width: 50%; /* 모달의 너비 */
+    width: 40%; /* 모달의 너비 */
     background-color: white; /* 배경색 */
     padding: 20px; /* 안쪽 여백 */
     border-radius: 10px; /* 테두리 둥글기 */
@@ -47,7 +47,7 @@
     display: flex;
     flex-direction: column;
     border-radius: 5px;
-    max-height: 80vh; /* 뷰포트 높이의 80%만큼의 최대 높이 */
+    max-height: 70vh; /* 뷰포트 높이의 80%만큼의 최대 높이 */
     overflow-y: auto;
     position: relative;
     background-color: white;
@@ -61,16 +61,16 @@
     display: flex;
     justify-content: space-between;
 }
-    .modal-content .review-title1 {
-        font-size: 28px;
-        font-weight: bold;
-        margin-top: 10px;
-        margin-bottom: 15px;
-        color: #393939;
-        text-align: left; 
-    margin-left: 40px;
-    margin-right: 40px;
-    }
+  .modal-content .review-title1 {
+      font-size: 28px;
+      font-weight: bold;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      color: #393939;
+      text-align: left; 
+      margin-left: 40px;
+      margin-right: 40px;
+  }
 
   .modal-content .subtitle1 {
     text-align: left; 
@@ -95,8 +95,8 @@
   }
   
   .slider-container img {
-    width: 90%;
-    height: 550px;
+    height: 450px;
+    width: 80%;
     object-fit: cover;
     margin:10px;
     object-position: center;
@@ -144,26 +144,26 @@
   }
   .reply-update, .reply-delete{
     font-size: 12px;
-  margin-inline: 5px;
-  color: #919191;
-  cursor: pointer;
+    margin-inline: 5px;
+    color: #919191;
+    cursor: pointer;
   }
   .reply-content-input {
     padding: 10px;
     width: 80%;
-  border-radius: 10px;
-border: 1px solid #E1E1E1
+    border-radius: 10px;
+    border: 1px solid #E1E1E1
 
   }
   .reply-update-save {
     width: 45px;
     font-size: 12px;
-  margin-right: 5px;
-  color: white;
-  cursor: point;
-  border: 1px solid #1275D6;
-  border-radius: 10px;
-  background-color: #1275D6;
+    margin-right: 5px;
+    color: white;
+    cursor: point;
+    border: 1px solid #1275D6;
+    border-radius: 10px;
+    background-color: #1275D6;
   }
   .reply-update-cancel{
     width: 45px;
@@ -171,7 +171,7 @@ border: 1px solid #E1E1E1
     border: 1px solid #ffc83b;
     color: #ffc83b;
     background-color: white;
-  border-radius: 10px;
+    border-radius: 10px;
 
   }
 
@@ -179,8 +179,8 @@ border: 1px solid #E1E1E1
   .new-reply{
     margin: 20px;
   }
-.reply-writer{
-  width: 15%;
+  .reply-writer{
+    width: 15%;
     margin-right: 5px;
     border-radius: 10px ;
     border: 1px solid #E1E1E1;
