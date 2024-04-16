@@ -251,11 +251,13 @@ export default {
   flex-direction: column;
   align-items: flex-start; /* 요소들을 컨테이너의 왼쪽 가장자리에 정렬합니다. */
   margin-bottom: 10px;
-  width: 70%;
+  width: 80%;
 }
 
 .form-group label {
   margin-bottom: 5px; /* 라벨과 입력 필드 사이에 약간의 간격을 추가 */
+  width: 100px;
+  text-align: start;
 }
 
 .form-group input {
