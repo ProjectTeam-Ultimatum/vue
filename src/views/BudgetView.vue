@@ -2,8 +2,8 @@
   <div>
     <h1 @click="showModal = true">예산하기</h1>
     <!-- 모달 컴포넌트 -->
-    <div v-if="showModal" class="modal">
-      <div class="modal-content">
+    <div v-if="showModal" class="budget-modal">
+      <div class="budget-modal-content">
         <h2>A코스 예산 계산해보기</h2>
         <p>여기에 예산에 관한 정보를 표시할 수 있습니다.</p>
         <button @click="showModal = false">닫기</button>
@@ -22,8 +22,8 @@ export default {
 }
 </script>
 
-<style scoped>
-.modal {
+<style>
+.budget-modal{
   position: fixed;
   top: 0;
   left: 0;
@@ -35,7 +35,7 @@ export default {
   justify-content: center;
 }
 
-.modal-content {
+.budget-modal-content {
   background-color: white;
   padding: 20px;
   border-radius: 8px;

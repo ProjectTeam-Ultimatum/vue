@@ -247,6 +247,7 @@ export default {
         this.selectedReview = response.data;
         this.isModalVisible = true;
         this.isModalEditing = false;
+        console.log("openModal called with review:", review);
         console.log(
           "selectedReview : " +
             this.selectedReview +
@@ -264,7 +265,9 @@ export default {
       }
     },
     createReview() {
+      console.log("createReview called");
       this.isModalCreate = true;
+      console.log("Create modal state:", this.isModalCreate);
     },
 
     startEditing() {

@@ -1,5 +1,5 @@
 <template>
-  <div class="modal" v-if="isModalCreate">
+  <div class="update-modal" v-if="isModalCreate">
     <div class="modal-body">
       <h2>게시글 작성</h2>
       <form @submit.prevent="submitForm" class="review-form">

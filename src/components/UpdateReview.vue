@@ -1,5 +1,5 @@
 <template>
-  <div class="modal" v-if="isModalEditing">
+  <div class="update-modal" v-if="isModalEditing">
     <div class="modal-body">
       <h2>게시글 수정</h2>
       <form @submit.prevent="submitForm" class="review-form">

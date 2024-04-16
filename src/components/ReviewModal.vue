@@ -1,5 +1,5 @@
 <template>
-  <div class="modal" v-if="isModalVisible">
+  <div class="review-modal" v-if="isModalVisible">
     <!-- 조회 모달창 -->
 
     <div class="head-bts">

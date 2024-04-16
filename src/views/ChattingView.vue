@@ -10,8 +10,8 @@
 
 
 <!-- 모달창 내용 -->
-<div v-if="showModal" class="modal" @click.self="showModal = false">
-  <div class="modal-content" @click.stop>
+<div v-if="showModal" class="chat-modal" @click.self="showModal = false">
+  <div class="chat-modal-content" @click.stop>
     <h2>채팅방 게시하기<font-awesome-icon icon="fa-solid fa-pen-to-square" /></h2>
     <div class="modal-header">
       <div class="profile-picture">
@@ -71,8 +71,8 @@
       </div>
 
     <!-- 필터 모달창 내용 -->
-    <div v-if="showFilterModal" class="modal" @click.self="showFilterModal = false">
-      <div class="modal-content" @click.stop>
+    <div v-if="showFilterModal" class="chat-modal" @click.self="showFilterModal = false">
+      <div class="chat-modal-content" @click.stop>
         <h2>필터 옵션<font-awesome-icon icon="fa-solid fa-sliders" /></h2>
           <!-- 나이 슬라이더 필터 -->
           <div class="input-group">
@@ -261,7 +261,7 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 
 
 /* 전체 페이지에 적용되는 스타일 */
@@ -392,7 +392,7 @@ export default {
 }
 
 /* 글쓰기 모달창 스타일*/
-.modal {
+.chat-modal {
   position: fixed; /* 화면에 고정 */
   top: 0;
   left: 0;
@@ -405,7 +405,7 @@ export default {
 }
 
 /* 글쓰기 모달창 전체 스타일 */
-.modal-content {
+.chat-modal-content {
   background-color: #FFF;
   padding: 30px;
   border-radius: 10px;
