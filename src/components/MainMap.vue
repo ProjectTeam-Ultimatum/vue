@@ -25,7 +25,7 @@ import markerImage from '@/assets/images/jjang.png';
 import OlLineString from 'ol/geom/LineString';
 import { Stroke } from 'ol/style';
 
-const EPSG_3857 = 'EPSG:3857';
+
 export default {
   name: 'MainMap',
   data() {
@@ -34,7 +34,6 @@ export default {
       address: '',
       iconsSource: undefined,
       locations: [],
-      vectorSource: undefined,
       title: '',
       grade: 0,
       review: '',
@@ -42,13 +41,22 @@ export default {
     }
   },
   mounted() {
+    this.initializeMap();
+    EventBus.$on('categoryClick', (category) => {
+      console.log(`Received category: ${category}`);
+    this.category = category;
+    this.updateMapIcons();  // 카테고리에 맞는 아이콘을 다시 불러옵니다.
+  });
+},
+methods: {
+  initializeMap() {
     this.vectorSource = new OlVectorSource();
+    // 카테고리 필터가 적용된 초기 위치 데이터 로드
     this.fetchLocations();
-    const vectorSource = new OlVectorSource(EPSG_3857);
     const vectorLayer = new OlVectorLayer({
-    source: vectorSource
- })
-this.olMap = new OlMap({
+      source: this.vectorSource
+    });
+  this.olMap = new OlMap({
   target: this.$refs.map,
   controls: defaults({
     attribution: false,
@@ -108,8 +116,9 @@ this.olMap.on('click', async (e) => {
     console.error('Failed to fetch address information');
   }
 });
+
 this.olMap.on('click', async (e) => {
-            this.vectorSource.clear();
+            
             geocoder.getSource().clear();
             const [lon, lat] = toLonLat(e.coordinate)
             const point = this.coordi4326To3857([lon, lat]);
@@ -124,6 +133,7 @@ this.olMap.on('click', async (e) => {
             }))
                 this.vectorSource.addFeature(feature);
         })
+
   const geocoder = new Geocoder('nominatim', {
     provider: 'osm',
     lang: 'kr',
@@ -139,8 +149,13 @@ this.olMap.on('click', async (e) => {
   this.olMap.once('rendercomplete', () => {
     this.fetchLocations(); // 지도 렌더링이 완료된 후에 위치 데이터를 가져오고 마커를 추가합니다.
   });
-},
-methods: {
+  },
+
+
+  updateMapIcons() {
+    this.vectorSource.clear();  // 기존 벡터 소스 클리어
+    this.addMapIcons();         // 새로운 아이콘 로드
+  },
   clearLocationData() {
     // UI에 표시된 정보 초기화
     this.title = '';
@@ -169,7 +184,7 @@ methods: {
       EventBus.$emit('mapClick', addressInfo.data.display_name.split(', ').reverse().join(' '));
       this.drawMapIcon(coordinate);
     },
-    drawMapIcon(coordinate) {
+  drawMapIcon(coordinate) {
       const vectorSource = this.olMap.getLayers().item(1).getSource(); // Get vector source from the second layer
       vectorSource.clear();
       const feature = new OlFeature({
@@ -210,14 +225,14 @@ methods: {
   setUiAddress(str) {
   this.address = str.split(', ').reverse().join(' ');
 },
-addMapIcons() {
-  const vectorLayer = this.olMap.getLayers().item(1); // 두 번째 레이어 가져오기
-  const vectorSource = vectorLayer.getSource();
-  const coordinates = [];
+  addMapIcons() {
+    const vectorLayer = this.olMap.getLayers().item(1); // 두 번째 레이어 가져오기
+    const vectorSource = vectorLayer.getSource();
+    const coordinates = [];
 
   // DB에서 가져온 각 위치 정보에 대해 아이콘을 추가합니다.
   this.locations.forEach(location => {
-
+    if (location.category === this.category){
     const point = fromLonLat([location.lonCopy, location.latCopy]);
       coordinates.push(point);
 
@@ -234,7 +249,7 @@ addMapIcons() {
     }));
     feature.set('data', location);
     vectorSource.addFeature(feature);
-  });
+  }});
   if (coordinates.length > 1) {
       const lineFeature = new OlFeature({
         geometry: new OlLineString(coordinates)

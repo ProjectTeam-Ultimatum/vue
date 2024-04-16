@@ -10,7 +10,7 @@
     >
       <div class="side-bar">
         <div class="title-area">
-          <textarea v-model="title" placeholder="맛집 이름을 입력해주세요."></textarea>
+          <textarea v-model="title" placeholder="메모장" :readOnly="true"></textarea>
         </div>
 
         <div class="image-area">
@@ -22,9 +22,10 @@
         <div class="location-info-area">
     <font-awesome-icon icon="fa-solid fa-pen" />
     <Input
-    placeholder="위치 정보 직접 입력하기"
+    placeholder="주소"
     :value="addressCopy"
     @input="updateAddress"
+    :readOnly="true"
   />
   </div>
 
@@ -44,21 +45,22 @@
     </ul>
 </div>
   <div class="rate-area">
-    <FormRating :value="parseInt(grade)" @update:grade="grade = $event" />
+    <!-- <FormRating :value="parseInt(grade)" @update:grade="grade = $event" /> -->
     <FormRating :grade="grade" :readOnly="true"/>
       </div>
         <div class="review-area">
           <textarea
               ref="textarea"
-              placeholder="후기를 입력해주세요."
-              v-model="review"
+              placeholder="메모장"
+              v-model="review" 
+              :readOnly="true"
           ></textarea>
         </div>
-        <div class="bottom-btn-area">
+        <!-- <div class="bottom-btn-area">
       <Button class="save-btn" @click="saveReview">
           저장
       </Button>
-  </div>
+  </div> -->
       </div>
     </VueResizable>
         <Button
@@ -113,6 +115,7 @@ mounted() {
 methods: {
   selectCategory(category) {
       this.category = category; // 사용자가 선택한 카테고리를 저장
+      EventBus.$emit('categoryClick', category);
   },
   onChangeFiles(e) {
     this.fileList.push(...e.target.files);
