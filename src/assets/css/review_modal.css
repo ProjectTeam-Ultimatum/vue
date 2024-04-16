@@ -6,7 +6,7 @@
     -50%,
     -50%
   ); /* 정중앙 정렬을 위해 자기 크기의 반만큼 이동 */
-  width: 40%; /* 모달의 너비 */
+  width: 42%; /* 모달의 너비 */
   background-color: white; /* 배경색 */
   padding: 20px; /* 안쪽 여백 */
   border-radius: 10px; /* 테두리 둥글기 */
@@ -95,7 +95,7 @@
 }
 
 .review-slider-container img {
-  height: 450px;
+  height: 470px;
   width: 80%;
   object-fit: cover;
   margin: 10px;
