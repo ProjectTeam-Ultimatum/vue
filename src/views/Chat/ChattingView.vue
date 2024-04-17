@@ -178,25 +178,28 @@ export default {
   },
   methods: {
     submitChatRoom() {
-    const chatRoomData = {
+        const chatRoomData = {
       chatRoomName: this.newChatRoomTitle,
-      travelStyleTags: this.travelStyles,
       chatRoomContent: this.newChatRoomContent,
+      travelStyleTags: this.travelStyles
     };
+    
+    // Axios를 통해 서버에 채팅방 생성 요청
     this.$axios.post('http://localhost:8080/api/v1/chat/create', chatRoomData)
       .then(response => {
+        // 성공적으로 응답을 받으면 실행될 코드
         console.log("채팅방 생성 성공:", response.data);
-        this.newChatRoomTitle = ''; // 입력 필드 초기화
-        this.travelStyles = []; // 태그 목록 초기화
-        this.newChatRoomContent = ''; // 채팅방 내용
+        this.newChatRoomTitle = ''; // 채팅방 이름 입력 필드 초기화
+        this.newChatRoomContent = ''; // 채팅방 내용 입력 필드 초기화
+        this.travelStyles = []; // 채팅방 태그 목록 초기화
         this.showModal = false; // 모달 창 닫기
         this.fetchChatRooms(); // 채팅방 목록 다시 불러오기
       })
       .catch(error => {
-        console.error("채팅방 생성 실패:", error);
+        // 요청에 실패하면 실행될 코드
+        console.error("채팅방 생성 실패:", error.response?.data || error.message);
+        alert('채팅방 생성에 실패했습니다: ' + (error.response?.data || error.message));
       });
-
-      console.log(this.newChatRoomContent);
     },
     addTravelStyle() {
     const input = document.getElementById('travelStyle');
