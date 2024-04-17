@@ -3,11 +3,8 @@
     <!-- 채팅방 상단 영역: 채팅방 이름 및 사용자 정보 -->
     <header class="chat-room-header">
       <div class="chat-room-title">{{ chatRoomName }}</div>
-      <div class="user-profile">
-        
-            <input v-model="userId" placeholder="아이디 입력" />
-    <!-- 입장 버튼 추가 -->
-    <button @click="enterChatRoom">입장</button>
+            <div class="user-info">
+        <p>환영합니다, {{ userName }}!</p>
       </div>
     </header>
 
@@ -22,7 +19,7 @@
     
     <!-- 가운데 패널 -->
     <section class="center-panel">
-    <!-- 채팅 메시지 목록 -->
+      <!-- 채팅 메시지 목록 -->
       <ul>
         <li v-for="message in messages" :key="message.id" class="message-item">
           <span class="message-sender">{{ message.senderId }}:</span>
@@ -34,14 +31,13 @@
         </li>
       </ul>
     </section>
-
     <!-- 오른쪽 패널 -->
     <aside class="right-panel">
     <!-- 오른쪽 내용 -->
     <img src="@/assets/images/profile.png" alt="User Avatar" class="user-avatar" />
-        <p class="user-name">배정현</p>
+        <p class="user-name">{{ userName }}</p>
         <p class="user-detail">신뢰도</p>
-        <p class="user-detail">나이</p>
+        <p class="user-detail">나이:  {{ userAge }}</p>
         <p class="user-detail">여행 스타일</p>
     </aside>
     </div>
@@ -67,7 +63,10 @@ export default {
     return {
       chatRoomId: null,
       chatRoomName: '',
-      userId: '',
+      userName: '',  // 사용자 이름
+      userEmail:'',
+      userGender:'',
+      userAge:'',
       newMessage: '', // 사용자가 입력한 새 메시지
       messages: [], // 채팅방의 메시지 목록
       socket: null,
@@ -75,12 +74,10 @@ export default {
   },
   mounted() {
     this.connectWebSocket(); // WebSocket 연결을 설정합니다.
-    // URL에서 roomId를 추출
-    this.chatRoomId = this.$route.params.roomId;
-    // 추출한 roomId를 사용하여 API 호출
-    this.fetchChatRoomDetails(this.chatRoomId);
-    // 채팅방 메시지 내역을 불러옵니다.
-    this.fetchMessages(); 
+    this.chatRoomId = this.$route.params.roomId; // URL에서 roomId를 추출
+    this.fetchChatRoomDetails(this.chatRoomId); // 추출한 roomId를 사용하여 API 호출
+    this.fetchMessages();  // 채팅방 메시지 내역을 불러옵니다.
+    this.fetchUserInfo();  // 사용자 정보를 불러옵니다.
   },
   methods: {
     // 이미지 파일 처리
@@ -103,27 +100,33 @@ export default {
     .catch(error => console.error("이미지 업로드 실패:", error));
     },
     connectWebSocket() {
-      // WebSocket 연결을 생성합니다.
-      this.socket = new WebSocket(`ws://localhost:8080/ws/chat?chatRoomId=${this.chatRoomId}`);
-      
-      // 연결이 열릴 때 실행될 콜백 함수를 정의합니다.
+      // 로컬 스토리지에서 인증 토큰을 가져옵니다.
+      const rawToken = localStorage.getItem('Authorization');
+      if (!rawToken) {
+        console.error('Authentication token is missing. Please login.');
+        return;
+      }
+      // 'Bearer ' 접두사 제거
+      const token = rawToken.replace('Bearer ', '');
+
+      this.socket = new WebSocket(`ws://localhost:8080/ws/chat?chatRoomId=${this.chatRoomId}&token=${encodeURIComponent(token)}`);
+
       this.socket.onopen = () => {
         console.log("WebSocket 연결 성공");
-        // 채팅방에 입장 메시지를 전송합니다.
         this.enterChatRoom();
       };
-      
+
       // 메시지를 수신할 때 실행될 콜백 함수를 정의합니다.
       this.socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
         this.messages.push(data); // 수신된 메시지를 메시지 목록에 추가합니다.
       };
-      
+
       // 연결이 종료될 때 실행될 콜백 함수를 정의합니다.
       this.socket.onclose = () => {
         console.log("WebSocket 연결 종료");
       };
-      
+
       // 오류가 발생했을 때 실행될 콜백 함수를 정의합니다.
       this.socket.onerror = (error) => {
         console.error("WebSocket 오류 발생:", error);
@@ -139,6 +142,19 @@ export default {
         })
         .catch(error => {
           console.error("채팅방 정보를 불러오는 중 오류가 발생했습니다:", error);
+        });
+    },
+    fetchUserInfo() {
+      this.$axios.get('http://localhost:8080/api/v1/user/info/detail')
+        .then(response => {
+          this.userName = response.data.userName;  // "userName" 키에 접근
+          this.userEmail = response.data.email;    // "email" 키에 접근
+          this.userGender = response.data.gender;  // "gender" 키에 접근
+          this.userAge = response.data.age;        // "age" 키에 접근
+          this.userAddress = response.data.address;// "address" 키에 접근
+        })
+        .catch(error => {
+          console.error("사용자 정보를 불러오는 중 오류가 발생했습니다:", error);
         });
     },
     fetchMessages() {

@@ -70,7 +70,6 @@
 
 
 <script>
-import axios from 'axios';
 
 export default {
   data() {
@@ -99,7 +98,7 @@ export default {
         memberEmail: this.username,
         memberPassword: this.password
       };
-      axios.post('/login', data)
+      this.$axios.post('/login', data)  // this.$axios로 변경
         .then(response => {
           const jwtToken = response.headers['authorization'] || response.headers['Authorization'];
           if (jwtToken) {
@@ -131,25 +130,26 @@ export default {
       this.showSignupModal = true; // 회원가입 모달 열기
     },
     register() {
-        const data = {
-          memberName: this.name,
-          memberEmail: this.email,
-          memberPassword: this.password,
-          memberAge: this.age,
-          memberGender: this.gender,
-          memberAddress: this.address
-        };
-  
-        axios.post('/api/v1/join', data)
-          .then(response => {
-            alert(response.data); // 성공 메시지 출력
-            this.closeModal(); // 모달 창 닫기
-            this.$router.push('/login'); // 로그인 페이지로 이동
-          })
-          .catch(error => {
-            console.error('Registration failed:', error);
-            alert('회원가입 실패: ' + error.response.data);
-        });
+      const data = {
+        memberName: this.name,
+        memberEmail: this.email,
+        memberPassword: this.password,
+        memberAge: this.age,
+        memberGender: this.gender,
+        memberAddress: this.address
+      };
+
+      // 여기에서 axios 대신 this.$axios를 사용합니다.
+      this.$axios.post('/api/v1/join', data)
+        .then(response => {
+          alert(response.data); // 성공 메시지 출력
+          this.closeModal(); // 모달 창 닫기
+          this.$router.push('/login'); // 로그인 페이지로 이동
+        })
+        .catch(error => {
+          console.error('Registration failed:', error);
+          alert('회원가입 실패: ' + error.response.data);
+      });
     },
     switchView(view) {
      this.currentView = view; // 현재 뷰 전환
