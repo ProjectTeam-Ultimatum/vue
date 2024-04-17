@@ -7,7 +7,7 @@
             <span style="font-weight: 900;">축제/행사 추천 태그</span>
           </div>
           <div class="tag-wrap">
-            <button type="button" class="btn btn-outline-primary"
+            <button type="button" class="btn btn-outline-dark"
                   :class="{ 'active': selectedTag === '' }"
                   @click="selectTag('')">전체</button>
             <button type="button" class="btn btn-outline-primary"
@@ -66,7 +66,7 @@
                 <div class="card-title-wrap">
                   <div class="card-title">{{ event.recommendEventTitle }}</div>
                   <!-- 영업시간 -->
-                  <div class="card-info">
+                  <div>
                     <span class="status" :class="getStatusClass(event.recommendEventClosetime)">
                         {{ getStatusMessage(event.recommendEventClosetime) }}
                     </span>
@@ -82,7 +82,7 @@
       </div>
       <PaginationComponent
           :total-pages="totalPages"
-          :current-page="page"
+          :current-page="currentPage"
           :current-tag="selectedTag"
           @changePage="gotoPage"
         />
@@ -107,73 +107,84 @@ export default {
   data(){
     return {
       loading: false,
-      selectedRegion: '',
       recommendListEvent: [],
-      page: 1,
-      totalPages: 0
+      currentPage: 1, // currentPage로 업데이트
+      totalPages: 0,
+      pageSize: 12,  // 페이지 크기 정의
+      selectedTag: '',  // 초기값으로 '전체' 태그 활성화
+      selectedRegion: this.region // prop을 직접 사용
     };
   },
   //created, mounted
   methods: {
     gotoPage(pageNumber) {
-      this.page = pageNumber;
-      this.fetchData();
+    if (this.currentPage !== pageNumber) {
+      this.currentPage = pageNumber;
+      this.fetchData(); // 데이터를 다시 불러오도록 함수 호출
+      console.log(`Page updated to: ${pageNumber}`); // 로그 출력으로 확인
+      }
     },
       //api axios 요청
-      fetchData() {
-  this.loading = true; // 데이터 요청 시작 시 로딩 상태 활성화
-
-  const params = {
-      page: this.page - 1,  // Ensure page is zero-indexed if backend expects it
-      size: 12,
-      sort: "recommendEventId,desc",
-      region: this.selectedRegion.trim(),
+    fetchData() {
+    this.loading = true; // 데이터 요청 시작 시 로딩 상태 활성화
+    const params = {
+        page: this.currentPage - 1,  // 백엔드가 0 시작 페이지 인덱스를 기대하는 경우
+        size: this.pageSize, // pageSize 사용
+        sort: "recommendEventId,desc",
+        tag: this.selectedTag,
+        region: this.selectedRegion // prop을 직접 사용
     };
+           
+    // 요청 파라미터 로그로 확인
+    console.log('Requesting data with params:', params); 
 
-  // Axios 요청에 params 적용
-  this.$axios.get("http://localhost:8080/api/recommend/listevent", { params })
-  .then((response) => {
-    this.recommendListEvent = response.data.content;
-        this.totalPages = response.data.totalPages;  // Set total pages from response
-        this.loading = false;
-      // 성공적으로 데이터를 받아온 경우
-      console.log("데이터요청 성공1 : ", response.data);
-      console.log("데이터요청 성공2 : ", response.data.content);
-      this.recommendListEvent = response.data.content.map(item => {
-          // 각 항목의 태그를 처리
-          const tags = item.recommendEventTag.split(',');
-          if (tags.length > 3) {
-              // 태그가 3개 이상인 경우, 처음 3개만 선택
+    // Axios 요청에 params 적용
+    this.$axios.get("http://localhost:8080/api/recommend/listevent", { params })
+    .then((response) => {
+        if (response.data.content.length === 0) {
+          console.error('No data returned for the page:', this.currentPage);
+          this.recommendListEvent = [];
+          this.totalPages = 0;
+          this.loading = false;
+        } else {
+          this.recommendListEvent = response.data.content.map(item => {
+            const tags = item.recommendEventTag.split(',');
+            // 태그가 3개 이상인 경우, 처음 3개만 선택
+            if (tags.length > 3) { 
               item.recommendEventTag = tags.slice(0, 3).join(', ');
-          }
-          // recommendEventTag의 길이가 6을 초과하는 경우, 줄임 처리
-          if (item.recommendEventTag.length > 14) {
+            }
+            // recommendEventTag의 길이 줄임 처리
+            if (item.recommendEventTag.length > 14) {
               item.recommendEventTag = item.recommendEventTag.slice(0, 14) + '.';
-          }
-          // 음식점 소개가 24글자 이상인 경우, 줄임말 처리
-          if (item.recommendEventIntroduction.length > 30) {
+            }
+            // 음식점 소개가 24글자 이상인 경우, 줄임말 처리
+            if (item.recommendEventIntroduction.length > 30) {
               item.recommendEventIntroduction = item.recommendEventIntroduction.substring(0, 30) + '...';
-          }
-          // 음식점 이름 줄이기 
-          if (item.recommendEventTitle.length > 6) {
-            item.recommendEventTitle = item.recommendEventTitle.substring(0, 6) + '.';
-          }
-          return item;
-      });
-      this.loading = false; // 데이터 로딩 완료
-  })
-  .catch((error) => {
+            }
+            // 음식점 이름 줄이기 
+            if (item.recommendEventTitle.length > 6) {
+              item.recommendEventTitle = item.recommendEventTitle.substring(0, 6) + '.';
+            }
+            return item;
+          });
+          this.totalPages = response.data.totalPages;
+          this.loading = false; // 데이터 로딩 완료
+          console.log("데이터요청 성공: ", response.data);
+        }
+      })
+    .catch((error) => {
       // 요청 중 에러 발생
       console.error("에러났어요 : " + error);
-      this.loading = false; // 에러 발생 시 로딩 상태 비활성화
-  });
+      this.loading = false;
+    });
   },
-selectTag(tag) { //태그 필터링
+  selectTag(tag) { //태그 필터링
       this.selectedTag = tag; // 선택된 태그 업데이트
+      this.currentPage = 1;
       this.fetchData(); // 필요하다면 데이터를 다시 가져옵니다
   },
-      //영업중, 영업마감
-      isOperating(closeTime) {
+    //영업중, 영업마감
+    isOperating(closeTime) {
     if (!closeTime) return '휴무일'; // 휴무일 처리
     
     const now = new Date();
@@ -186,20 +197,19 @@ selectTag(tag) { //태그 필터링
     } else {
       return '영업마감';
     }
-  },
-  getStatusClass(closeTime) {
+    },
+    getStatusClass(closeTime) {
     const status = this.isOperating(closeTime);
     return {
-      open: status === '영업중',
-      closed: status === '영업마감',
-      holiday: status === '휴무일',
-    };
+      'card-opentime': status === '영업중',  // '영업중'에 해당하는 CSS 클래스
+      'card-closetime': status === '영업마감' // '영업마감'에 해당하는 CSS 클래스
+      };
+    },
+    getStatusMessage(closeTime) {
+      return this.isOperating(closeTime);
+    }
   },
-  getStatusMessage(closeTime) {
-    return this.isOperating(closeTime);
-  }
-},
-computed: {
+  computed: {
   filteredEvents() {
     return this.recommendListEvent.filter(event => {
       return (!this.region || event.recommendEventRegion === this.region) &&
@@ -207,9 +217,16 @@ computed: {
     });
   }
 },
-mounted() {
-      this.fetchData(); //컴포넌트가 마운트 될 때 데이터를 가져옴
-  },
+  watch: {
+      region(newVal) {
+        this.selectedRegion = newVal; // prop 변경 시 selectedRegion 업데이트
+        this.currentPage = 1;
+        this.fetchData();
+      }
+    },
+  mounted() {
+        this.fetchData(); //컴포넌트가 마운트 될 때 데이터를 가져옴
+    },
 };
 </script>
 

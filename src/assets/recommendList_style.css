@@ -102,12 +102,22 @@ body {
   }
   
   
-  .card-info {
+  .card-opentime {
     font-size: 0.8em;
     font-weight: 500;
     padding: 5px;
     color:#333;
     background-color: #F7EC1D;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
+
+  .card-closetime {
+    font-size: 0.8em;
+    font-weight: 500;
+    padding: 5px;
+    color:#ffffff;
+    background-color: #b9b9b9;
     margin-bottom: 10px;
     border-radius: 5px;
   }
@@ -206,7 +216,7 @@ body {
   
   .category_menu ul li {
     display: inline-block; /* Display list items inline */
-    margin: 0 60px; /* Add horizontal space between items */
+    width: 250px;
     padding: 10px 15px; /* Padding inside each list item */
     color: #ffffff; /* Text color for list items */
      /* background-color: #000000;Background color for list items */

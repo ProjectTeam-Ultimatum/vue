@@ -1,20 +1,25 @@
+// eslint-disable-next-line
+/* eslint-disable */
+
 <template>
   <div class="pagination-wrap">
     <nav aria-label="Page navigation example">
       <ul class="pagination">
-        <li class="page-item" :class="{ disabled: currentPage === 1 }">
-          <a class="page-link" href="#" aria-label="Previous" @click.prevent="goToPrevPage"> 
+        <li class="page-item" :class="{ 'disabled': currentPage === 1 }">
+          <!-- Prevent the default anchor behavior and handle page change manually -->
+          <a class="page-link" href="#" aria-label="Previous" @click.prevent="goToPrevPage">
             <span aria-hidden="true">&laquo;</span>
             <span class="sr-only">Previous</span>
           </a>
         </li>
         <li class="page-item" v-for="pageNumber in totalPages" :key="pageNumber"
-            :class="{ active: pageNumber === currentPage }">
+            :class="{ 'active': pageNumber === currentPage }">
+          <!-- Direct page selection should also prevent default behavior -->
           <a class="page-link" href="#" @click.prevent="goToPage(pageNumber)">
             {{ pageNumber }}
           </a>
         </li>
-        <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+        <li class="page-item" :class="{ 'disabled': currentPage === totalPages }">
           <a class="page-link" href="#" aria-label="Next" @click.prevent="goToNextPage">
             <span aria-hidden="true">&raquo;</span>
             <span class="sr-only">Next</span>
@@ -29,22 +34,21 @@
 export default {
   props: {
     totalPages: Number,
-    currentPage: Number,
-    currentTag: String  // 현재 선택된 태그를 props로 추가
+    currentPage: Number
   },
   methods: {
+    goToPage(pageNumber) {
+      this.$emit('changePage', pageNumber);
+    },
     goToPrevPage() {
       if (this.currentPage > 1) {
-        this.$emit('changePage', this.currentTag, this.currentPage - 1); // 태그 정보 포함
+        this.goToPage(this.currentPage - 1);
       }
     },
     goToNextPage() {
       if (this.currentPage < this.totalPages) {
-        this.$emit('changePage', this.currentTag, this.currentPage + 1); // 태그 정보 포함
+        this.goToPage(this.currentPage + 1);
       }
-    },
-    goToPage(pageNumber) {
-        this.$emit('changePage', this.currentTag, pageNumber); // 태그 정보 포함
     }
   }
 }
