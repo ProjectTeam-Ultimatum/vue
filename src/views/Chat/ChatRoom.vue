@@ -3,9 +3,7 @@
     <!-- 채팅방 상단 영역: 채팅방 이름 및 사용자 정보 -->
     <header class="chat-room-header">
       <div class="chat-room-title">{{ chatRoomName }}</div>
-            <div class="user-info">
-        <p>환영합니다, {{ userName }}!</p>
-      </div>
+
     </header>
 
     <!-- 메인 콘텐츠 영역 -->
@@ -21,9 +19,9 @@
     <section class="center-panel">
       <!-- 채팅 메시지 목록 -->
       <ul>
-        <li v-for="message in messages" :key="message.id" class="message-item">
+        <li v-for="message in messages" :key="message.id"
+            :class="{'my-message': message.senderId === userName, 'other-message': message.senderId !== userName}">
           <span class="message-sender">{{ message.senderId }}:</span>
-          <!-- 이미지 URL이면 img 태그로, 그렇지 않으면 span으로 메시지를 보여줍니다. -->
           <span v-if="isImageUrl(message.message)" class="message-content">
             <img :src="message.message" alt="Image" style="max-width: 200px; max-height: 200px;">
           </span>
@@ -354,11 +352,59 @@ html, body {
   font-weight: bold;
   margin-right: 5px;
 }
-
-/* 채팅메시지 내용 스타일*/
+/* 기본 말풍선 스타일 */
 .message-content {
-  word-break: break-word;
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 18px;
+  margin: 5px 10px;
+  max-width: 60%;
+  position: relative;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.1);
 }
+
+/* 나의 메시지 스타일 */
+.my-message {
+  text-align: right;
+}
+
+.my-message .message-content {
+  background-color: #F7EC1D; /* 황색 */
+  border-bottom-right-radius: 0;  /* 오른쪽 아래 코너를 평평하게 */
+}
+
+.my-message .message-content::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  bottom: 0;
+  right: 10px;
+  margin-bottom: -20px;
+}
+
+
+/* 다른 사람의 메시지 스타일 */
+.other-message {
+  text-align: left;
+}
+
+.other-message .message-content {
+  background-color: #F3F3F3; /* 밝은 회색 */
+  border-bottom-left-radius: 0;  /* 왼쪽 아래 코너를 평평하게 */
+}
+
+.other-message .message-content::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  bottom: 0;
+  left: 10px;
+  margin-bottom: -20px;
+}
+
+
 
 /* 메시지 입력 영역 스타일 */
 .message-input-area {
