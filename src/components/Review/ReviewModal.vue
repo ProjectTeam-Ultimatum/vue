@@ -210,7 +210,8 @@ export default {
       } catch (error) {
         if (error.response && error.response.data) {
           //백엔드에서 보낸 에러메시지 표시
-          this.$toast.error(error.response.data.message);
+          alert(`${error.response.data.message}`);
+          console.error(error.response.data.message);
         } else {
           console.error("댓글 작성 실패 : ", error);
         }
@@ -238,6 +239,7 @@ export default {
           if (error.response && error.response.data) {
             //백엔드에서 보낸 에러메시지 표시
             alert(`${error.response.data.message}`);
+            console.error(error.response.data.message);
           } else {
             console.error("리뷰 삭제에 실패하였습니다: ", error);
           }
@@ -274,7 +276,13 @@ export default {
         reply.isEditing = false;
         alert("댓글이 수정되었습니다.");
       } catch (error) {
-        console.error("댓글 수정에 실패하였습니다: ", error);
+        if (error.response && error.response.data) {
+          //백엔드에서 보낸 에러메시지 표시
+          alert(`${error.response.data.message}`);
+          console.error(error.response.data.message);
+        } else {
+          console.error("댓글 수정에 실패하였습니다: ", error);
+        }
       }
     },
     async deleteReply(replyId) {
@@ -287,6 +295,7 @@ export default {
           if (error.response && error.response.data) {
             //백엔드에서 보낸 에러메시지 표시
             alert(`${error.response.data.message}`);
+            console.error(error.response.data.message);
           } else {
             console.error("댓글 삭제에 실패하였습니다: ", error);
           }

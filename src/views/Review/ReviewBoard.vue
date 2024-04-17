@@ -256,7 +256,13 @@ export default {
         this.isModalEditing = false;
         this.isModalCreate = false;
       } catch (error) {
-        console.error("에러났어요 : " + error);
+        if (error.response && error.response.data) {
+          //백엔드에서 보낸 에러메시지 표시
+          alert(`${error.response.data.message}`);
+          console.error(error.response.data.message);
+        } else {
+          console.error("에러났어요 : " + error);
+        }
       }
     },
     async openModal(review) {
@@ -281,7 +287,12 @@ export default {
         this.selectedReview.replies = repliesResponse.data;
         console.log("replies :", this.selectedReview.replies);
       } catch (error) {
-        console.error("리뷰 상세 정보를 가져오는 중 에러 발생 :  ", error);
+        if (error.response && error.response.data) {
+          alert(`${error.response.data.message}`);
+          console.error(error.response.data.message);
+        } else {
+          console.error("리뷰 상세 정보를 가져오는 중 에러 발생 :  ", error);
+        }
       }
     },
     createReview() {
@@ -334,7 +345,13 @@ export default {
         );
         // 필요하다면 응답 처리
       } catch (error) {
-        console.error("좋아요 업데이트 중 에러 발생: " + error);
+        if (error.response && error.response.data) {
+          //백엔드에서 보낸 에러메시지 표시
+          alert(`${error.response.data.message}`);
+          console.error(error.response.data.message);
+        } else {
+          console.error("좋아요 업데이트 중 에러 발생: " + error);
+        }
       }
     },
     // 날짜를 인자로 받아서 원하는 형태의 문자열로 변환하여 반환

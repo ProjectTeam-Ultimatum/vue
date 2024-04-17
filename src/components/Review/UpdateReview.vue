@@ -197,6 +197,7 @@ export default {
         if (error.response && error.response.data) {
           //백엔드에서 보낸 에러메시지 표시
           alert(`${error.response.data.message}`);
+          console.error(error.response.data.message);
         } else {
           console.error("업데이트 실패 : ", error);
         }

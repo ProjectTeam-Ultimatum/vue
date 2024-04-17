@@ -156,11 +156,15 @@ export default {
             "Content-Type": "multipart/form-data",
           },
         });
-
-        // this.$emit("create", response.data); // 리뷰 데이터를 이벤트로 전달
         this.$emit("close");
       } catch (error) {
-        console.error("업데이트 실패 : ", error);
+        if (error.response && error.response.data) {
+          //백엔드에서 보낸 에러메시지 표시
+          alert(`${error.response.data.message}`);
+          console.error(error.response.data.message);
+        } else {
+          console.error("업데이트 실패 : ", error);
+        }
       }
     },
   },
