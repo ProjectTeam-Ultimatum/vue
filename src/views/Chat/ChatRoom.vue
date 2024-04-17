@@ -83,10 +83,13 @@ export default {
     this.fetchMessages(); 
   },
   methods: {
-    // 이미지 파일 처리
+    // 이미지 파일 업로드 처리
     handleFileUpload(event) {
       const file = event.target.files[0];
-      if (!file) return;
+      if (!file) {
+        console.error("파일을 선택하지 않았습니다.");
+        return;
+      }
 
       const formData = new FormData();
       formData.append('file', file);
@@ -96,38 +99,42 @@ export default {
           'Content-Type': 'multipart/form-data'
         }
       })
-    .then(response => {
-      const imageUrl = response.data;
-      this.sendMessage(imageUrl);  // 이미지 URL을 채팅으로 전송
-    })
-    .catch(error => console.error("이미지 업로드 실패:", error));
+      .then(response => {
+        const imageUrl = response.data;
+        this.sendMessage(imageUrl); // 이미지 URL을 채팅으로 전송
+      })
+      .catch(error => {
+        console.error("이미지 업로드 실패:", error);
+        alert("이미지를 업로드하는 동안 오류가 발생했습니다.");
+      });
     },
+    // WebSocket 연결 설정
     connectWebSocket() {
-      // WebSocket 연결을 생성합니다.
-      this.socket = new WebSocket(`ws://localhost:8080/ws/chat?chatRoomId=${this.chatRoomId}`);
-      
-      // 연결이 열릴 때 실행될 콜백 함수를 정의합니다.
-      this.socket.onopen = () => {
-        console.log("WebSocket 연결 성공");
-        // 채팅방에 입장 메시지를 전송합니다.
-        this.enterChatRoom();
-      };
-      
-      // 메시지를 수신할 때 실행될 콜백 함수를 정의합니다.
-      this.socket.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        this.messages.push(data); // 수신된 메시지를 메시지 목록에 추가합니다.
-      };
-      
-      // 연결이 종료될 때 실행될 콜백 함수를 정의합니다.
-      this.socket.onclose = () => {
-        console.log("WebSocket 연결 종료");
-      };
-      
-      // 오류가 발생했을 때 실행될 콜백 함수를 정의합니다.
-      this.socket.onerror = (error) => {
-        console.error("WebSocket 오류 발생:", error);
-      };
+      // 로컬 스토리지에서 인증 토큰 가져오기
+      const token = localStorage.getItem('Authorization');
+      if (token) {
+        this.socket = new WebSocket(`ws://localhost:8080/ws/chat?token=${token}`);
+
+        this.socket.onopen = () => {
+          console.log("WebSocket 연결 성공");
+          this.enterChatRoom();
+        };
+
+        this.socket.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          this.messages.push(data);
+        };
+
+        this.socket.onclose = () => {
+          console.log("WebSocket 연결 종료");
+        };
+
+        this.socket.onerror = (error) => {
+          console.error("WebSocket 오류 발생:", error);
+        };
+      } else {
+        console.error("인증 토큰이 없습니다. 로그인이 필요합니다.");
+      }
     },
     fetchChatRoomDetails(roomId) {
       // Axios를 사용하여 백엔드 API 호출

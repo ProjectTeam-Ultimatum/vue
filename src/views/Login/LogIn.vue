@@ -99,7 +99,7 @@ export default {
         memberEmail: this.username,
         memberPassword: this.password
       };
-      axios.post('/login', data)
+      this.$axios.post('/login', data)  // this.$axios로 변경
         .then(response => {
           const jwtToken = response.headers['authorization'] || response.headers['Authorization'];
           if (jwtToken) {
@@ -115,6 +115,7 @@ export default {
           alert('로그인 실패: ' + error.message);
         });
     },
+
     logout() {
       // 로컬 스토리지에서 토큰 제거
       localStorage.removeItem('Authorization');
