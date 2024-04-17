@@ -80,10 +80,13 @@ export default {
     this.fetchUserInfo();  // 사용자 정보를 불러옵니다.
   },
   methods: {
-    // 이미지 파일 처리
+    // 이미지 파일 업로드 처리
     handleFileUpload(event) {
       const file = event.target.files[0];
-      if (!file) return;
+      if (!file) {
+        console.error("파일을 선택하지 않았습니다.");
+        return;
+      }
 
       const formData = new FormData();
       formData.append('file', file);
@@ -93,12 +96,16 @@ export default {
           'Content-Type': 'multipart/form-data'
         }
       })
-    .then(response => {
-      const imageUrl = response.data;
-      this.sendMessage(imageUrl);  // 이미지 URL을 채팅으로 전송
-    })
-    .catch(error => console.error("이미지 업로드 실패:", error));
+      .then(response => {
+        const imageUrl = response.data;
+        this.sendMessage(imageUrl); // 이미지 URL을 채팅으로 전송
+      })
+      .catch(error => {
+        console.error("이미지 업로드 실패:", error);
+        alert("이미지를 업로드하는 동안 오류가 발생했습니다.");
+      });
     },
+    // WebSocket 연결 설정
     connectWebSocket() {
       // 로컬 스토리지에서 인증 토큰을 가져옵니다.
       const rawToken = localStorage.getItem('Authorization');
