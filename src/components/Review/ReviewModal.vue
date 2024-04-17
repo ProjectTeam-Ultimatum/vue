@@ -136,11 +136,6 @@
       </div>
       <div class="review-new-reply">
         <input
-          class="review-reply-writer"
-          v-model="reviewReplyer"
-          placeholder="닉네임을 입력하세요"
-        />
-        <input
           class="review-reply-writing"
           v-model="reviewReplyContent"
           @keyup.enter="postReply"

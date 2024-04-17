@@ -175,15 +175,8 @@
 .review-new-reply {
   margin: 20px;
 }
-.review-reply-writer {
-  width: 15%;
-  margin-right: 5px;
-  border-radius: 10px;
-  border: 1px solid #e1e1e1;
-  padding: 13px;
-}
 .review-reply-writing {
-  width: 60%;
+  width: 85%;
   margin-right: 5px;
   border-radius: 10px;
   border: 1px solid #e1e1e1;
