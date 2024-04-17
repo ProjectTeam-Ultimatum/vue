@@ -28,7 +28,7 @@
       </div>
 
       <div class="review-modal-content">
-        <div class="review-board-name">여행 후기 게시판 ></div>
+        <div class="review-board-name">여행 후기 게시판 〉〉</div>
         <div class="review-title">
           [{{ review.reviewLocation }}] {{ review.reviewTitle }}
         </div>
@@ -46,7 +46,7 @@
           </div>
           <div class="review-footer-container-modal">
             <span class="review-date">{{ formatDate(review.reg_date) }}</span>
-            <span class="review-author">by auther</span>
+            <span class="review-author">{{ review.author }}</span>
           </div>
         </div>
 

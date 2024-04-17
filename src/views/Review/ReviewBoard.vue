@@ -151,7 +151,7 @@
               </div>
               <div class="footer-container">
                 <span class="date">{{ formatDate(review.reg_date) }}</span>
-                <span class="author">by auther</span>
+                <span class="author">{{ review.author }}</span>
               </div>
             </div>
           </div>
@@ -246,11 +246,12 @@ export default {
         const response = await this.$axios.get("/api/reviews", {
           params,
         });
+
+        this.allReviews = response.data.content;
+        this.totalPages = response.data.totalPages; // 백엔드로부터 전체 페이지 수 받기
         //성공적으로 데이터를 받아온 경우
         console.log("데이터요청 성공 : " + response.data);
         console.log(this.allReviews);
-        this.allReviews = response.data.content;
-        this.totalPages = response.data.totalPages; // 백엔드로부터 전체 페이지 수 받기
         this.isModalVisible = false;
         this.isModalEditing = false;
         this.isModalCreate = false;
