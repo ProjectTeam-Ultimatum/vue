@@ -213,7 +213,12 @@ export default {
         //부모컴포넌트에 review객체를 보내고 새로고침 요청
         this.$emit("refresh-modal", this.review);
       } catch (error) {
-        console.error("댓글 작성 실패 : ", error);
+        if (error.response && error.response.data) {
+          //백엔드에서 보낸 에러메시지 표시
+          this.$toast.error(error.response.data.message);
+        } else {
+          console.error("댓글 작성 실패 : ", error);
+        }
       }
     },
     openImageModal() {
@@ -235,7 +240,12 @@ export default {
           this.$emit("close");
           this.$emit("deleted");
         } catch (error) {
-          console.error("리뷰 삭제에 실패하였습니다: ", error);
+          if (error.response && error.response.data) {
+            //백엔드에서 보낸 에러메시지 표시
+            alert(`${error.response.data.message}`);
+          } else {
+            console.error("리뷰 삭제에 실패하였습니다: ", error);
+          }
         }
       }
     },
@@ -279,7 +289,12 @@ export default {
           alert("댓글이 삭제되었습니다.");
           this.$emit("refresh-modal", this.review);
         } catch (error) {
-          console.error("댓글 삭제에 실패하였습니다: ", error);
+          if (error.response && error.response.data) {
+            //백엔드에서 보낸 에러메시지 표시
+            alert(`${error.response.data.message}`);
+          } else {
+            console.error("댓글 삭제에 실패하였습니다: ", error);
+          }
         }
       }
     },
