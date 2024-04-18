@@ -17,7 +17,8 @@
       <div class="profile-picture">
         <img src="@/assets/images/profile.png" alt="Profile Picture">
       </div>
-      <p class="name-input">배정현</p>
+      <p class="name-input">{{userName}}</p>
+      <p class="name-input">{{userAge}} 살</p>
     </div>
     <!-- 제목 입력 부분 -->
     <div class="input-group">
@@ -121,26 +122,25 @@
 
       <!-- 채팅방 카드 목록 -->
       <div v-for="room in filteredChatRooms" :key="room.chatRoomId" class="card-container">
-  <div class="profile-picture">
-    <img src="@/assets/images/hanra.jpeg" alt="Profile Picture" >
-    <p class="profile-name">배정현</p> <!-- 여기에 사용자 이름을 추가 -->
-    <p class="profile-detail">21살</p>
-  </div>
-  <div class="text-content">
-    <h3 class="chatroom-name">{{ room.chatRoomName }}</h3>
-    <p class="author-style">여행 스타일: 불도저 </p>
-    <p class="subtitle">{{ room.chatRoomContent }}</p>
-    <div class="tag">
-  <span v-for="tag in room.travelStyleTags" :key="tag" class="travel-style-tag">
-    #{{ tag }}
-  </span>
-</div>
-    <div class="button-group">
-    <button class="btn-submit" @click="enterChatRoom(room.chatRoomId)">입장</button>
-    <button class="btn-down" @click="deleteChatRoom(room.chatRoomId)">삭제</button>
-  </div>
-  </div>
-</div>
+          <div class="profile-picture">
+              <img src="@/assets/images/profile.png" alt="Profile Picture">
+              <p class="profile-name">{{ room.creatorName }}</p> <!-- 작성자 이름 -->
+              <p class="profile-detail">{{ room.creatorAge }}살</p> <!-- 작성자 나이 -->
+          </div>
+          <div class="text-content">
+              <h3 class="chatroom-name">{{ room.chatRoomName }}</h3>
+              <p class="subtitle">{{ room.chatRoomContent }}</p>
+              <div class="tag">
+                  <span v-for="tag in room.travelStyleTags" :key="tag" class="travel-style-tag">
+                      #{{ tag }}
+                  </span>
+              </div>
+              <div class="button-group">
+                  <button class="btn-submit" @click="enterChatRoom(room.chatRoomId)">입장</button>
+                  <button class="btn-down" @click="deleteChatRoom(room.chatRoomId)">삭제</button>
+              </div>
+          </div>
+      </div>
 
     </div>
 
@@ -163,6 +163,10 @@ export default {
       distanceFilter: 10, // 기본 거리 필터 값을 설정
       regionFilter: [], // 체크된 지역을 담을 배열
       selectedRegion: '', // 선택된 지역을 저장할 데이터 속성
+      userName: '',  // 사용자 이름
+      userEmail:'',
+      userGender:'',
+      userAge:'',
     };
   },
   computed: {
@@ -175,6 +179,7 @@ export default {
   },
   mounted() {
     this.fetchChatRooms();
+    this.fetchUserInfo();
   },
   methods: {
     submitChatRoom() {
@@ -218,34 +223,37 @@ export default {
     this.travelStyles.splice(index, 1); // 인덱스를 사용하여 배열에서 태그 삭제
     },
     fetchChatRooms() {
-      this.$axios.get('http://localhost:8080/api/v1/chat/list') // 백엔드 API 주소
+      this.$axios.get('http://localhost:8080/api/v1/chat/list')
         .then(response => {
-          this.chatRooms = response.data; // 받아온 채팅방 목록을 chatRooms 배열에 저장
+            console.log("Fetched chat rooms:", response.data);  // 데이터 확인
+            this.chatRooms = response.data;
         })
         .catch(error => {
-          console.error("채팅방 목록을 불러오는데 실패했습니다:", error);
+            console.error("채팅방 목록을 불러오는데 실패했습니다:", error);
         });
     },
+
     createChatRoom() {
       const newChatRoom = {
-        chatRoomName: this.newChatRoomTitle, // 사용자 입력으로 받은 채팅방 제목
-        travelStyleTags: this.travelStyles, // 사용자가 추가한 여행 스타일 태그
-        chatRoomContent: this.newChatRoomContent,
-    };
+          chatRoomName: this.newChatRoomTitle, // 채팅방 이름
+          chatRoomContent: this.newChatRoomContent, // 채팅방 내용
+          travelStyleTags: this.travelStyles // 여행 스타일 태그
+      };
       this.$axios.post('http://localhost:8080/api/v1/chat/create', newChatRoom)
-    .then(response => {
-      console.log("채팅방 생성 성공:", response.data);
-      // 성공 후 필요한 상태 초기화
-      console.log("travleStyles", this.travelStyles)
-      this.newChatRoomTitle = '';
-      this.travelStyles = [];
-      this.newChatRoomContent = ''; // 채팅방 내용
-      this.showModal = false; // 모달 창 닫기
-      this.fetchChatRooms(); // 채팅방 목록 다시 불러오기
-    })
-    .catch(error => {
-      console.error("채팅방 생성 실패:", error);
-    });
+      .then(response => {
+          console.log("채팅방 생성 성공:", response.data);
+          this.resetForm();
+      })
+      .catch(error => {
+          console.error("채팅방 생성 실패:", error.response.data);
+      });
+    },
+    resetForm() {
+        this.newChatRoomTitle = '';
+        this.newChatRoomContent = '';
+        this.travelStyles = [];
+        this.showModal = false;
+        this.fetchChatRooms();
     },
     deleteChatRoom(roomId) {
       this.$axios.delete(`http://localhost:8080/api/v1/chat/room/${roomId}`)
@@ -260,7 +268,20 @@ export default {
     enterChatRoom(roomId) {
       // Vue Router를 사용하여 해당 채팅방의 상세 페이지로 이동!
       this.$router.push({ name: 'ChatRoom', params: { roomId: roomId } });
-    }
+    },
+    fetchUserInfo() {
+      this.$axios.get('http://localhost:8080/api/v1/user/info/detail')
+        .then(response => {
+          this.userName = response.data.userName;  // "userName" 키에 접근
+          this.userEmail = response.data.email;    // "email" 키에 접근
+          this.userGender = response.data.gender;  // "gender" 키에 접근
+          this.userAge = response.data.age;        // "age" 키에 접근
+          this.userAddress = response.data.address;// "address" 키에 접근
+        })
+        .catch(error => {
+          console.error("사용자 정보를 불러오는 중 오류가 발생했습니다:", error);
+        });
+    },
   }
 };
 </script>

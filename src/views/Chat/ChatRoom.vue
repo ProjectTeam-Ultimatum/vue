@@ -3,7 +3,7 @@
     <!-- 채팅방 상단 영역: 채팅방 이름 및 사용자 정보 -->
     <header class="chat-room-header">
       <div class="chat-room-title">{{ chatRoomName }}</div>
-
+      <button class="leave-button" @click="leaveChatRoom">나가기</button>
     </header>
 
     <!-- 메인 콘텐츠 영역 -->
@@ -61,6 +61,7 @@ export default {
     return {
       chatRoomId: null,
       chatRoomName: '',
+      userId: null,
       userName: '',  // 사용자 이름
       userEmail:'',
       userGender:'',
@@ -123,8 +124,16 @@ export default {
 
       // 메시지를 수신할 때 실행될 콜백 함수를 정의합니다.
       this.socket.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        this.messages.push(data); // 수신된 메시지를 메시지 목록에 추가합니다.
+          const data = JSON.parse(event.data);
+          if (data.senderId && data.message) {
+              // 서버로부터 받은 메시지에 senderId가 현재 사용자의 ID와 동일한 경우
+              if (data.senderId === this.userName) {
+                  data.isMine = true;  // 메시지가 현재 사용자의 것임을 표시
+              } else {
+                  data.isMine = false; // 다른 사용자의 메시지임을 표시
+              }
+              this.messages.push(data);
+          }
       };
 
       // 연결이 종료될 때 실행될 콜백 함수를 정의합니다.
@@ -152,6 +161,7 @@ export default {
     fetchUserInfo() {
       this.$axios.get('http://localhost:8080/api/v1/user/info/detail')
         .then(response => {
+          this.userId = response.data.id; // 사용자 ID 설정
           this.userName = response.data.userName;  // "userName" 키에 접근
           this.userEmail = response.data.email;    // "email" 키에 접근
           this.userGender = response.data.gender;  // "gender" 키에 접근
@@ -177,7 +187,7 @@ export default {
       const messageData = {
         messageType: "TALK",
         chatRoomId: this.chatRoomId,
-        senderId: this.userId,
+        senderId: this.userName,
         message: this.newMessage || imageUrl,
       };
       if (this.socket && this.socket.readyState === WebSocket.OPEN) {
@@ -207,6 +217,18 @@ export default {
         console.error("WebSocket 연결이 준비되지 않았습니다.");
       }
     },
+    leaveChatRoom() {
+      const leaveMessage = {
+        messageType: "LEAVE",
+        chatRoomId: this.chatRoomId,
+        senderId: this.userName,
+      };
+      if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+        this.socket.send(JSON.stringify(leaveMessage));
+        this.socket.close(); // WebSocket 연결을 닫습니다.
+      }
+      this.$router.push({ name: 'chatting' });
+    }
   }
 };
 </script>
@@ -438,5 +460,18 @@ html, body {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.leave-button {
+  padding: 8px 16px;
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.leave-button:hover {
+  background-color: #ff7875;
 }
 </style>
