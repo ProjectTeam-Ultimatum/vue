@@ -3,8 +3,8 @@
     <div class="recomemnd_info">
         <div class="info_contents">
           <div>
-            <h4 style="font-weight: 900;">제주도 관광지 리스트</h4>
-            <span style="font-weight: 900;">관광지 추천 태그</span>
+            <h4 style="font-weight: 900;">제주도 숙박 리스트</h4>
+            <span style="font-weight: 900;">숙박 추천 태그</span>
           </div>
           <div class="tag-wrap">
             <button type="button" class="btn btn-outline-dark"
@@ -19,57 +19,65 @@
       <button type="button" class="btn btn-outline-primary"
           :class="{ 'active': selectedTag === '커플' }"
           @click="selectTag('커플')">커플</button>
+          <button type="button" class="btn btn-outline-primary"
+          :class="{ 'active': selectedTag === '가족' }"
+          @click="selectTag('가족')">가족</button>
       <button type="button" class="btn btn-outline-primary"
           :class="{ 'active': selectedTag === '아이' }"
           @click="selectTag('아이')">아이</button>
       <button type="button" class="btn btn-outline-primary"
-          :class="{ 'active': selectedTag === '휴식/힐링' }"
-          @click="selectTag('휴식/힐링')">휴식/힐링</button>
+          :class="{ 'active': selectedTag === '호텔' }"
+          @click="selectTag('호텔')">호텔</button>
       <button type="button" class="btn btn-outline-primary"
-      :class="{ 'active': selectedTag === '걷기/등산' }"
-      @click="selectTag('걷기/등산')">걷기/등산</button>
+      :class="{ 'active': selectedTag === '펜션' }"
+      @click="selectTag('펜션')">펜션</button>
       <button type="button" class="btn btn-outline-primary"
-          :class="{ 'active': selectedTag === '액티비티' }"
+          :class="{ 'active': selectedTag === '독채' }"
           @click="selectTag('액티비티')">액티비티</button>
       <button type="button" class="btn btn-outline-primary"
-      :class="{ 'active': selectedTag === '레저/체험' }"
-      @click="selectTag('레저/체험')">레저/체험</button>
+      :class="{ 'active': selectedTag === '캠핑장' }"
+      @click="selectTag('캠핑장')">캠핑장</button>
+      <button type="button" class="btn btn-outline-primary"
+      :class="{ 'active': selectedTag === '오션뷰' }"
+      @click="selectTag('오션뷰')">오션뷰</button>
+      <button type="button" class="btn btn-outline-primary"
+      :class="{ 'active': selectedTag === '수영장' }"
+      @click="selectTag('수영장')">수영장</button>
       <button type="button" class="btn btn-outline-primary"
       :class="{ 'active': selectedTag === '반려동물동반입장' }"
-      @click="selectTag('반려동물동반입장')">반려동물동반입장</button> 
+      @click="selectTag('반려동물동반입장')">반려동물동반입장</button>
           </div>
         </div>
         <div>
-          <img alt="map" src="../assets/map.png" style="width:160px">
+          <img alt="map" src="@/assets/map.png" style="width:160px">
         </div>
     </div>
-    
     <div class="content_list">
         <div style="width: 820px; margin: 16px auto; text-align:left;">
-            <span class="headline2" >제주도 구경할만한 곳</span>
-            <span style="margin-left: 5px;">제주랑 고객님들이 엄선한 구경거리 입니다</span>
+            <span class="headline2" >제주도 쉬어갈 곳</span>
+            <span style="margin-left: 5px;">제주랑 고객님들이 엄선한 놀거리 입니다</span>
         </div>
         <div class="card-wrap">
         <!-- <div v-for="list in recommendList" :key="list.id"> -->
-          <div :key="i" v-for="(place, i) in filteredPlaces">
+          <div :key="i" v-for="(hotel, i) in filteredHotels">
             <div class="card">
               <div class="card-image">
-                <img :src="place.recommendPlaceImgPath || 'default-image-url'" alt="Review Image">
-                <!-- <div class="score">{{ place.recommendPlaceStar }}</div> -->
+                <img :src="hotel.recommendHotelImgPath || 'default-image-url'" alt="Review Image">
+                <!-- <div class="score">{{ hotel.recommendHotelStar }}</div> -->
               </div>
               <div class="card-content">
                 <div class="card-title-wrap">
-                  <div class="card-title">{{ place.recommendPlaceTitle }}</div>
+                  <div class="card-title">{{ hotel.recommendHotelTitle }}</div>
                   <!-- 영업시간 -->
                   <div>
-                    <span class="status" :class="getStatusClass(place.recommendPlaceClosetime)">
-                      {{ getStatusMessage(place.recommendPlaceClosetime) }}
+                    <span class="status" :class="getStatusClass(hotel.recommendHotelClosetime)">
+                        {{ getStatusMessage(hotel.recommendHotelClosetime) }}
                     </span>
                   </div>
                 </div>
-                <div class="card-option-blue">{{ place.recommendPlaceRegion }}</div>
-                <div class="card-subtitle">{{ place.recommendPlaceIntroduction }}</div>
-                <div class="card-option">{{ place.recommendPlaceTag }}</div>
+                <div class="card-option-blue">{{ hotel.recommendHotelRegion }}</div>
+                <div class="card-subtitle">{{ hotel.recommendHotelIntroduction }}</div>
+                <div class="card-option">{{ hotel.recommendHotelTag }}</div>
               </div>
             </div>
           </div>
@@ -89,7 +97,7 @@
 import PaginationComponent from './PaginationComponent.vue';
 
 export default {
-  name: 'RecommendListPlace',
+  name: 'RecommendListHotel',
   components: {
     PaginationComponent
   },
@@ -102,7 +110,7 @@ export default {
   data(){
     return {
       loading: false,
-      recommendListPlace: [],
+      recommendListHotel: [],
       currentPage: 1, // currentPage로 업데이트
       totalPages: 0,
       pageSize: 12,  // 페이지 크기 정의
@@ -123,42 +131,42 @@ export default {
     fetchData() {
     this.loading = true; // 데이터 요청 시작 시 로딩 상태 활성화
       const params = {
-        page: this.currentPage - 1,  // 백엔드가 0 시작 페이지 인덱스를 기대하는 경우
-        size: this.pageSize, // pageSize 사용
-        sort: "recommendPlaceId,desc",
+        page: this.currentPage - 1,  // Ensure page is zero-indexed if backend expects it
+        size: this.pageSize,
+        sort: "recommendHotelId,desc",
         tag: this.selectedTag,
         region: this.selectedRegion // prop을 직접 사용
-      };
-      
+    };
+
     // 요청 파라미터 로그로 확인
     console.log('Requesting data with params:', params); 
 
     // Axios 요청에 params 적용
-    this.$axios.get("http://localhost:8080/api/recommend/listplace", { params })
-    .then((response) => {
+   this.$axios.get("http://localhost:8080/api/recommend/listhotel", { params })
+   .then((response) => {
         if (response.data.content.length === 0) {
           console.error('No data returned for the page:', this.currentPage);
-          this.recommendListPlace = [];
+          this.recommendListHotel = [];
           this.totalPages = 0;
           this.loading = false;
         } else {
-          this.recommendListPlace = response.data.content.map(item => {
-            const tags = item.recommendPlaceTag.split(',');
+          this.recommendListHotel = response.data.content.map(item => {
+            const tags = item.recommendHotelTag.split(',');
             // 태그가 3개 이상인 경우, 처음 3개만 선택
             if (tags.length > 3) { 
-              item.recommendPlaceTag = tags.slice(0, 3).join(', ');
+              item.recommendHotelTag = tags.slice(0, 3).join(', ');
             }
-            // recommendPlaceTag의 길이 줄임 처리
-            if (item.recommendPlaceTag.length > 14) {
-              item.recommendPlaceTag = item.recommendPlaceTag.slice(0, 14) + '.';
+            // recommendHotelTag의 길이 줄임 처리
+            if (item.recommendHotelTag.length > 14) {
+              item.recommendHotelTag = item.recommendHotelTag.slice(0, 14) + '.';
             }
             // 음식점 소개가 24글자 이상인 경우, 줄임말 처리
-            if (item.recommendPlaceIntroduction.length > 30) {
-              item.recommendPlaceIntroduction = item.recommendPlaceIntroduction.substring(0, 30) + '...';
+            if (item.recommendHotelIntroduction.length > 30) {
+              item.recommendHotelIntroduction = item.recommendHotelIntroduction.substring(0, 30) + '...';
             }
             // 음식점 이름 줄이기 
-            if (item.recommendPlaceTitle.length > 6) {
-              item.recommendPlaceTitle = item.recommendPlaceTitle.substring(0, 6) + '.';
+            if (item.recommendHotelTitle.length > 6) {
+              item.recommendHotelTitle = item.recommendHotelTitle.substring(0, 6) + '.';
             }
             return item;
           });
@@ -168,18 +176,18 @@ export default {
         }
       })
     .catch((error) => {
-      // 요청 중 에러 발생
-      console.error("에러났어요 : " + error);
-      this.loading = false; // 에러 발생 시 로딩 상태 비활성화
-  });
+        // 요청 중 에러 발생
+        console.error("에러났어요 : " + error);
+        this.loading = false; 
+    });
   },
   selectTag(tag) { //태그 필터링
       this.selectedTag = tag; // 선택된 태그 업데이트
       this.currentPage = 1;
-      this.fetchData(); // 필요하다면 데이터를 다시 가져옵니다
+      this.fetchData();
   },
-      //영업중, 영업마감
-      isOperating(closeTime) {
+    //영업중, 영업마감
+    isOperating(closeTime) {
     if (!closeTime) return '휴무일'; // 휴무일 처리
     
     const now = new Date();
@@ -205,10 +213,10 @@ export default {
   }
 },
 computed: {
-  filteredPlaces() {
-    return this.recommendListPlace.filter(place => {
-      return (!this.region || place.recommendPlaceRegion === this.region) &&
-             (!this.selectedTag || place.recommendPlaceTag.includes(this.selectedTag));
+  filteredHotels() {
+    return this.recommendListHotel.filter(hotel => {
+      return (!this.region || hotel.recommendHotelRegion === this.region) &&
+             (!this.selectedTag || hotel.recommendHotelTag.includes(this.selectedTag));
     });
   }
 },
@@ -226,5 +234,5 @@ mounted() {
 </script>
 
 <style scoped>
-@import "../assets/recommendList_style.css";
+@import "@/assets/recommendList_style.css";
 </style>

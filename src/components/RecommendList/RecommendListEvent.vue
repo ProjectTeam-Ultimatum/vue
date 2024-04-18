@@ -46,7 +46,7 @@
           </div>
         </div>
         <div>
-          <img alt="map" src="../assets/map.png" style="width:160px">
+          <img alt="map" src="@/assets/map.png" style="width:160px">
         </div>
     </div>
     <div class="content_list">
@@ -231,5 +231,5 @@ export default {
 </script>
 
 <style scoped>
-@import "../assets/recommendList_style.css";
+@import "@/assets/recommendList_style.css";
 </style>
