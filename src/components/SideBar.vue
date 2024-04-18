@@ -10,7 +10,7 @@
     >
       <div class="side-bar">
         <div class="title-area">
-          <textarea v-model="title" placeholder="메모장" :readOnly="true"></textarea>
+          <textarea v-model="title" placeholder="메모장" ></textarea>
         </div>
 
         <div class="image-area">
@@ -25,7 +25,7 @@
     placeholder="주소"
     :value="addressCopy"
     @input="updateAddress"
-    :readOnly="true"
+    
   />
   </div>
 
@@ -34,18 +34,29 @@
   </di> -->
   <div class="dropdown">
   <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    {{ category || '장소 정하기'  }}
+    {{ course || '코스 보기'  }}
   </a>
-
+  <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#" @click="selectCourse('A')">A코스</a></li>
+      <li><a class="dropdown-item" href="#" @click="selectCourse('B')">B코스</a></li>
+      <li><a class="dropdown-item" href="#" @click="selectCourse('C')">C코스</a></li>
+      <li><a class="dropdown-item" href="#" @click="selectCourse('D')">D코스</a></li>
+  </ul>
+</div>
+<div class="dropdown">
+  <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    {{ category || '장소 보기'  }}
+  </a>
   <ul class="dropdown-menu">
       <li><a class="dropdown-item" href="#" @click="selectCategory('놀거리')">놀거리</a></li>
       <li><a class="dropdown-item" href="#" @click="selectCategory('숙소')">숙소</a></li>
-      <li><a class="dropdown-item" href="#" @click="selectCategory('음식')">음식</a></li>
+      <li><a class="dropdown-item" href="#" @click="selectCategory('음식')">음식점</a></li>
       <li><a class="dropdown-item" href="#" @click="selectCategory('축제')">축제</a></li>
-    </ul>
+  </ul>
 </div>
+
   <div class="rate-area">
-    <!-- <FormRating :value="parseInt(grade)" @update:grade="grade = $event" /> -->
+    <FormRating :value="parseInt(grade)" @update:grade="grade = $event" />
     <FormRating :grade="grade" :readOnly="true"/>
       </div>
         <div class="review-area">
@@ -53,14 +64,33 @@
               ref="textarea"
               placeholder="메모장"
               v-model="review" 
-              :readOnly="true"
+              
           ></textarea>
         </div>
-        <!-- <div class="bottom-btn-area">
+        <div class="bottom-btn-area">
       <Button class="save-btn" @click="saveReview">
           저장
       </Button>
-  </div> -->
+  </div>
+  <div>
+    <h1 @click="showModal = true">예산하기</h1>
+    <!-- 모달 컴포넌트 -->
+    <div v-if="showModal" class="budget-modal">
+      <div class="budget-modal-content">
+
+        <h2>1일차</h2>
+        <p>{{ calculateBudget }}</p>
+
+        <h2>2일차</h2>
+        <p>{{ calculateBudget }}</p>
+
+        <h2>3일차</h2>
+        <p>{{ calculateBudget }}</p>
+
+        <button @click="showModal = false">닫기</button>
+      </div>
+    </div>
+  </div>
       </div>
     </VueResizable>
         <Button
@@ -97,6 +127,9 @@ data() {
     latCopy: 0.0,
     image: '',
     category: null,
+    showModal: false,
+    date: '',
+    budget: 0,
   };
 },
 mounted() {
@@ -109,13 +142,45 @@ mounted() {
         this.latCopy = data.latCopy;
         this.image = data.image || '';
         this.category = data.category || '';
-        console.log("category: ", data.category);
+        this.course = data.course || '';
+        console.log("course: ", data.course);
     });
 },
 methods: {
+  // calculateBudget() {
+  //   let totalBudget = 0; // 합산할 예산을 저장할 변수를 초기화합니다.
+    
+  //   if (this.course === 'A코스') {
+  //     this.dates.forEach((day) => {
+  //       if (day.course === 'A') { // 현재 '일차'가 'A코스'에 해당하는지 확인합니다.
+  //         totalBudget += day.budget; // 'A코스'에 해당하는 예산을 합산합니다.
+  //       }
+  //     });
+  //   }
+  //   else if (this.course === 'B코스') {
+  //     this.dates.forEach((day) => {
+  //       if (day.course === 'B') {
+  //         totalBudget += day.budget;
+  //       }
+  //     });
+  //   }
+  //   else if (this.course === 'C코스') {
+  //     this.dates.forEach((day) => {
+  //       if (day.course === 'C') {
+  //         totalBudget += day.budget;
+  //       }
+  //     });
+  //   }
+
+  //   return totalBudget; // 계산된 총 예산을 반환합니다.
+  // },
+  selectCourse(course) {
+    this.course = course; // 사용자가 선택한 코스를 저장
+    EventBus.$emit('courseClick', course);
+  },
   selectCategory(category) {
-      this.category = category; // 사용자가 선택한 카테고리를 저장
-      EventBus.$emit('categoryClick', category);
+    this.category = category; // 사용자가 선택한 코스를 저장
+    EventBus.$emit('categoryClick', category);
   },
   onChangeFiles(e) {
     this.fileList.push(...e.target.files);
@@ -128,7 +193,6 @@ methods: {
     this.$emit('update:address', event.target.value);
   },
   saveReview() {
-    console.log("Saving with category:", this.category);
     try{
     this.$axios.post('http://localhost:8081/api/map/saveMap', {
       title: this.title,
@@ -138,7 +202,8 @@ methods: {
       lonCopy: this.lonCopy,
       latCopy: this.latCopy,
       image: this.image,
-      category: this.category
+      category: this.category,
+      course: this.course
     }).then(response => {
       console.log('저장 성공:', response);
     })
@@ -150,11 +215,32 @@ methods: {
 }
 </script>
 <style lang="scss" scoped>
+.budget-modal{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.budget-modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 700px;
+  height: 700px;
+  text-align: center;
+  background-image: url('@/assets/images/blackpig.jpg');
+}
 .side-bar-wrapper {
   display: flex;
   color: #fff;
-  > .resizable-side-bar {
-    > .side-bar {
+   .resizable-side-bar {
+     .side-bar {
       background-color: rgba(0, 0, 0, 0.5);
       position: absolute;
       top: 0;
@@ -162,7 +248,7 @@ methods: {
       right: 0;
       bottom: 0;
       padding: 10px;
-      > .title-area {
+       .title-area {
         padding: 20px 10px;
         input, input::placeholder, input:focus {
           font-size: 2rem;
@@ -173,7 +259,7 @@ methods: {
           border: none;
         }
       }
-      > .image-area {
+       .image-area {
         padding: 0 10px;
         > .iw-file-input {
           display: flex;
@@ -186,7 +272,7 @@ methods: {
           background-color: rgb(255, 255, 255, 0.5);
         }
       }
-      > .location-info-area {
+       .location-info-area {
         padding: 10px;
         input, input::placeholder, input:focus {
           font-size: 1rem;
@@ -196,7 +282,7 @@ methods: {
           border: none;
         }
       }
-      > .rate-area {
+       .rate-area {
         padding: 0 20px;
         text-align: center;
         output {
@@ -207,7 +293,7 @@ methods: {
           box-shadow: none;
         }
       }
-      > .review-area {
+       .review-area {
         padding: 20px 10px;
         textarea, textarea::placeholder {
           min-height: 300px;
@@ -236,7 +322,7 @@ methods: {
       }
     }
   }
-  > .side-bar-active-btn {
+   .side-bar-active-btn {
     flex-shrink: 0;
     display: flex;
     justify-content: center;
@@ -251,7 +337,7 @@ methods: {
     height: 40px;
   }
 }
-> .bottom-btn-area {
+ .bottom-btn-area {
   text-align: right;
   padding-right: 10px;
   > .save-btn {
@@ -260,4 +346,5 @@ methods: {
         background-color: #ee9e06;
   }
 }
+
 </style>

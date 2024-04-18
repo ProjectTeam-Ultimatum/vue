@@ -37,18 +37,90 @@ export default {
       title: '',
       grade: 0,
       review: '',
-      category: ''
+      category: '',
+      course: ''
     }
   },
   mounted() {
     this.initializeMap();
-    EventBus.$on('categoryClick', (category) => {
-      console.log(`Received category: ${category}`);
-    this.category = category;
+    EventBus.$on('courseClick', (course) => {
+    this.course = course;
     this.updateMapIcons();  // 카테고리에 맞는 아이콘을 다시 불러옵니다.
   });
 },
 methods: {
+  groupAndDrawLines() {
+    const groupedByDate = {};
+    // 현재 카테고리에 해당하는 위치 데이터만 날짜별로 그룹화
+    this.locations.forEach(location => {
+      if (location.course === this.course) {
+        if (!groupedByDate[location.date]) {
+          groupedByDate[location.date] = [];
+        }
+        groupedByDate[location.date].push(fromLonLat([location.lonCopy, location.latCopy]));
+      }
+    });
+
+    // 각 그룹에 대해 선을 그립니다
+    Object.keys(groupedByDate).forEach(date => {
+      const coordinates = groupedByDate[date];
+      if (coordinates.length > 1) {
+        const lineFeature = new OlFeature({
+          geometry: new OlLineString(coordinates)
+        });
+        const lineColor = this.getColorForDay(date);
+        lineFeature.setStyle(new OlStyle({
+          stroke: new Stroke({
+            color: lineColor,
+            width: 2
+          })
+        }));
+        this.vectorSource.addFeature(lineFeature);
+      }
+    });
+  },
+
+  getColorForDay(date) {
+    switch (date) {
+      case '1일차':
+        return '#ff0000'; // 빨간색
+      case '2일차':
+        return '#00ff00'; // 초록색
+      case '3일차':
+        return '#0000ff'; // 파란색
+      default:
+        return '#ffcc33'; // 기본 색상
+    }
+  },
+  updateMapIcons() {
+    this.vectorSource.clear();  // 기존 벡터 소스 클리어 (마커와 선 모두 제거됩니다)
+
+    // 새로운 카테고리에 해당하는 마커들만 추가
+    this.locations.forEach(location => {
+      if (location.course === this.course) {
+        const point = fromLonLat([location.lonCopy, location.latCopy]);
+        const feature = new OlFeature({
+          geometry: new OlPoint(point),
+          id: location.id
+        });
+
+        feature.setStyle(new OlStyle({
+          image: new OlIcon({
+            scale: 0.05,
+            src: markerImage 
+          })
+        }));
+
+        feature.set('data', location);
+        this.vectorSource.addFeature(feature);
+      }
+    });
+
+    // 여기서 groupAndDrawLines 함수를 호출하여 선을 그립니다
+    this.groupAndDrawLines();
+  },
+
+
   initializeMap() {
     this.vectorSource = new OlVectorSource();
     // 카테고리 필터가 적용된 초기 위치 데이터 로드
@@ -56,13 +128,13 @@ methods: {
     const vectorLayer = new OlVectorLayer({
       source: this.vectorSource
     });
-  this.olMap = new OlMap({
-  target: this.$refs.map,
-  controls: defaults({
-    attribution: false,
-    zoom: false,
-    rotate: false,
-  }),
+    this.olMap = new OlMap({
+      target: this.$refs.map,
+      controls: defaults({
+      attribution: false,
+      zoom: false,
+      rotate: false,
+    }),
   
   layers: [
     new OlLayerTile({
@@ -110,29 +182,30 @@ this.olMap.on('click', async (e) => {
       lonCopy: lon,
       latCopy: lat,
       image: this.image,
-      category: this.category
+      category: this.category,
+      course: this.course
     });
   } else {
     console.error('Failed to fetch address information');
   }
 });
 
-this.olMap.on('click', async (e) => {
-            
-            geocoder.getSource().clear();
-            const [lon, lat] = toLonLat(e.coordinate)
-            const point = this.coordi4326To3857([lon, lat]);
-            const feature = new OlFeature({
-                geometry: new OlPoint(point)
-            })
-            feature.setStyle(new OlStyle({
-                image: new OlIcon({
-                    scale: 0.7,
-                    src: '//cdn.rawgit.com/jonataswalker/map-utils/master/images/marker.png'
-                })
-            }))
-                this.vectorSource.addFeature(feature);
-        })
+  this.olMap.on('click', async (e) => {
+    geocoder.getSource().clear();
+      const [lon, lat] = toLonLat(e.coordinate)
+      console.log(lon,lat)
+      const point = this.coordi4326To3857([lon, lat]);
+      const feature = new OlFeature({
+          geometry: new OlPoint(point)
+      })
+    feature.setStyle(new OlStyle({
+        image: new OlIcon({
+        scale: 0.7,
+        src: '//cdn.rawgit.com/jonataswalker/map-utils/master/images/marker.png'
+    })
+  }))
+    this.vectorSource.addFeature(feature);
+})
 
   const geocoder = new Geocoder('nominatim', {
     provider: 'osm',
@@ -142,20 +215,15 @@ this.olMap.on('click', async (e) => {
     autoComplete: true,
     keepOpen: true
   });
-  this.olMap.addControl(geocoder);
-  geocoder.on('addresschosen', (evt) => {
-    this.setUiAddress(evt.address.details.name);
+    this.olMap.addControl(geocoder);
+    geocoder.on('addresschosen', (evt) => {
+      this.setUiAddress(evt.address.details.name);
   });
-  this.olMap.once('rendercomplete', () => {
-    this.fetchLocations(); // 지도 렌더링이 완료된 후에 위치 데이터를 가져오고 마커를 추가합니다.
+      this.olMap.once('rendercomplete', () => {
+      this.fetchLocations(); // 지도 렌더링이 완료된 후에 위치 데이터를 가져오고 마커를 추가합니다.
   });
   },
 
-
-  updateMapIcons() {
-    this.vectorSource.clear();  // 기존 벡터 소스 클리어
-    this.addMapIcons();         // 새로운 아이콘 로드
-  },
   clearLocationData() {
     // UI에 표시된 정보 초기화
     this.title = '';
@@ -164,7 +232,9 @@ this.olMap.on('click', async (e) => {
     this.review = '';
     this.image = '';
     this.category = '';
+    this.course = '';
   },
+
   coordi4326To3857([lon, lat]) {
       // 좌표 변환 로직 구현
       const x = lon * 20037508.34 / 180;
@@ -172,111 +242,102 @@ this.olMap.on('click', async (e) => {
       y = y * 20037508.34 / 180;
       return [x, y];
     },
+
   getUiAddress(str) {
-        return str.split(', ').reverse().join(' ');
+      return str.split(', ').reverse().join(' ');
     },
+
   async addUiAddress(coordinate) {
       const lonLatArr = toLonLat(coordinate);
       const lon = lonLatArr[0];
       const lat = lonLatArr[1];
       const addressInfo = await this.getAddress(lon, lat);
-      
       EventBus.$emit('mapClick', addressInfo.data.display_name.split(', ').reverse().join(' '));
       this.drawMapIcon(coordinate);
     },
+
   drawMapIcon(coordinate) {
-      const vectorSource = this.olMap.getLayers().item(1).getSource(); // Get vector source from the second layer
-      vectorSource.clear();
-      const feature = new OlFeature({
-        geometry: new OlPoint(coordinate)
-      });
+    const vectorSource = this.olMap.getLayers().item(1).getSource(); // Get vector source from the second layer
+    vectorSource.clear();
+    const feature = new OlFeature({
+    geometry: new OlPoint(coordinate)
+  });
       feature.setStyle(
-        new OlStyle({
-          image: new OlIcon({
-            scale: 0.7,
-            src: '//cdn.rawgit.com/jonataswalker/map-utils/master/images/marker.png'
-          })
-        })
-      );
+      new OlStyle({
+        image: new OlIcon({
+        scale: 0.7,
+        src: '//cdn.rawgit.com/jonataswalker/map-utils/master/images/marker.png'
+      })
+    })
+  );
       vectorSource.addFeature(feature);
-    },
-    async fetchLocations() {
-  try {
-    const response = await axios.get('http://localhost:8081/api/map/listMap');
-    this.locations = response.data; // 응답 데이터를 locations 배열에 저장
-    this.addMapIcons(); // 가져온 위치 정보를 기반으로 지도에 아이콘을 추가
+  },
+  async fetchLocations() {
+    try {
+      const response = await axios.get('http://localhost:8081/api/map/listMap');
+        this.locations = response.data; // 응답 데이터를 locations 배열에 저장
+        this.addMapIcons(); // 가져온 위치 정보를 기반으로 지도에 아이콘을 추가
     } catch (error) {
-    console.error('Error fetching locations:', error);
+        console.error('Error fetching locations:', error);
     }
-    console.log('Received locations:', this.locations);
+        console.log('Received locations:', this.locations);
   },
   
-  getAddress (lon, lat) {
+  getAddress (lon, lat) {.0
     return axios.get(
         'https://nominatim.openstreetmap.org/reverse',
         {
           params: {
-            format: 'json',
+            format: 'json', 
             lon: lon,
             lat: lat
           }
         })
   },
+
   setUiAddress(str) {
-  this.address = str.split(', ').reverse().join(' ');
-},
+    this.address = str.split(', ').reverse().join(' ');
+  },
+
   addMapIcons() {
     const vectorLayer = this.olMap.getLayers().item(1); // 두 번째 레이어 가져오기
     const vectorSource = vectorLayer.getSource();
     const coordinates = [];
-
   // DB에서 가져온 각 위치 정보에 대해 아이콘을 추가합니다.
   this.locations.forEach(location => {
-    if (location.category === this.category){
-    const point = fromLonLat([location.lonCopy, location.latCopy]);
-      coordinates.push(point);
+    if (location.course === this.course){
+      const point = fromLonLat([location.lonCopy, location.latCopy]);
+       coordinates.push(point);
+        this.groupAndDrawLines();
 
-    const feature = new OlFeature({
-      geometry: new OlPoint(fromLonLat([location.lonCopy, location.latCopy]))
-      ,id: location.id
+      const feature = new OlFeature({
+       geometry: new OlPoint(fromLonLat([location.lonCopy, location.latCopy]))
+        ,id: location.id
     });
 
-    feature.setStyle(new OlStyle({
-      image: new OlIcon({
-        scale: 0.05,
-        src: markerImage 
-      })
-    }));
-    feature.set('data', location);
-    vectorSource.addFeature(feature);
+  feature.setStyle(new OlStyle({
+    image: new OlIcon({
+    scale: 0.05,
+    src: markerImage 
+  })
+  }));
+  feature.set('data', location);
+  vectorSource.addFeature(feature);
   }});
-  if (coordinates.length > 1) {
-      const lineFeature = new OlFeature({
-        geometry: new OlLineString(coordinates)
-      });
-
-      lineFeature.setStyle(new OlStyle({
-        stroke: new Stroke({
-          color: '#ffcc33',
-          width: 2
-        })
-      }));
-
-      vectorSource.addFeature(lineFeature);
-    }
 
   this.olMap.on('click', (evt) => {
-      const feature = this.olMap.forEachFeatureAtPixel(evt.pixel, (feature) => {
-        return feature;
-      });
-      if (feature) {
-        const data = feature.get('data');
-        if (data) {
-          this.displayLocationData(data);
-        }
-      }});
+    const feature = this.olMap.forEachFeatureAtPixel(evt.pixel, (feature) => {
+      return feature;
+    });
+    if (feature) {
+      const data = feature.get('data');
+    if (data) {
+      this.displayLocationData(data);
+    }
+  }});
 },
-displayLocationData(data) {
+
+  displayLocationData(data) {
     // DB에서 가져온 데이터를 UI에 표시
     this.title = data.title;
     this.addressCopy = data.address;
@@ -284,10 +345,11 @@ displayLocationData(data) {
     this.review = data.review;
     this.image = data.image;
     this.category = data.category;
+    this.course = data.course;
     // 이외에 필요한 UI 업데이트 로직
   }
+
   }
-  
 }
 </script>
 <style>
