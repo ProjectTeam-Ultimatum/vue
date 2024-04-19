@@ -45,6 +45,7 @@ export default {
       budget: 0,
       category: '',
       lastFeature: undefined,
+      lastClickedFeature: undefined,
     }
   },
   mounted() {
@@ -95,7 +96,7 @@ methods: {
         return '#00ff00'; // 초록색
       case '3일차':
         return '#0000ff'; // 파란색
-        case '4일차':
+      case '4일차':
         return '#FF00FF';
       default:
         return '#FFFFFF'; // 기본 색상
@@ -122,17 +123,39 @@ methods: {
 
         feature.set('data', location);
         this.vectorSource.addFeature(feature);
+
+        feature.on('click', () => this.onMarkerClick(feature));
       }
     });
-
-    // 여기서 groupAndDrawLines 함수를 호출하여 선을 그립니다
     this.groupAndDrawLines();
   },
 
+  onMarkerClick(clickedFeature) {
+
+  if (this.lastClickedFeature) {
+    this.lastClickedFeature.setStyle(new OlStyle({
+      image: new OlIcon({
+        scale: 0.05,
+        src: markerImage
+      })
+    }));
+  }
+
+  const clickedStyle = new OlStyle({
+    image: new OlIcon({
+      scale: 0.07,
+      src: markerImage
+    }),
+    zIndex: 1000 
+  });
+
+  clickedFeature.setStyle(clickedStyle);
+  this.lastClickedFeature = clickedFeature;
+},
 
   initializeMap() {
     this.vectorSource = new OlVectorSource();
-    // 카테고리 필터가 적용된 초기 위치 데이터 로드
+ 
     this.fetchLocations();
     const vectorLayer = new OlVectorLayer({
       source: this.vectorSource
@@ -186,11 +209,10 @@ this.olMap.on('click', async (e) => {
       this.vectorSource.addFeature(feature);
       this.lastFeature = feature;
     } else {
-      // Optionally update the feature if needed
-      feature.setGeometry(new OlPoint(point));  // Update geometry or other properties
+      feature.setGeometry(new OlPoint(point));
       this.lastFeature = feature;
     }
-    // Emit data only if the feature is newly added or needs to be updated
+  
     EventBus.$emit('mapClick', {
       title: this.title,
       address: displayAddress,
@@ -334,6 +356,7 @@ this.olMap.on('click', async (e) => {
       return feature;
     });
     if (feature) {
+      this.onMarkerClick(feature);
       const data = feature.get('data');
     if (data) {
       this.displayLocationData(data);
