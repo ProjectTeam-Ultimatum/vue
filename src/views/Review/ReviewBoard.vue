@@ -1,4 +1,5 @@
 <template>
+  <div class="divider" style="padding: 60px" />
   <div class="main-text">여행 <span class="highlight">후기</span> 게시판</div>
   <p class="sub-text">
     당신의 여행이 더욱 특별해질 수 있게 여행기록을 공유하세요
@@ -88,6 +89,7 @@
         @refresh-modal="openModal"
         @close="closeModal()"
         @edit="startEditing"
+        @click.self="closeModal()"
       />
       <!-- 수정 모달창 -->
       <UpdateReview
@@ -150,7 +152,7 @@
               </div>
               <div class="footer-container">
                 <span class="date">{{ formatDate(review.reg_date) }}</span>
-                <span class="author">by auther</span>
+                <span class="author">{{ review.author }}</span>
               </div>
             </div>
           </div>
@@ -158,9 +160,17 @@
       </div>
     </div>
   </div>
-  <button v-for="n in totalPages" :key="n" @click="changePage(n - 1)">
-    {{ n }}
-  </button>
+  <div class="pagination">
+    <span
+      v-for="n in totalPages"
+      :key="n"
+      @click="changePage(n - 1)"
+      class="page-item"
+      :class="{ active: n === page + 1 }"
+    >
+      {{ n }}
+    </span>
+  </div>
 </template>
 
 <script>
@@ -213,6 +223,16 @@ export default {
         : this.allReviews;
     },
   },
+  watch: {
+    isModalVisible(newValue) {
+      console.log("isModalVisible changed:", newValue);
+      if (newValue) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "";
+      }
+    },
+  },
 
   //created, mounted같은 생명주기 훅을 사용하여 후기 데이터를 가져오기
   methods: {
@@ -227,16 +247,23 @@ export default {
         const response = await this.$axios.get("/api/reviews", {
           params,
         });
+
+        this.allReviews = response.data.content;
+        this.totalPages = response.data.totalPages; // 백엔드로부터 전체 페이지 수 받기
         //성공적으로 데이터를 받아온 경우
         console.log("데이터요청 성공 : " + response.data);
         console.log(this.allReviews);
-        this.allReviews = response.data.content;
-        this.totalPages = response.data.totalPages; // 백엔드로부터 전체 페이지 수 받기
         this.isModalVisible = false;
         this.isModalEditing = false;
         this.isModalCreate = false;
       } catch (error) {
-        console.error("에러났어요 : " + error);
+        if (error.response && error.response.data) {
+          //백엔드에서 보낸 에러메시지 표시
+          alert(`${error.response.data.message}`);
+          console.error(error.response.data.message);
+        } else {
+          console.error("에러났어요 : " + error);
+        }
       }
     },
     async openModal(review) {
@@ -261,7 +288,12 @@ export default {
         this.selectedReview.replies = repliesResponse.data;
         console.log("replies :", this.selectedReview.replies);
       } catch (error) {
-        console.error("리뷰 상세 정보를 가져오는 중 에러 발생 :  ", error);
+        if (error.response && error.response.data) {
+          alert(`${error.response.data.message}`);
+          console.error(error.response.data.message);
+        } else {
+          console.error("리뷰 상세 정보를 가져오는 중 에러 발생 :  ", error);
+        }
       }
     },
     createReview() {
@@ -314,7 +346,13 @@ export default {
         );
         // 필요하다면 응답 처리
       } catch (error) {
-        console.error("좋아요 업데이트 중 에러 발생: " + error);
+        if (error.response && error.response.data) {
+          //백엔드에서 보낸 에러메시지 표시
+          alert(`${error.response.data.message}`);
+          console.error(error.response.data.message);
+        } else {
+          console.error("좋아요 업데이트 중 에러 발생: " + error);
+        }
       }
     },
     // 날짜를 인자로 받아서 원하는 형태의 문자열로 변환하여 반환

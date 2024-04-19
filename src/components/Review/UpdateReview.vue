@@ -1,88 +1,90 @@
 <template>
-  <div class="update-modal" v-if="isModalEditing">
-    <div class="modal-body">
-      <h2>게시글 수정</h2>
-      <form @submit.prevent="submitForm" class="review-form">
-        <div class="form-group">
-          <label for="title">제목</label>
-          <input
-            id="title"
-            type="text"
-            v-model="editableReview.reviewTitle"
-            class="form-control-title"
-          />
-          <select
-            id="location"
-            v-model="editableReview.reviewLocation"
-            class="form-control-location"
-          >
-            <option value="전체 지역">전체 지역</option>
-            <option value="제주 북부">제주 북부</option>
-            <option value="제주 남부">제주 남부</option>
-            <option value="제주 동부">제주 동부</option>
-            <option value="제주 서부">제주 서부</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="subtitle">부제목</label>
-          <input
-            id="subtitle"
-            type="text"
-            v-model="editableReview.reviewSubtitle"
-            class="form-control"
-          />
-        </div>
-        <div class="form-group">
-          <label for="newImages">이미지 업로드</label>
-          <input
-            id="newImages"
-            type="file"
-            @change="handleFiles"
-            multiple
-            class="form-control"
-          />
-        </div>
-        <div class="image-preview-container">
-          <div
-            v-for="(image, index) in editableReview.reviewImages"
-            :key="image.reviewImageId || 'new-' + index"
-            class="image-preview"
-          >
-            <span class="image-name">✓ {{ image.imageName }} </span>
-
-            <div
-              class="btn-remove"
-              @click="
-                image.isNew
-                  ? removeNewImage(index)
-                  : removeExistingImage(index, image.reviewImageId)
-              "
-              style="color: #6e6e6e"
+  <div class="update-modal-overlay">
+    <div class="update-modal" v-if="isModalEditing">
+      <div class="update-modal-body">
+        <h2>게시글 수정</h2>
+        <form @submit.prevent="submitForm" class="review-form">
+          <div class="update-form-group">
+            <label for="title">제목</label>
+            <input
+              id="title"
+              type="text"
+              v-model="editableReview.reviewTitle"
+              class="update-form-control-title"
+            />
+            <select
+              id="location"
+              v-model="editableReview.reviewLocation"
+              class="update-form-control-location"
             >
-              <font-awesome-icon :icon="['fas', 'xmark']" />
+              <option value="전체 지역">전체 지역</option>
+              <option value="제주 북부">제주 북부</option>
+              <option value="제주 남부">제주 남부</option>
+              <option value="제주 동부">제주 동부</option>
+              <option value="제주 서부">제주 서부</option>
+            </select>
+          </div>
+          <div class="update-form-group">
+            <label for="subtitle">부제목</label>
+            <input
+              id="subtitle"
+              type="text"
+              v-model="editableReview.reviewSubtitle"
+              class="update-form-control"
+            />
+          </div>
+          <div class="update-form-group">
+            <label for="newImages">이미지 업로드</label>
+            <input
+              id="newImages"
+              type="file"
+              @change="handleFiles"
+              multiple
+              class="update-form-control"
+            />
+          </div>
+          <div class="image-preview-container">
+            <div
+              v-for="(image, index) in editableReview.reviewImages"
+              :key="image.reviewImageId || 'new-' + index"
+              class="image-preview"
+            >
+              <span class="image-name">✓ {{ image.imageName }} </span>
+
+              <div
+                class="btn-remove"
+                @click="
+                  image.isNew
+                    ? removeNewImage(index)
+                    : removeExistingImage(index, image.reviewImageId)
+                "
+                style="color: #6e6e6e"
+              >
+                <font-awesome-icon :icon="['fas', 'xmark']" />
+              </div>
             </div>
           </div>
-        </div>
-        <div class="form-group">
-          <!--tiptap3 Editor-->
-          <link
-            href="https://cdn.jsdelivr.net/npm/remixicon@2.2.0/fonts/remixicon.css"
-            rel="stylesheet"
-          />
+          <div class="update-form-group">
+            <!--tiptap3 Editor-->
+            <link
+              href="https://cdn.jsdelivr.net/npm/remixicon@2.2.0/fonts/remixicon.css"
+              rel="stylesheet"
+            />
 
-          <AppTextEditor v-model="content" :max-limit="500" />
-        </div>
-        <div class="form-actions">
-          <button
-            type="button"
-            @click="$emit('cancel')"
-            class="btn btn-secondary"
-          >
-            취 소
-          </button>
-          <button type="submit" class="btn btn-primary">저 장</button>
-        </div>
-      </form>
+            <AppTextEditor v-model="content" :max-limit="500" />
+          </div>
+          <div class="update-form-actions">
+            <button
+              type="button"
+              @click="$emit('cancel')"
+              class="btn btn-secondary"
+            >
+              취 소
+            </button>
+            <button type="submit" class="btn btn-primary">저 장</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </template>
@@ -118,6 +120,16 @@ export default {
       content: this.review.reviewContent,
       deleteImageIds: [],
     };
+  },
+  watch: {
+    isModalEditing(newValue) {
+      console.log("isModalEditing changed:", newValue);
+      if (newValue) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "";
+      }
+    },
   },
   methods: {
     submitForm() {
@@ -182,7 +194,13 @@ export default {
 
         this.$emit("close");
       } catch (error) {
-        console.error("업데이트 실패 : ", error);
+        if (error.response && error.response.data) {
+          //백엔드에서 보낸 에러메시지 표시
+          alert(`${error.response.data.message}`);
+          console.error(error.response.data.message);
+        } else {
+          console.error("업데이트 실패 : ", error);
+        }
       }
     },
   },
@@ -190,4 +208,17 @@ export default {
 </script>
 <style>
 @import "@/assets/css/review_modal_update.css";
+.modal-overlay {
+  position: fixed; /* 화면에 고정 */
+  top: 50%;
+  left: 50%;
+  width: 100vw; /* 모달의 너비 */
+  height: 100vh; /* 모달의 높이 */
+  background-color: rgba(0, 0, 0, 0.6); /* 배경색 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* 다른 요소들 위에 나타나도록 z-index 설정 */
+  transform: translate(-50%, -50%); /* 중앙 정렬을 위해 변환 적용 */
+}
 </style>
