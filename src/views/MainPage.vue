@@ -1,10 +1,11 @@
 <template>
   <div class="full-screen-background" />
-  <div class="divider"></div>
+  <div class="divider" />
   <div class="recommend-style">
-    <h2>여행스타일 추천</h2>
+    <h2 class="mb-3">여행스타일 추천</h2>
     <div class="recommand-card"></div>
   </div>
+  <div class="divider" />
 </template>
 
 <script>
@@ -26,5 +27,14 @@ export default {
 }
 .divider {
   padding: 50px;
+}
+.recommend-style {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  background-color: #f3f3f3;
+  padding: 50px;
+}
+.recommend-card {
 }
 </style>

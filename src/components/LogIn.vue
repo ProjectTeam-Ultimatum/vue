@@ -88,8 +88,6 @@
 
 
 <script>
-import axios from "axios";
-
 export default {
   data() {
     return {
@@ -112,14 +110,15 @@ export default {
         memberEmail: this.username,
         memberPassword: this.password,
       };
-      axios
-        .post("/login", data)
+      this.$axios
+        .post("/login", data) // this.$axios로 변경
         .then((response) => {
           const jwtToken =
             response.headers["authorization"] ||
             response.headers["Authorization"];
           if (jwtToken) {
             localStorage.setItem("Authorization", jwtToken);
+
             this.$emit("login-success"); //모달닫기 이벤트 전송
           } else {
             alert("JWT 토큰을 받지 못했습니다.");
@@ -149,7 +148,8 @@ export default {
         memberAddress: this.address,
       };
 
-      axios
+      // 여기에서 axios 대신 this.$axios를 사용합니다.
+      this.$axios
         .post("/api/v1/join", data)
         .then((response) => {
           alert(response.data); // 성공 메시지 출력
