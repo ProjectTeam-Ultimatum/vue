@@ -3,7 +3,10 @@
     <!-- 채팅방 상단 영역: 채팅방 이름 및 사용자 정보 -->
     <header class="chat-room-header">
       <div class="chat-room-title">{{ chatRoomName }}</div>
-      <button class="leave-button" @click="leaveChatRoom">나가기</button>
+      <div class="button-container"> <!-- 버튼 컨테이너 추가 -->
+        <button class="back-button" @click="goBackToChatList">채팅 목록으로</button>
+        <button class="leave-button" @click="leaveChatRoom">나가기</button>
+      </div>
     </header>
 
     <!-- 메인 콘텐츠 영역 -->
@@ -16,12 +19,13 @@
 
     
     <!-- 가운데 패널 -->
-    <section class="center-panel">
+    <section class="center-panel" ref="messageContainer">
       <!-- 채팅 메시지 목록 -->
       <ul>
         <li v-for="message in messages" :key="message.id"
-            :class="{'my-message': message.senderId === userName, 'other-message': message.senderId !== userName}">
-          <span class="message-sender">{{ message.senderId }}:</span>
+            :class="{'my-message': message.senderId === userName, 'other-message': message.senderId !== userName, 'enter-leave-message': message.messageType === 'ENTER' || message.messageType === 'LEAVE'}">
+          <!-- 조건부 렌더링으로 senderId 표시 -->
+          <span v-if="message.messageType !== 'ENTER' && message.messageType !== 'LEAVE'" class="message-sender">{{ message.senderId }}:</span>
           <span v-if="isImageUrl(message.message)" class="message-content">
             <img :src="message.message" alt="Image" style="max-width: 200px; max-height: 200px;">
           </span>
@@ -29,6 +33,7 @@
         </li>
       </ul>
     </section>
+
     <!-- 오른쪽 패널 -->
     <aside class="right-panel">
     <!-- 오른쪽 내용 -->
@@ -125,7 +130,14 @@ export default {
       // 메시지를 수신할 때 실행될 콜백 함수를 정의합니다.
       this.socket.onmessage = (event) => {
           const data = JSON.parse(event.data);
-          if (data.senderId && data.message) {
+          console.log("Received message:", data);
+
+          // 시스템 메시지인 경우(ENTER, LEAVE) 처리
+          if (data.messageType === 'ENTER' || data.messageType === 'LEAVE') {
+              data.isSystemMessage = true; // 시스템 메시지 플래그 설정
+              this.messages.push(data);
+          } else if (data.senderId && data.message) {
+              // 일반 채팅 메시지 처리
               // 서버로부터 받은 메시지에 senderId가 현재 사용자의 ID와 동일한 경우
               if (data.senderId === this.userName) {
                   data.isMine = true;  // 메시지가 현재 사용자의 것임을 표시
@@ -135,6 +147,7 @@ export default {
               this.messages.push(data);
           }
       };
+
 
       // 연결이 종료될 때 실행될 콜백 함수를 정의합니다.
       this.socket.onclose = () => {
@@ -209,13 +222,17 @@ export default {
         const enterSignal = {
           messageType: "ENTER",
           chatRoomId: this.chatRoomId,
-          senderId: this.userId,
+          senderId: this.userName,
           // 실제 메시지 내용은 서버에서 생성됩니다.
         };
         this.socket.send(JSON.stringify(enterSignal));
         } else {
         console.error("WebSocket 연결이 준비되지 않았습니다.");
       }
+    },
+    goBackToChatList() {
+      // 채팅 목록 페이지로 이동
+      this.$router.push('/chatting');
     },
     leaveChatRoom() {
       const leaveMessage = {
@@ -228,7 +245,16 @@ export default {
         this.socket.close(); // WebSocket 연결을 닫습니다.
       }
       this.$router.push({ name: 'chatting' });
-    }
+    },
+    scrollToBottom() {
+      this.$nextTick(() => {
+        const container = this.$refs.messageContainer;
+        container.scrollTop = container.scrollHeight;
+      });
+    },
+  },
+  updated() {
+    this.scrollToBottom();
   }
 };
 </script>
@@ -324,6 +350,8 @@ html, body {
 .center-panel {
   flex: 2.2;
   border-right: 1px solid #ddd; /* 오른쪽에 경계선 추가 */
+  overflow-y: auto; /* 내용이 많을 경우 스크롤바를 표시 */
+  height: calc(100vh - 240px); /* 뷰포트 높이에서 헤더와 푸터 높이를 빼고 설정 */
 }
 
 /* 오른쪽 세션 */
@@ -405,7 +433,6 @@ html, body {
   margin-bottom: -20px;
 }
 
-
 /* 다른 사람의 메시지 스타일 */
 .other-message {
   text-align: left;
@@ -425,8 +452,6 @@ html, body {
   left: 10px;
   margin-bottom: -20px;
 }
-
-
 
 /* 메시지 입력 영역 스타일 */
 .message-input-area {
@@ -462,6 +487,19 @@ html, body {
   cursor: pointer;
 }
 
+.back-button {
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.back-button:hover {
+  background-color: #4CAF50;
+}
+
 .leave-button {
   padding: 8px 16px;
   background-color: #ff4d4f;
@@ -473,5 +511,23 @@ html, body {
 }
 .leave-button:hover {
   background-color: #ff7875;
+}
+
+.enter-leave-message {
+  display: flex; /* Flexbox 사용 */
+  justify-content: center; /* 가운데 정렬 */
+  width: 100%; /* 전체 너비 사용 */
+}
+
+.enter-leave-message .message-content {
+  color: #888; /* 회색으로 표시 */
+  font-style: italic;
+  text-align: center;
+  width: auto; /* 자동 너비 설정 */
+}
+
+.button-container {
+  display: flex; /* 버튼들을 가로로 나란히 배치 */
+  gap: 8px; /* 버튼 사이의 간격 */
 }
 </style>
