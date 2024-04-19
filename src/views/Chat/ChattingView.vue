@@ -1,86 +1,133 @@
 <template>
+  <div class="divider" style="padding: 70px" />
+
   <div class="app-container">
-  <div class="title-container">
-  <!-- 타이틀 -->
-    <h1>여행 조인 게시판</h1>
-    <p class="write-text" @click="showModal = true">
-  <font-awesome-icon icon="fa-solid fa-pen-to-square" /> 글쓰기
-</p>
-  </div>
+    <div class="title-container">
+      <!-- 타이틀 -->
+      <h1>여행 조인 게시판</h1>
+      <p class="write-text" @click="showModal = true">
+        <font-awesome-icon icon="fa-solid fa-pen-to-square" /> 글쓰기
+      </p>
+    </div>
 
-
-<!-- 모달창 내용 -->
-<div v-if="showModal" class="chat-modal" @click.self="showModal = false">
-  <div class="chat-modal-content" @click.stop>
-    <h2>채팅방 게시하기<font-awesome-icon icon="fa-solid fa-pen-to-square" /></h2>
-    <div class="modal-header">
-      <div class="profile-picture">
-        <img src="@/assets/images/profile.png" alt="Profile Picture">
+    <!-- 모달창 내용 -->
+    <div v-if="showModal" class="chat-modal" @click.self="showModal = false">
+      <div class="chat-modal-content" @click.stop>
+        <h2>
+          채팅방 게시하기<font-awesome-icon icon="fa-solid fa-pen-to-square" />
+        </h2>
+        <div class="modal-header">
+          <div class="profile-picture">
+            <img src="@/assets/images/profile.png" alt="Profile Picture" />
+          </div>
+          <p class="name-input">배정현</p>
+        </div>
+        <!-- 제목 입력 부분 -->
+        <div class="input-group">
+          <label for="title" class="form-label">제목</label>
+          <input
+            type="text"
+            id="title"
+            v-model="newChatRoomTitle"
+            placeholder="제목을 입력하세요"
+            class="text-input"
+          />
+        </div>
+        <div class="input-group">
+          <div class="input-group">
+            <label for="travelStyle" class="form-label">태그</label>
+            <input
+              type="text"
+              id="travelStyle"
+              placeholder="원하는 여행 스타일 태그를 입력해주세요"
+              class="text-input"
+            />
+            <button class="btn-add" @click="addTravelStyle">추가</button>
+          </div>
+          <!-- 입력된 태그 표시 -->
+          <div class="tags">
+            <span
+              v-for="(style, index) in travelStyles"
+              :key="index"
+              class="tag"
+            >
+              {{ style }}
+              <button class="remove-tag" @click="removeTravelStyle(index)">
+                x
+              </button>
+            </span>
+          </div>
+        </div>
+        <div class="input-group textarea-group">
+          <label for="exampleFormControlTextarea1" class="form-label"
+            >내용</label
+          >
+          <textarea
+            class="form-control"
+            id="exampleFormControlTextarea1"
+            rows="5"
+            v-model="newChatRoomContent"
+          ></textarea>
+        </div>
+        <div class="submit-group">
+          <button class="btn-down" @click="showModal = false">닫기</button>
+          <button class="btn-submit" @click="submitChatRoom">게시하기</button>
+        </div>
       </div>
-      <p class="name-input">배정현</p>
     </div>
-    <!-- 제목 입력 부분 -->
-    <div class="input-group">
-      <label for="title" class="form-label">제목</label>
-      <input type="text" id="title" v-model="newChatRoomTitle" placeholder="제목을 입력하세요" class="text-input">
-    </div>
-    <div class="input-group">
-      <div class="input-group">
-        <label for="travelStyle" class="form-label">태그</label>
-        <input type="text" id="travelStyle" placeholder="원하는 여행 스타일 태그를 입력해주세요" class="text-input">
-        <button class="btn-add" @click="addTravelStyle">추가</button>
-      </div>
-    <!-- 입력된 태그 표시 -->
-    <div class="tags">
-      <span v-for="(style, index) in travelStyles" :key="index" class="tag">
-      {{ style }}
-      <button class="remove-tag" @click="removeTravelStyle(index)">x</button>
-      </span>
-    </div>
-  </div>
-  <div class="input-group textarea-group">
-  <label for="exampleFormControlTextarea1" class="form-label">내용</label>
-  <textarea class="form-control" id="exampleFormControlTextarea1" rows="5" v-model="newChatRoomContent"></textarea>
-  </div>
-  <div class="submit-group">
-    <button class="btn-down" @click="showModal = false">닫기</button>
-    <button class="btn-submit" @click="submitChatRoom">게시하기</button>
-  </div>
-  </div>
-</div>
 
-  <!-- 서브타이틀 -->
-  <p style="text-align: left;">당신의 여행이 더욱 특별해질 수 있게 여행메이트를 찾아보세요.</p>
+    <!-- 서브타이틀 -->
+    <p style="text-align: left">
+      당신의 여행이 더욱 특별해질 수 있게 여행메이트를 찾아보세요.
+    </p>
 
-  <!-- 검색 폼 -->
-  <div class="d-flex justify-content-center pb-5 pt-5">
-  <input class="form-control me-2" style="flex-grow: 1; max-width: 80%;" type="text" v-model="searchQuery" placeholder="채팅방 이름을 입력해주세요" aria-label="default input example">
-  <button type="button" class="btn btn-primary">검색</button>
-  </div>
+    <!-- 검색 폼 -->
+    <div class="d-flex justify-content-center pb-5 pt-5">
+      <input
+        class="form-control me-2"
+        style="flex-grow: 1; max-width: 80%"
+        type="text"
+        v-model="searchQuery"
+        placeholder="채팅방 이름을 입력해주세요"
+        aria-label="default input example"
+      />
+      <button type="button" class="btn btn-primary">검색</button>
+    </div>
 
     <!-- 채팅방 목록 -->
     <div class="chatting-background">
       <div class="chatroom-header">
         <!-- 채팅방 목록 가운데 정렬을 위한 래퍼 -->
         <div class="title-wrapper">
-        <h2 style="margin-top: 20px;">채팅방 목록</h2>
+          <h2 style="margin-top: 20px">채팅방 목록</h2>
         </div>
         <div class="filter-text" @click="showFilterModal = true">
           <font-awesome-icon icon="fa-solid fa-sliders" /> 필터
         </div>
       </div>
 
-    <!-- 필터 모달창 내용 -->
-    <div v-if="showFilterModal" class="chat-modal" @click.self="showFilterModal = false">
-      <div class="chat-modal-content" @click.stop>
-        <h2>필터 옵션<font-awesome-icon icon="fa-solid fa-sliders" /></h2>
+      <!-- 필터 모달창 내용 -->
+      <div
+        v-if="showFilterModal"
+        class="chat-modal"
+        @click.self="showFilterModal = false"
+      >
+        <div class="chat-modal-content" @click.stop>
+          <h2>필터 옵션<font-awesome-icon icon="fa-solid fa-sliders" /></h2>
           <!-- 나이 슬라이더 필터 -->
           <div class="input-group">
             <div for="ageFilter" class="filter-body">
               <span>나이</span>
               <span class="filter-font">{{ ageFilter }}세</span>
             </div>
-            <input type="range" id="ageFilter" v-model="ageFilter" min="18" max="50" class="slider">
+            <input
+              type="range"
+              id="ageFilter"
+              v-model="ageFilter"
+              min="18"
+              max="50"
+              class="slider"
+            />
           </div>
 
           <!-- 거리 슬라이더 필터 -->
@@ -89,19 +136,30 @@
               <span>거리</span>
               <span class="filter-font">{{ distanceFilter }}km 이내</span>
             </div>
-            <input type="range" id="distanceFilter" v-model="distanceFilter" min="1" max="100" class="slider">
+            <input
+              type="range"
+              id="distanceFilter"
+              v-model="distanceFilter"
+              min="1"
+              max="100"
+              class="slider"
+            />
           </div>
 
           <!-- 드롭다운 필터 -->
           <div class="input-group">
             <div for="regionSelect" class="filter-body">
               <span>지역</span>
-              <select id="regionSelect" v-model="selectedRegion" class="dropdown-select">
-              <option value="">선택하세요</option>
-              <option value="서울">서울</option>
-              <option value="부산">부산</option>
-              <!-- 추가 지역 옵션을 여기에 더 추가할 수 있습니다. -->
-            </select>
+              <select
+                id="regionSelect"
+                v-model="selectedRegion"
+                class="dropdown-select"
+              >
+                <option value="">선택하세요</option>
+                <option value="서울">서울</option>
+                <option value="부산">부산</option>
+                <!-- 추가 지역 옵션을 여기에 더 추가할 수 있습니다. -->
+              </select>
             </div>
           </div>
 
@@ -112,39 +170,52 @@
             </ul>
           </div>
 
-        <div class="submit-group">
-        <button class="btn-down" @click="showFilterModal = false">닫기</button>
-        <button class="btn-submit" @click="applyFilters">적용</button>
+          <div class="submit-group">
+            <button class="btn-down" @click="showFilterModal = false">
+              닫기
+            </button>
+            <button class="btn-submit" @click="applyFilters">적용</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 채팅방 카드 목록 -->
+      <div
+        v-for="room in filteredChatRooms"
+        :key="room.chatRoomId"
+        class="card-container"
+      >
+        <div class="profile-picture">
+          <img src="@/assets/images/hanra.jpeg" alt="Profile Picture" />
+          <p class="profile-name">배정현</p>
+          <!-- 여기에 사용자 이름을 추가 -->
+          <p class="profile-detail">21살</p>
+        </div>
+        <div class="text-content">
+          <h3 class="chatroom-name">{{ room.chatRoomName }}</h3>
+          <p class="author-style">여행 스타일: 불도저</p>
+          <p class="subtitle">{{ room.chatRoomContent }}</p>
+          <div class="tag">
+            <span
+              v-for="tag in room.travelStyleTags"
+              :key="tag"
+              class="travel-style-tag"
+            >
+              #{{ tag }}
+            </span>
+          </div>
+          <div class="button-group">
+            <button class="btn-submit" @click="enterChatRoom(room.chatRoomId)">
+              입장
+            </button>
+            <button class="btn-down" @click="deleteChatRoom(room.chatRoomId)">
+              삭제
+            </button>
+          </div>
         </div>
       </div>
     </div>
-
-      <!-- 채팅방 카드 목록 -->
-      <div v-for="room in filteredChatRooms" :key="room.chatRoomId" class="card-container">
-  <div class="profile-picture">
-    <img src="@/assets/images/hanra.jpeg" alt="Profile Picture" >
-    <p class="profile-name">배정현</p> <!-- 여기에 사용자 이름을 추가 -->
-    <p class="profile-detail">21살</p>
   </div>
-  <div class="text-content">
-    <h3 class="chatroom-name">{{ room.chatRoomName }}</h3>
-    <p class="author-style">여행 스타일: 불도저 </p>
-    <p class="subtitle">{{ room.chatRoomContent }}</p>
-    <div class="tag">
-  <span v-for="tag in room.travelStyleTags" :key="tag" class="travel-style-tag">
-    #{{ tag }}
-  </span>
-</div>
-    <div class="button-group">
-    <button class="btn-submit" @click="enterChatRoom(room.chatRoomId)">입장</button>
-    <button class="btn-down" @click="deleteChatRoom(room.chatRoomId)">삭제</button>
-  </div>
-  </div>
-</div>
-
-    </div>
-
-</div>
 </template>
 
 <script>
@@ -152,74 +223,81 @@ export default {
   data() {
     return {
       chatRooms: [], // 채팅방 목록을 저장할 배열
-      newChatRoomName: '',
+      newChatRoomName: "",
       showModal: false, // 모달 창 표시 여부
       travelStyles: [], // 사용자가 입력한 여행 스타일 태그를 저장할 배열
-      newChatRoomTitle: '',  // 채팅방 제목
-      newChatRoomContent: '', // 채팅방 내용
-      searchQuery: '', // 사용자의 검색 쿼리를 저장할 새로운 데이터 속성
+      newChatRoomTitle: "", // 채팅방 제목
+      newChatRoomContent: "", // 채팅방 내용
+      searchQuery: "", // 사용자의 검색 쿼리를 저장할 새로운 데이터 속성
       showFilterModal: false, // 필터 모달 창 표시 여부
       ageFilter: 25, // 기본 나이 필터 값을 설정
       distanceFilter: 10, // 기본 거리 필터 값을 설정
       regionFilter: [], // 체크된 지역을 담을 배열
-      selectedRegion: '', // 선택된 지역을 저장할 데이터 속성
+      selectedRegion: "", // 선택된 지역을 저장할 데이터 속성
     };
   },
   computed: {
     filteredChatRooms() {
       // 검색 쿼리를 소문자로 변환하고, 채팅방 이름도 소문자로 변환하여 비교합니다.
-      return this.chatRooms.filter(room =>
+      return this.chatRooms.filter((room) =>
         room.chatRoomName.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
-    }
+    },
   },
   mounted() {
     this.fetchChatRooms();
   },
   methods: {
     submitChatRoom() {
-    const chatRoomData = {
-      chatRoomName: this.newChatRoomTitle,
-      travelStyleTags: this.travelStyles,
-      chatRoomContent: this.newChatRoomContent,
-    };
-    this.$axios.post('http://localhost:8080/api/v1/chat/create', chatRoomData)
-      .then(response => {
-        console.log("채팅방 생성 성공:", response.data);
-        this.newChatRoomTitle = ''; // 입력 필드 초기화
-        this.travelStyles = []; // 태그 목록 초기화
-        this.newChatRoomContent = ''; // 채팅방 내용
-        this.showModal = false; // 모달 창 닫기
-        this.fetchChatRooms(); // 채팅방 목록 다시 불러오기
-      })
-      .catch(error => {
-        console.error("채팅방 생성 실패:", error);
-      });
+      const chatRoomData = {
+        chatRoomName: this.newChatRoomTitle,
+        travelStyleTags: this.travelStyles,
+        chatRoomContent: this.newChatRoomContent,
+      };
+      this.$axios
+        .post("http://localhost:8080/api/v1/chat/create", chatRoomData)
+        .then((response) => {
+          console.log("채팅방 생성 성공:", response.data);
+          this.newChatRoomTitle = ""; // 입력 필드 초기화
+          this.travelStyles = []; // 태그 목록 초기화
+          this.newChatRoomContent = ""; // 채팅방 내용
+          this.showModal = false; // 모달 창 닫기
+          this.fetchChatRooms(); // 채팅방 목록 다시 불러오기
+        })
+        .catch((error) => {
+          console.error("채팅방 생성 실패:", error);
+        });
 
       console.log(this.newChatRoomContent);
     },
     addTravelStyle() {
-    const input = document.getElementById('travelStyle');
-    if (input.value.trim() !== '') {
-      this.travelStyles.push(input.value);
-      input.value = ''; // 입력 필드 초기화
+      const input = document.getElementById("travelStyle");
+      if (input.value.trim() !== "") {
+        this.travelStyles.push(input.value);
+        input.value = ""; // 입력 필드 초기화
       }
     },
     applyFilters() {
-    // 필터 로직을 여기에 구현합니다.
-    // 예를 들면, 서버에 필터링된 채팅방 데이터를 요청하는 API 호출 등을 할 수 있습니다.
-    console.log('적용된 필터:', this.ageFilter, this.distanceFilter, this.regionFilter);
-    this.showFilterModal = false; // 필터 적용 후 모달창 닫기
-  },
+      // 필터 로직을 여기에 구현합니다.
+      // 예를 들면, 서버에 필터링된 채팅방 데이터를 요청하는 API 호출 등을 할 수 있습니다.
+      console.log(
+        "적용된 필터:",
+        this.ageFilter,
+        this.distanceFilter,
+        this.regionFilter
+      );
+      this.showFilterModal = false; // 필터 적용 후 모달창 닫기
+    },
     removeTravelStyle(index) {
-    this.travelStyles.splice(index, 1); // 인덱스를 사용하여 배열에서 태그 삭제
+      this.travelStyles.splice(index, 1); // 인덱스를 사용하여 배열에서 태그 삭제
     },
     fetchChatRooms() {
-      this.$axios.get('http://localhost:8080/api/v1/chat/list') // 백엔드 API 주소
-        .then(response => {
+      this.$axios
+        .get("http://localhost:8080/api/v1/chat/list") // 백엔드 API 주소
+        .then((response) => {
           this.chatRooms = response.data; // 받아온 채팅방 목록을 chatRooms 배열에 저장
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("채팅방 목록을 불러오는데 실패했습니다:", error);
         });
     },
@@ -228,42 +306,42 @@ export default {
         chatRoomName: this.newChatRoomTitle, // 사용자 입력으로 받은 채팅방 제목
         travelStyleTags: this.travelStyles, // 사용자가 추가한 여행 스타일 태그
         chatRoomContent: this.newChatRoomContent,
-    };
-      this.$axios.post('http://localhost:8080/api/v1/chat/create', newChatRoom)
-    .then(response => {
-      console.log("채팅방 생성 성공:", response.data);
-      // 성공 후 필요한 상태 초기화
-      console.log("travleStyles", this.travelStyles)
-      this.newChatRoomTitle = '';
-      this.travelStyles = [];
-      this.newChatRoomContent = ''; // 채팅방 내용
-      this.showModal = false; // 모달 창 닫기
-      this.fetchChatRooms(); // 채팅방 목록 다시 불러오기
-    })
-    .catch(error => {
-      console.error("채팅방 생성 실패:", error);
-    });
+      };
+      this.$axios
+        .post("http://localhost:8080/api/v1/chat/create", newChatRoom)
+        .then((response) => {
+          console.log("채팅방 생성 성공:", response.data);
+          // 성공 후 필요한 상태 초기화
+          console.log("travleStyles", this.travelStyles);
+          this.newChatRoomTitle = "";
+          this.travelStyles = [];
+          this.newChatRoomContent = ""; // 채팅방 내용
+          this.showModal = false; // 모달 창 닫기
+          this.fetchChatRooms(); // 채팅방 목록 다시 불러오기
+        })
+        .catch((error) => {
+          console.error("채팅방 생성 실패:", error);
+        });
     },
     deleteChatRoom(roomId) {
-      this.$axios.delete(`http://localhost:8080/api/v1/chat/room/${roomId}`)
+      this.$axios
+        .delete(`http://localhost:8080/api/v1/chat/room/${roomId}`)
         .then(() => {
           alert("채팅방이 삭제되었습니다.");
           this.fetchChatRooms(); // 채팅방 목록을 다시 불러옵니다.
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("채팅방 삭제 중 오류가 발생했습니다:", error);
         });
     },
     enterChatRoom(roomId) {
       // Vue Router를 사용하여 해당 채팅방의 상세 페이지로 이동!
-      this.$router.push({ name: 'ChatRoom', params: { roomId: roomId } });
-    }
-  }
+      this.$router.push({ name: "ChatRoom", params: { roomId: roomId } });
+    },
+  },
 };
 </script>
 <style scoped>
-
-
 /* 전체 페이지에 적용되는 스타일 */
 .app-container {
   max-width: 1200px; /* 최대 너비 설정 */
@@ -280,18 +358,18 @@ export default {
 
 /* 채팅방 목록 카드 스타일 전체 컨테이너 */
 .card-container {
-  background-color:white ;
+  background-color: white;
   display: flex;
   align-items: center; /* 세로 중앙 정렬 */
   margin: 20px;
   padding: 10px;
-  border: 1px solid #ccc; 
-  border-radius: 8px; 
+  border: 1px solid #ccc;
+  border-radius: 8px;
 }
 
 /* 채팅방 목록 카드 프로필이미지가 차지하는 공간 스타일*/
 .profile-picture {
-  padding: 30px; 
+  padding: 30px;
   margin-top: 20px;
   margin-left: 50px;
   margin-right: 50px;
@@ -339,7 +417,7 @@ export default {
 
 /* 채팅방 목록 카드 백그라운드 스타일 */
 .chatting-background {
-  background-color: #FFC83B;
+  background-color: #ffc83b;
   padding-bottom: 20px;
 }
 
@@ -359,7 +437,7 @@ export default {
 }
 
 /* 글쓰기 버튼 스타일 */
-.write-text{
+.write-text {
   cursor: pointer;
 }
 
@@ -380,7 +458,7 @@ export default {
 /* 채팅방 목록 사용자 나이 스타일 */
 .profile-detail {
   font-size: 13px;
-  color:#666;
+  color: #666;
 }
 
 /* 입장, 삭제버튼 스타일 */
@@ -406,7 +484,7 @@ export default {
 
 /* 글쓰기 모달창 전체 스타일 */
 .chat-modal-content {
-  background-color: #FFF;
+  background-color: #fff;
   padding: 30px;
   border-radius: 10px;
   width: 700px;
@@ -431,14 +509,14 @@ export default {
 /* 방제목, 방내용 입력폼 스타일*/
 .text-input,
 .form-control {
-  border: 1px solid #CCC;
+  border: 1px solid #ccc;
   border-radius: 4px;
   padding: 10px;
   width: 80%;
 }
 
 /* 방제목, 태그 입력 폼 스타일 */
-.text-input{
+.text-input {
   padding: 8px;
   margin: 4px; /* 필요에 따라 조정 */
 }
@@ -451,9 +529,9 @@ export default {
 /* 입력된 태그 표시 스타일 */
 .tag {
   background-color: #ffffff;
-  color: #007BFF;
+  color: #007bff;
   border-radius: 16px;
-  border: solid 1px #007BFF;
+  border: solid 1px #007bff;
   padding: 5px 10px;
   display: inline-flex;
   align-items: center;
@@ -464,7 +542,7 @@ export default {
 .remove-tag {
   background-color: white;
   border: none;
-  color: #FFC83B;
+  color: #ffc83b;
   cursor: pointer;
   margin-left: 10px;
   border-radius: 50%;
@@ -473,7 +551,7 @@ export default {
 
 /* 채팅방입장, 게시글 등록 버튼 스타일 */
 .btn-submit {
-  background-color: #007BFF;
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
@@ -484,8 +562,8 @@ export default {
 /* 채팅방삭제, 게시글 닫기 버튼 스타일 */
 .btn-down {
   background-color: #ffffff;
-  color: #FFC83B;
-  border: solid 1px #FFC83B;
+  color: #ffc83b;
+  border: solid 1px #ffc83b;
   border-radius: 4px;
   padding: 10px 20px;
   margin-right: 10px;
@@ -494,7 +572,7 @@ export default {
 
 /* 태그 추가 버튼 스타일 */
 .btn-add {
-  background-color: #007BFF;
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
@@ -510,7 +588,6 @@ export default {
   margin-bottom: 20px;
 }
 
-
 .input-group label {
   margin-right: 10px; /* 라벨과 입력 필드 사이의 공간 */
   white-space: nowrap; /* 라벨을 줄 바꿈 없이 한 줄로 유지 */
@@ -523,7 +600,6 @@ export default {
   margin-right: 10px; /* 태그 사이의 간격 */
   /* 필요한 스타일 추가 */
 }
-
 
 .slider {
   width: 100%;
@@ -558,10 +634,10 @@ export default {
   width: 16.5%; /* 컨테이너 너비에 맞춤 */
   padding: 10px; /* 패딩 설정 */
   background-color: transparent; /* 배경색 투명 */
-  border: 1px solid #007BFF; /* 경계선 스타일 */
+  border: 1px solid #007bff; /* 경계선 스타일 */
   appearance: none; /* 기본 브라우저 스타일 제거 */
   cursor: pointer; /* 커서 모양 변경 */
-  color:#007BFF;
+  color: #007bff;
 }
 
 .dropdown-select::-ms-expand {
@@ -574,12 +650,12 @@ export default {
   background-color: #f8f8f8; /* 활성화/호버 상태의 배경색 */
 }
 
-.filter-font{
-  color:#007BFF;
+.filter-font {
+  color: #007bff;
 }
 
-.filter-tip{
-  margin-top:10px;
+.filter-tip {
+  margin-top: 10px;
   border-top: #ccc 1px solid;
   text-align: start;
   padding-top: 20px;

@@ -1,4 +1,6 @@
 <template>
+  <div class="divider" style="padding: 70px" />
+
   <div>
     <h1 @click="showModal = true">예산하기</h1>
     <!-- 모달 컴포넌트 -->
@@ -17,13 +19,13 @@ export default {
   data() {
     return {
       showModal: false, // 모달 창 표시 여부
-    }
-  }
-}
+    };
+  },
+};
 </script>
 
 <style>
-.budget-modal{
+.budget-modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -42,6 +44,6 @@ export default {
   width: 700px;
   height: 700px;
   text-align: center;
-  background-image: url('@/assets/images/blackpig.jpg');
+  background-image: url("@/assets/images/blackpig.jpg");
 }
 </style>

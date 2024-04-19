@@ -127,7 +127,7 @@
 
 .review-reply-content {
   text-align: start;
-  font-size: 12px;
+  font-size: 15px;
   margin-left: 15px;
   color: #393939;
 }
@@ -154,7 +154,7 @@
   border: 1px solid #e1e1e1;
 }
 .review-reply-update-save {
-  width: 45px;
+  width: 60px;
   font-size: 12px;
   margin-right: 5px;
   color: white;
@@ -164,7 +164,7 @@
   background-color: #1275d6;
 }
 .review-reply-update-cancel {
-  width: 45px;
+  width: 60px;
 
   border: 1px solid #ffc83b;
   color: #ffc83b;

@@ -1,4 +1,5 @@
 <template>
+  <div class="divider" style="padding: 60px" />
   <div class="main-text">여행 <span class="highlight">후기</span> 게시판</div>
   <p class="sub-text">
     당신의 여행이 더욱 특별해질 수 있게 여행기록을 공유하세요

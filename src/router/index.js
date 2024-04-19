@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import MainPage from '../views/MainPage.vue'
 import ReviewBoard from '../views/Review/ReviewBoard.vue'
-import LogIn from '../views/Login/LogIn.vue'
 import ChattingView from '../views/Chat/ChattingView.vue'
 import ChatRoom from '../views/Chat/ChatRoom.vue';
 import BudgetView from '../views/Budget/BudgetView.vue';
@@ -10,19 +9,15 @@ import BudgetView from '../views/Budget/BudgetView.vue';
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: HomeView
+    name: 'MainPage',
+    component: MainPage
   },
   {
     path: '/reviews',
     name: 'reviews',
     component: ReviewBoard
   },
-  {
-    path: '/login',
-    name: 'login',
-    component: LogIn
-  },
+  
   {
     path: '/chatting',
     name: 'chatting',

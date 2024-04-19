@@ -1,104 +1,87 @@
 <template>
-  <div class="login-container">
-    <button
-      class="login-trigger"
-      @click="
-        showModal = true;
-        currentView = 'login';
-      "
-    >
-      로그인
-    </button>
-    <button class="logout-button" @click="logout" v-if="isAuthenticated">
-      로그아웃
-    </button>
+  <!-- 모달 창 -->
+  <div class="modal-overlay" @click.self="$emit('close')">
+    <div class="login-modal-content">
+      <span class="close" @click.self="$emit('close')">&times;</span>
+      <h1 class="modal-title">
+        {{ currentView === "login" ? "로그인" : "회원가입" }}
+      </h1>
 
-    <!-- 모달 창 -->
-    <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
-      <div class="login-modal-content">
-        <span class="close" @click="closeModal">&times;</span>
-        <h1 class="modal-title">
-          {{ currentView === "login" ? "로그인" : "회원가입" }}
-        </h1>
-
-        <!-- 로그인 폼 -->
-        <form
-          v-if="currentView === 'login'"
-          @submit.prevent="login"
-          class="login-form"
-        >
-          <!-- 로그인 필드 -->
-          <div class="form-group">
-            <label for="email">이메일</label>
+      <!-- 로그인 폼 -->
+      <form
+        v-if="currentView === 'login'"
+        @submit.prevent="login"
+        class="login-form"
+      >
+        <!-- 로그인 필드 -->
+        <div class="form-group">
+          <label for="email">이메일</label>
+          <input
+            type="text"
+            id="username"
+            v-model="username"
+            placeholder="이메일"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="password">비밀번호</label>
+          <div class="password-container">
             <input
-              type="text"
-              id="username"
-              v-model="username"
-              placeholder="이메일"
+              :type="passwordFieldType"
+              id="password"
+              v-model="password"
+              placeholder="비밀번호"
               required
             />
+            <span class="password-toggle-icon" @click="togglePasswordVisibility"
+              >&#128065;</span
+            >
           </div>
-          <div class="form-group">
-            <label for="password">비밀번호</label>
-            <div class="password-container">
-              <input
-                :type="passwordFieldType"
-                id="password"
-                v-model="password"
-                placeholder="비밀번호"
-                required
-              />
-              <span
-                class="password-toggle-icon"
-                @click="togglePasswordVisibility"
-                >&#128065;</span
-              >
-            </div>
-            <div>
-              <p style="font-size: 12px">비밀번호를 잊으셨나요?</p>
-            </div>
+          <div>
+            <p style="font-size: 12px">비밀번호를 잊으셨나요?</p>
           </div>
-          <button type="submit" class="submit-button">로그인</button>
-          <p>OR</p>
-          <button class="google-signin">카카오 계정으로 로그인하기</button>
-          <p class="signup-prompt">
-            아직 회원이 아니신가요?
-            <a @click="switchView('signup')">회원가입 하기</a>
-          </p>
-        </form>
+        </div>
+        <button type="submit" class="submit-button">로그인</button>
+        <p>OR</p>
+        <button class="google-signin">카카오 계정으로 로그인하기</button>
+        <p class="signup-prompt">
+          아직 회원이 아니신가요?
+          <a @click="switchView('signup')">회원가입 하기</a>
+        </p>
+      </form>
 
-        <!-- 회원가입 폼 -->
-        <form v-else @submit.prevent="register" class="signup-form">
-          <div class="form-group">
-            <label for="name">이름</label>
-            <input type="text" id="name" v-model="name" required />
-          </div>
-          <div class="form-group">
-            <label for="email">이메일</label>
-            <input type="email" id="email" v-model="email" required />
-          </div>
-          <div class="form-group">
-            <label for="password">비밀번호</label>
-            <input type="password" id="password" v-model="password" required />
-          </div>
-          <div class="form-group">
-            <label for="age">나이</label>
-            <input type="number" id="age" v-model="age" required />
-          </div>
-          <div class="form-group">
-            <label for="gender">성별</label>
-            <select id="gender" v-model="gender" required>
-              <option value="M">남성</option>
-              <option value="F">여성</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="address">주소</label>
-            <input type="text" id="address" v-model="address" required />
-          </div>
-          <button type="submit" class="submit-button">회원가입</button>
-        </form>
-      </div>
+      <!-- 회원가입 폼 -->
+      <form v-else @submit.prevent="register" class="signup-form">
+        <div class="form-group">
+          <label for="name">이름</label>
+          <input type="text" id="name" v-model="name" required />
+        </div>
+        <div class="form-group">
+          <label for="email">이메일</label>
+          <input type="email" id="email" v-model="email" required />
+        </div>
+        <div class="form-group">
+          <label for="password">비밀번호</label>
+          <input type="password" id="password" v-model="password" required />
+        </div>
+        <div class="form-group">
+          <label for="age">나이</label>
+          <input type="number" id="age" v-model="age" required />
+        </div>
+        <div class="form-group">
+          <label for="gender">성별</label>
+          <select id="gender" v-model="gender" required>
+            <option value="M">남성</option>
+            <option value="F">여성</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="address">주소</label>
+          <input type="text" id="address" v-model="address" required />
+        </div>
+        <button type="submit" class="submit-button">회원가입</button>
+      </form>
     </div>
   </div>
 </template>
@@ -123,11 +106,6 @@ export default {
       address: "",
     };
   },
-  computed: {
-    isAuthenticated() {
-      return !!localStorage.getItem("Authorization");
-    },
-  },
   methods: {
     login() {
       const data = {
@@ -142,8 +120,7 @@ export default {
             response.headers["Authorization"];
           if (jwtToken) {
             localStorage.setItem("Authorization", jwtToken);
-            this.showModal = false; // 모달 닫기
-            this.$router.push("/"); // 홈으로 리디렉트
+            this.$emit("login-success"); //모달닫기 이벤트 전송
           } else {
             alert("JWT 토큰을 받지 못했습니다.");
           }
@@ -153,13 +130,7 @@ export default {
           alert("로그인 실패: " + error.message);
         });
     },
-    logout() {
-      // 로컬 스토리지에서 토큰 제거
-      localStorage.removeItem("Authorization");
-      // 로그아웃 성공 메시지 표시 후 페이지 새로 고침
-      alert("로그아웃 되었습니다.");
-      location.reload(); // 페이지 새로고침
-    },
+
     togglePasswordVisibility() {
       this.passwordFieldType =
         this.passwordFieldType === "password" ? "text" : "password";
@@ -182,8 +153,7 @@ export default {
         .post("/api/v1/join", data)
         .then((response) => {
           alert(response.data); // 성공 메시지 출력
-          this.closeModal(); // 모달 창 닫기
-          this.$router.push("/login"); // 로그인 페이지로 이동
+          this.$emit("close");
         })
         .catch((error) => {
           console.error("Registration failed:", error);
@@ -240,10 +210,10 @@ export default {
 
 .modal-overlay {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  width: 100vw;
-  height: 100vh;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;

@@ -39,6 +39,8 @@
   cursor: pointer;
   font-size: 23px;
   margin-bottom: 15px;
+  justify-content: start;
+  text-align: start;
 }
 .region-item.active {
   font-weight: bold;
@@ -93,7 +95,7 @@
   overflow: hidden; /* 컨테이너 밖으로 내용물이 넘치지 않도록 설정 */
   margin: 20px 3%; /* 상하 20px, 좌우 5%의 마진을 적용 */
 
-  max-width: 1200px;
+  max-width: 1000px;
   height: 300px; /* 카드의 높이 고정 */
   background-color: white;
   justify-content: space-around;

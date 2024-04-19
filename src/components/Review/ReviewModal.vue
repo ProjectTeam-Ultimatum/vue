@@ -115,12 +115,15 @@
             </div>
             <div v-else class="review-reply-main">
               <input
-                class="reply-content-input"
+                class="review-reply-content-input"
                 v-model="reply.editingContent"
                 @keyup.enter="updateReply(reply)"
               />
               <div class="review-reply-control">
-                <button class="reply-update-save" @click="updateReply(reply)">
+                <button
+                  class="review-reply-update-save"
+                  @click="updateReply(reply)"
+                >
                   저장
                 </button>
                 <button
