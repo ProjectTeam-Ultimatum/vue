@@ -1,22 +1,17 @@
 <template>
-  <nav :class="{ 'main-page': isMainPage, 'dark-text': isScrolled }">
+  <nav :class="{ 'main-page': isMainPage, scrolled: isScrolled }">
     <router-link class="main-logo" to="/">제주랑</router-link>
     <div class="nav-links">
       <router-link to="/chatting"> 메이트 찾기</router-link>
       <router-link to="/budget">예산 짜기</router-link>
       <router-link to="/reviews"> 여행후기 </router-link>
     </div>
-    <div class="login" style="cursor: pointer">
-      <div v-if="!isAuthenticated" @click="showLoginModal">
-        <!-- <font-awesome-icon :icon="['far', 'circle-user']" size="lg" /> -->
-        로그인
+    <div class="login">
+      <div v-if="!isAuthenticated">
+        <button @click="showLoginModal">로그인</button>
       </div>
-      <div v-else @click="logout">
-        <!-- <font-awesome-icon
-          :icon="['fas', 'arrow-right-from-bracket']"
-          size="lg"
-        /> -->
-        로그아웃
+      <div v-else>
+        {{}}님 환영합니다.<button @click="logout">로그아웃</button>
       </div>
     </div>
     <login-modal
@@ -30,6 +25,7 @@
 
 <script>
 import LoginModal from "./components/LogIn.vue";
+/* eslint-disable */
 export default {
   name: "App",
   components: {
@@ -65,13 +61,15 @@ export default {
       this.isAuthenticated = true;
       this.showModal = false;
       //사용자를 홈페이지로 리다이랙션
-      this.$router.push("/");
     },
   },
   mounted() {
     window.addEventListener("scroll", () => {
-      this.isScrolled = window.scrollY > 50; //스크롤 위치가 50px 이상이면 색상 변경
+      this.isScrolled = window.scrollY > window.innerHeight;
     });
+  },
+  beforeDestroy() {
+    window.removeEventListener("scroll", this.handleScroll);
   },
 };
 </script>
@@ -102,7 +100,7 @@ nav {
   width: 100vw;
   top: 0;
   left: 0;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s; /* 부드러운 전환 효과 */
   background-size: cover;
   z-index: 1000;
 }
@@ -127,9 +125,9 @@ nav:not(.main-page) {
 .login {
   transition: color 0.3s;
 }
-nav.scrolled,
-nav:not(.main-page) {
-  background-color: white;
+nav.scrolled {
+  background-color: white; /* 스크롤 시 배경색 변경 */
+  color: black; /* 스크롤 시 텍스트 색상 변경 */
 }
 
 nav.main-page .nav-links a,
@@ -168,5 +166,15 @@ nav a.router-link-exact-active {
   right: 30px;
   font-size: 18px;
   cursor: pointer;
+}
+.login button {
+  margin-left: 10px;
+  padding: 10px 20px; /* 좌우 패딩을 늘려서 버튼이 더 넓게 보이게 합니다 */
+  border-radius: 5px; /* 모서리 둥글기를 적당히 조절합니다 */
+  border: 1px solid #ffc83b; /* 테두리 색상을 조절합니다 */
+  background-color: #ffc83b; /* 버튼 배경색을 노란색으로 설정합니다 */
+  color: white; /* 버튼 내 텍스트 색상을 흰색으로 설정합니다 */
+  font-weight: bold; /* 텍스트를 굵게 합니다 */
+  cursor: pointer; /* 마우스 오버 시 커서 변경 */
 }
 </style>
