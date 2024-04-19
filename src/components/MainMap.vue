@@ -1,8 +1,30 @@
 <template>
-  <div>
-    <h1> 여기다가 써 !!!!!!</h1>
+  <div class="courseButton">
+        <button type="button" @click="coursebutton('A')"> A 코스 </button>
+        <button type="button" @click="coursebutton('B')"> B 코스 </button>
+        <button type="button" @click="coursebutton('C')"> C 코스 </button>
+        <button type="button" @click="coursebutton('D')"> D 코스 </button>
+        <button type="button" @click="coursebutton('E')"> E 코스 </button>
+        <button type="button" @click="coursebutton('F')"> F 코스 </button>
+        <button type="button" @click="coursebutton('G')"> G 코스 </button>
+        <button type="button" @click="coursebutton('H')"> H 코스 </button>
+        <button type="button" @click="coursebutton('I')"> I 코스 </button>
+        <button type="button" @click="coursebutton('J')"> J 코스 </button>
+        <div class="budgetButton">
+          <button type="button" @click="showModal = true">코스마다 예산보기</button>
+        </div>
   </div>
   <div class="main-map" ref="map">
+  </div>
+  <div>
+    <div v-if="showModal" class="budget-modal">
+      <div class="budget-modal-content">
+    <div v-for="(total, day) in budgetSummary" :key="day">
+      <p>{{ day }}코스의 총 예산: {{ total }}원</p>
+    </div>
+        <button @click="showModal = false">닫기</button>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -46,10 +68,14 @@ export default {
       category: '',
       lastFeature: undefined,
       lastClickedFeature: undefined,
+      dates: [],
+      budgetSummary: {},
+      showModal: false,
     }
   },
   mounted() {
     this.initializeMap();
+    this.fetchBudgets();
     EventBus.$on('courseClick', (course) => {
     this.course = course;
     this.updateMapIcons();  // 코스에 맞는 아이콘을 다시 불러옵니다.
@@ -57,6 +83,55 @@ export default {
 },
 
 methods: {
+  fetchBudgets() {
+    this.$axios.get('http://localhost:8081/api/map/listMap')
+      .then(response => {
+        // response.data 형태가 [{ date: '1일차', budget: 111 }, ...]라고 가정
+        this.dates = response.data;
+        this.calculateTotalBudgets();  // 데이터를 받아온 후 총 예산을 계산
+      })
+      .catch(error => {
+        console.error('Error fetching budgets:', error);
+      });
+  },
+
+  calculateTotalBudgets() {
+  const budgetSummary = {};
+
+  // 코스별로 예산을 저장할 객체 초기화
+  budgetSummary['A'] = {};
+  budgetSummary['B'] = {};
+  budgetSummary['C'] = {};
+  budgetSummary['D'] = {};
+  budgetSummary['E'] = {};
+  budgetSummary['F'] = {};
+  budgetSummary['G'] = {};
+  budgetSummary['H'] = {};
+  budgetSummary['I'] = {};
+  budgetSummary['J'] = {};
+  // 추가적인 코스가 있다면 여기에 더합니다.
+
+  this.dates.forEach((date) => {
+    const course = date.course; // 코스 구분값 (예: 'A', 'B', 'C')
+    const day = date.date; // 날짜 구분값 (예: '1일차')
+    const budget = date.budget; // 예산
+
+    // 코스별 예산 집계
+    if (!budgetSummary[course][day]) {
+      budgetSummary[course][day] = 0;
+    }
+    budgetSummary[course][day] += budget;
+  });
+
+  console.log(budgetSummary);
+  // 이제 budgetSummary 객체에는 각 코스별, 각 날짜별 예산 합산이 저장되어 있음
+  this.budgetSummary = budgetSummary; // 리액티브하게 데이터 업데이트
+},
+
+  coursebutton(course) {
+    this.course = course; // 사용자가 선택한 코스를 저장
+    EventBus.$emit('courseClick', course);
+  },
   groupAndDrawLines() {
     const groupedByDate = {};
     // 현재 코스에 해당하는 위치 데이터만 날짜별로 그룹화
@@ -190,6 +265,7 @@ this.olMap.on('click', async (e) => {
 
   const [lon, lat] = toLonLat(e.coordinate);
   const addressInfo = await this.getAddress(lon, lat);
+  console.log(addressInfo)
   if (addressInfo) {
     const displayAddress = this.getUiAddress(addressInfo.data.display_name);
     const point = fromLonLat([lon, lat]);
@@ -430,5 +506,38 @@ this.olMap.on('click', async (e) => {
 }
 .ol-geocoder ul li a .gcd-road {
   color: white;
+}
+.courseButton {
+    display: flex;
+    justify-content: center; /* 내부 요소를 가로축 중앙에 배치 */
+    flex-wrap: wrap; /* 요소가 너무 많으면 다음 줄로 넘김 */
+    margin-top: 150px;
+    margin-left: 385px;
+}
+.courseButton button {
+    margin: 5px; /* 버튼 주변에 약간의 여백 추가 */
+}
+.budgetButton {
+  margin-left: 370px;
+}
+.budget-modal{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.budget-modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 700px;
+  height: 700px;
+  text-align: center;
+  background-image: url('@/assets/images/blackpig.jpg');
 }
 </style>

@@ -12,27 +12,11 @@
 
         <div class="title-area">
           <input placeholder="장소 이름" v-model="title"  :readonly="true"/>
-          <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        {{ course || '코스 보기'  }} </a>
-  
-          <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#" @click="selectCourse('A')">A코스</a></li>
-              <li><a class="dropdown-item" href="#" @click="selectCourse('B')">B코스</a></li>
-              <li><a class="dropdown-item" href="#" @click="selectCourse('C')">C코스</a></li>
-              <li><a class="dropdown-item" href="#" @click="selectCourse('D')">D코스</a></li>
-              <li><a class="dropdown-item" href="#" @click="selectCourse('E')">E코스</a></li>
-              <li><a class="dropdown-item" href="#" @click="selectCourse('F')">F코스</a></li>
-              <li><a class="dropdown-item" href="#" @click="selectCourse('G')">G코스</a></li>
-              <li><a class="dropdown-item" href="#" @click="selectCourse('H')">H코스</a></li>
-              <li><a class="dropdown-item" href="#" @click="selectCourse('I')">I코스</a></li>
-              <li><a class="dropdown-item" href="#" @click="selectCourse('J')">J코스</a></li>
-          </ul>
           <p>
           <span class="category">카테고리: {{ category }}</span>
           </p>
         </div>
         
-
         <div class="image-area">
           <div class="iw-file-input">
             <img :src="image" alt="Uploaded Image" v-if="image"/>
@@ -77,17 +61,7 @@
       </Button>
   </div> -->
   
-  <div>
-    <h5 @click="showModal = true">코스마다 예산보기</h5>
-    <div v-if="showModal" class="budget-modal">
-      <div class="budget-modal-content">
-    <div v-for="(total, day) in budgetSummary" :key="day">
-      <p>{{ day }}코스의 총 예산: {{ total }}원</p>
-    </div>
-        <button @click="showModal = false">닫기</button>
-      </div>
-    </div>
-  </div>
+
 
       </div>
     </VueResizable>
@@ -124,7 +98,6 @@ data() {
     latCopy: 0.0,
     image: '',
     mapTag: '#',
-    showModal: false,
     date: '',
     budget: 0,
     dates: [],
@@ -133,7 +106,6 @@ data() {
   };
 },
 mounted() {
-  this.fetchBudgets();
     EventBus.$on('mapClick', (data) => {
         this.title = data.title || '';
         this.addressCopy = data.address || '';
@@ -149,57 +121,6 @@ mounted() {
     });
 },
 methods: {
-
-  fetchBudgets() {
-    this.$axios.get('http://localhost:8081/api/map/listMap')
-      .then(response => {
-        // response.data 형태가 [{ date: '1일차', budget: 111 }, ...]라고 가정
-        this.dates = response.data;
-        this.calculateTotalBudgets();  // 데이터를 받아온 후 총 예산을 계산
-      })
-      .catch(error => {
-        console.error('Error fetching budgets:', error);
-      });
-  },
-
-  calculateTotalBudgets() {
-  const budgetSummary = {};
-
-  // 코스별로 예산을 저장할 객체 초기화
-  budgetSummary['A'] = {};
-  budgetSummary['B'] = {};
-  budgetSummary['C'] = {};
-  budgetSummary['D'] = {};
-  budgetSummary['E'] = {};
-  budgetSummary['F'] = {};
-  budgetSummary['G'] = {};
-  budgetSummary['H'] = {};
-  budgetSummary['I'] = {};
-  budgetSummary['J'] = {};
-  // 추가적인 코스가 있다면 여기에 더합니다.
-
-  this.dates.forEach((date) => {
-    const course = date.course; // 코스 구분값 (예: 'A', 'B', 'C')
-    const day = date.date; // 날짜 구분값 (예: '1일차')
-    const budget = date.budget; // 예산
-
-    // 코스별 예산 집계
-    if (!budgetSummary[course][day]) {
-      budgetSummary[course][day] = 0;
-    }
-    budgetSummary[course][day] += budget;
-  });
-
-  console.log(budgetSummary);
-  // 이제 budgetSummary 객체에는 각 코스별, 각 날짜별 예산 합산이 저장되어 있음
-  this.budgetSummary = budgetSummary; // 리액티브하게 데이터 업데이트
-},
-
-  selectCourse(course) {
-    this.course = course; // 사용자가 선택한 코스를 저장
-    EventBus.$emit('courseClick', course);
-  },
-
   onChangeFiles(e) {
     this.fileList.push(...e.target.files);
     console.log(this.fileList);
