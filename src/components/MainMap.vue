@@ -1,4 +1,7 @@
 <template>
+  <div>
+    <h1> 여기다가 써 !!!!!!</h1>
+  </div>
   <div class="main-map" ref="map">
   </div>
 </template>
@@ -37,21 +40,25 @@ export default {
       title: '',
       grade: 0,
       review: '',
+      mapTag: '#',
+      course: '',
+      budget: 0,
       category: '',
-      course: ''
+      lastFeature: undefined,
     }
   },
   mounted() {
     this.initializeMap();
     EventBus.$on('courseClick', (course) => {
     this.course = course;
-    this.updateMapIcons();  // 카테고리에 맞는 아이콘을 다시 불러옵니다.
+    this.updateMapIcons();  // 코스에 맞는 아이콘을 다시 불러옵니다.
   });
 },
+
 methods: {
   groupAndDrawLines() {
     const groupedByDate = {};
-    // 현재 카테고리에 해당하는 위치 데이터만 날짜별로 그룹화
+    // 현재 코스에 해당하는 위치 데이터만 날짜별로 그룹화
     this.locations.forEach(location => {
       if (location.course === this.course) {
         if (!groupedByDate[location.date]) {
@@ -88,14 +95,16 @@ methods: {
         return '#00ff00'; // 초록색
       case '3일차':
         return '#0000ff'; // 파란색
+        case '4일차':
+        return '#FF00FF';
       default:
-        return '#ffcc33'; // 기본 색상
+        return '#FFFFFF'; // 기본 색상
     }
   },
   updateMapIcons() {
     this.vectorSource.clear();  // 기존 벡터 소스 클리어 (마커와 선 모두 제거됩니다)
 
-    // 새로운 카테고리에 해당하는 마커들만 추가
+    // 새로운 코스에 해당하는 마커들만 추가
     this.locations.forEach(location => {
       if (location.course === this.course) {
         const point = fromLonLat([location.lonCopy, location.latCopy]);
@@ -150,6 +159,12 @@ methods: {
 this.olMap.on('click', async (e) => {
   geocoder.getSource().clear();
   this.clearLocationData();
+
+  if (this.lastFeature) {
+    this.vectorSource.removeFeature(this.lastFeature);
+    this.lastFeature = null;
+  }
+
   const [lon, lat] = toLonLat(e.coordinate);
   const addressInfo = await this.getAddress(lon, lat);
   if (addressInfo) {
@@ -169,9 +184,11 @@ this.olMap.on('click', async (e) => {
         })
       }));
       this.vectorSource.addFeature(feature);
+      this.lastFeature = feature;
     } else {
       // Optionally update the feature if needed
       feature.setGeometry(new OlPoint(point));  // Update geometry or other properties
+      this.lastFeature = feature;
     }
     // Emit data only if the feature is newly added or needs to be updated
     EventBus.$emit('mapClick', {
@@ -182,30 +199,15 @@ this.olMap.on('click', async (e) => {
       lonCopy: lon,
       latCopy: lat,
       image: this.image,
+      mapTag: this.mapTag,
+      course: this.course,
+      budget: this.budget,
       category: this.category,
-      course: this.course
     });
   } else {
     console.error('Failed to fetch address information');
   }
 });
-
-  this.olMap.on('click', async (e) => {
-    geocoder.getSource().clear();
-      const [lon, lat] = toLonLat(e.coordinate)
-      console.log(lon,lat)
-      const point = this.coordi4326To3857([lon, lat]);
-      const feature = new OlFeature({
-          geometry: new OlPoint(point)
-      })
-    feature.setStyle(new OlStyle({
-        image: new OlIcon({
-        scale: 0.7,
-        src: '//cdn.rawgit.com/jonataswalker/map-utils/master/images/marker.png'
-    })
-  }))
-    this.vectorSource.addFeature(feature);
-})
 
   const geocoder = new Geocoder('nominatim', {
     provider: 'osm',
@@ -231,8 +233,10 @@ this.olMap.on('click', async (e) => {
     this.grade = null;
     this.review = '';
     this.image = '';
-    this.category = '';
+    this.mapTag = '';
     this.course = '';
+    this.budget = null;
+    this.category = '';
   },
 
   coordi4326To3857([lon, lat]) {
@@ -344,8 +348,10 @@ this.olMap.on('click', async (e) => {
     this.grade = data.grade;
     this.review = data.review;
     this.image = data.image;
-    this.category = data.category;
+    this.mapTag = data.mapTag;
     this.course = data.course;
+    this.budget = data.budget;
+    this.category = data.category;
     // 이외에 필요한 UI 업데이트 로직
   }
 
@@ -354,9 +360,12 @@ this.olMap.on('click', async (e) => {
 </script>
 <style>
 .main-map {
-  width: 100%;
-  height: 100%;
-  position: relative; /* 부모 요소를 기준으로 위치를 설정하기 위해 필요합니다. */
+  width: 65%;
+  height: 70%;
+  position: absolute; /* 절대 위치 설정 */
+  top: 55%; /* 상단에서 50% 위치 */
+  left: 60%; /* 왼쪽에서 50% 위치 */
+  transform: translate(-50%, -50%); /* 요소의 중심을 정확히 중앙에 맞추기 위해 변형 */
 }
 .ol-geocoder {
   position: absolute;

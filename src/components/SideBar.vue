@@ -9,9 +9,29 @@
         v-if="isVisibleSideBar"
     >
       <div class="side-bar">
+
         <div class="title-area">
-          <textarea v-model="title" placeholder="메모장" ></textarea>
+          <input placeholder="장소 이름" v-model="title"  :readonly="true"/>
+          <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {{ course || '코스 보기'  }} </a>
+  
+          <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#" @click="selectCourse('A')">A코스</a></li>
+              <li><a class="dropdown-item" href="#" @click="selectCourse('B')">B코스</a></li>
+              <li><a class="dropdown-item" href="#" @click="selectCourse('C')">C코스</a></li>
+              <li><a class="dropdown-item" href="#" @click="selectCourse('D')">D코스</a></li>
+              <li><a class="dropdown-item" href="#" @click="selectCourse('E')">E코스</a></li>
+              <li><a class="dropdown-item" href="#" @click="selectCourse('F')">F코스</a></li>
+              <li><a class="dropdown-item" href="#" @click="selectCourse('G')">G코스</a></li>
+              <li><a class="dropdown-item" href="#" @click="selectCourse('H')">H코스</a></li>
+              <li><a class="dropdown-item" href="#" @click="selectCourse('I')">I코스</a></li>
+              <li><a class="dropdown-item" href="#" @click="selectCourse('J')">J코스</a></li>
+          </ul>
+          <p>
+          <span class="category">카테고리: {{ category }}</span>
+          </p>
         </div>
+        
 
         <div class="image-area">
           <div class="iw-file-input">
@@ -25,79 +45,56 @@
     placeholder="주소"
     :value="addressCopy"
     @input="updateAddress"
-    
+    :readonly="true"
   />
   </div>
 
   <!-- <di>
     <input placeholder="category" :value="category">
   </di> -->
-  <div class="dropdown">
-  <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    {{ course || '코스 보기'  }}
-  </a>
-  <ul class="dropdown-menu">
-      <li><a class="dropdown-item" href="#" @click="selectCourse('A')">A코스</a></li>
-      <li><a class="dropdown-item" href="#" @click="selectCourse('B')">B코스</a></li>
-      <li><a class="dropdown-item" href="#" @click="selectCourse('C')">C코스</a></li>
-      <li><a class="dropdown-item" href="#" @click="selectCourse('D')">D코스</a></li>
-  </ul>
-</div>
-<div class="dropdown">
-  <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    {{ category || '장소 보기'  }}
-  </a>
-  <ul class="dropdown-menu">
-      <li><a class="dropdown-item" href="#" @click="selectCategory('놀거리')">놀거리</a></li>
-      <li><a class="dropdown-item" href="#" @click="selectCategory('숙소')">숙소</a></li>
-      <li><a class="dropdown-item" href="#" @click="selectCategory('음식')">음식점</a></li>
-      <li><a class="dropdown-item" href="#" @click="selectCategory('축제')">축제</a></li>
-  </ul>
-</div>
+
+  <p>
+    <span class="tag-label">태그: {{ mapTag }}</span>
+    <span class="budget-label">가격: {{ budget }}</span>
+  </p>
 
   <div class="rate-area">
-    <FormRating :value="parseInt(grade)" @update:grade="grade = $event" />
+    <!-- <FormRating :value="parseInt(grade)" @update:grade="grade = $event" /> -->
     <FormRating :grade="grade" :readOnly="true"/>
       </div>
+
         <div class="review-area">
-          <textarea
-              ref="textarea"
-              placeholder="메모장"
-              v-model="review" 
-              
-          ></textarea>
+          <div>
+            <div>
+          <span ref="span" class="review-span" placeholder="내용">{{ review }}</span>
+          </div>
+          </div>
         </div>
-        <div class="bottom-btn-area">
+
+        <!-- <div class="bottom-btn-area">
       <Button class="save-btn" @click="saveReview">
           저장
       </Button>
-  </div>
+  </div> -->
+  
   <div>
-    <h1 @click="showModal = true">예산하기</h1>
-    <!-- 모달 컴포넌트 -->
+    <h5 @click="showModal = true">코스마다 예산보기</h5>
     <div v-if="showModal" class="budget-modal">
       <div class="budget-modal-content">
-
-        <h2>1일차</h2>
-        <p>{{ calculateBudget }}</p>
-
-        <h2>2일차</h2>
-        <p>{{ calculateBudget }}</p>
-
-        <h2>3일차</h2>
-        <p>{{ calculateBudget }}</p>
-
+    <div v-for="(total, day) in budgetSummary" :key="day">
+      <p>{{ day }}코스의 총 예산: {{ total }}원</p>
+    </div>
         <button @click="showModal = false">닫기</button>
       </div>
     </div>
   </div>
+
       </div>
     </VueResizable>
         <Button
       class="side-bar-active-btn"
       size="sm"
-      @click="showSideBar"
-  >
+      @click="showSideBar">
     <font-awesome-icon :icon="isVisibleSideBar ? 'fa-solid fa-arrow-left' : 'fa-solid fa-arrow-right'" />
   </Button>
   </div>
@@ -126,13 +123,17 @@ data() {
     lonCopy: 0.0,
     latCopy: 0.0,
     image: '',
-    category: null,
+    mapTag: '#',
     showModal: false,
     date: '',
     budget: 0,
+    dates: [],
+    budgetSummary: {},
+    category: '',
   };
 },
 mounted() {
+  this.fetchBudgets();
     EventBus.$on('mapClick', (data) => {
         this.title = data.title || '';
         this.addressCopy = data.address || '';
@@ -141,47 +142,64 @@ mounted() {
         this.lonCopy = data.lonCopy;
         this.latCopy = data.latCopy;
         this.image = data.image || '';
-        this.category = data.category || '';
+        this.mapTag = data.mapTag || '';
         this.course = data.course || '';
-        console.log("course: ", data.course);
+        this.budget = data.budget || 0;
+        this.category = data.category || '';
     });
 },
 methods: {
-  // calculateBudget() {
-  //   let totalBudget = 0; // 합산할 예산을 저장할 변수를 초기화합니다.
-    
-  //   if (this.course === 'A코스') {
-  //     this.dates.forEach((day) => {
-  //       if (day.course === 'A') { // 현재 '일차'가 'A코스'에 해당하는지 확인합니다.
-  //         totalBudget += day.budget; // 'A코스'에 해당하는 예산을 합산합니다.
-  //       }
-  //     });
-  //   }
-  //   else if (this.course === 'B코스') {
-  //     this.dates.forEach((day) => {
-  //       if (day.course === 'B') {
-  //         totalBudget += day.budget;
-  //       }
-  //     });
-  //   }
-  //   else if (this.course === 'C코스') {
-  //     this.dates.forEach((day) => {
-  //       if (day.course === 'C') {
-  //         totalBudget += day.budget;
-  //       }
-  //     });
-  //   }
 
-  //   return totalBudget; // 계산된 총 예산을 반환합니다.
-  // },
+  fetchBudgets() {
+    this.$axios.get('http://localhost:8081/api/map/listMap')
+      .then(response => {
+        // response.data 형태가 [{ date: '1일차', budget: 111 }, ...]라고 가정
+        this.dates = response.data;
+        this.calculateTotalBudgets();  // 데이터를 받아온 후 총 예산을 계산
+      })
+      .catch(error => {
+        console.error('Error fetching budgets:', error);
+      });
+  },
+
+  calculateTotalBudgets() {
+  const budgetSummary = {};
+
+  // 코스별로 예산을 저장할 객체 초기화
+  budgetSummary['A'] = {};
+  budgetSummary['B'] = {};
+  budgetSummary['C'] = {};
+  budgetSummary['D'] = {};
+  budgetSummary['E'] = {};
+  budgetSummary['F'] = {};
+  budgetSummary['G'] = {};
+  budgetSummary['H'] = {};
+  budgetSummary['I'] = {};
+  budgetSummary['J'] = {};
+  // 추가적인 코스가 있다면 여기에 더합니다.
+
+  this.dates.forEach((date) => {
+    const course = date.course; // 코스 구분값 (예: 'A', 'B', 'C')
+    const day = date.date; // 날짜 구분값 (예: '1일차')
+    const budget = date.budget; // 예산
+
+    // 코스별 예산 집계
+    if (!budgetSummary[course][day]) {
+      budgetSummary[course][day] = 0;
+    }
+    budgetSummary[course][day] += budget;
+  });
+
+  console.log(budgetSummary);
+  // 이제 budgetSummary 객체에는 각 코스별, 각 날짜별 예산 합산이 저장되어 있음
+  this.budgetSummary = budgetSummary; // 리액티브하게 데이터 업데이트
+},
+
   selectCourse(course) {
     this.course = course; // 사용자가 선택한 코스를 저장
     EventBus.$emit('courseClick', course);
   },
-  selectCategory(category) {
-    this.category = category; // 사용자가 선택한 코스를 저장
-    EventBus.$emit('categoryClick', category);
-  },
+
   onChangeFiles(e) {
     this.fileList.push(...e.target.files);
     console.log(this.fileList);
@@ -192,29 +210,52 @@ methods: {
   updateAddress(event) {
     this.$emit('update:address', event.target.value);
   },
-  saveReview() {
-    try{
-    this.$axios.post('http://localhost:8081/api/map/saveMap', {
-      title: this.title,
-      addressCopy: this.addressCopy,
-      grade: this.grade,
-      review: this.review,
-      lonCopy: this.lonCopy,
-      latCopy: this.latCopy,
-      image: this.image,
-      category: this.category,
-      course: this.course
-    }).then(response => {
-      console.log('저장 성공:', response);
-    })
-  }catch(error){
-    console.error("저장하기 에러" + error);
-  }
-  } 
+  // saveReview() {
+  //   try{
+  //   this.$axios.post('http://localhost:8081/api/map/saveMap', {
+  //     title: this.title,
+  //     addressCopy: this.addressCopy,
+  //     grade: this.grade,
+  //     review: this.review,
+  //     lonCopy: this.lonCopy,
+  //     latCopy: this.latCopy,
+  //     image: this.image,
+  //     category: this.category,
+  //     course: this.course
+  //   }).then(response => {
+  //     console.log('저장 성공:', response);
+  //   })
+  // }catch(error){
+  //   console.error("저장하기 에러" + error);
+  // }
+  // } 
 },
 }
 </script>
 <style lang="scss" scoped>
+.review-span {
+  display: block; /* span을 블록 레벨 요소처럼 보이게 함 */
+  white-space: pre-wrap; /* 공백과 줄바꿈을 유지 */
+  overflow-wrap: break-word; /* 긴 단어가 넘치지 않도록 줄바꿈 */
+  margin: 10px 0; /* 위아래 마진 추가 */
+  padding: 10px; /* 패딩 추가 */
+  border: 1px solid #ccc; /* 테두리 추가 */
+  border-radius: 4px; /* 둥근 테두리 모양 */
+  
+  color: #ffffff; /* 글자색 */
+  min-height: 100px; /* 최소 높이 */
+  width: 100%; /* 너비 */
+}
+
+.tag-label {
+  margin-left: 90px;
+  margin-right: 70px; /* 오른쪽에 20px의 공간을 추가 */
+}
+
+.budget-label {
+  
+  margin-left: 80px; /* 왼쪽에 20px의 공간을 추가 */
+}
 .budget-modal{
   position: fixed;
   top: 0;
@@ -236,6 +277,17 @@ methods: {
   text-align: center;
   background-image: url('@/assets/images/blackpig.jpg');
 }
+/* 입력된 태그 표시 스타일 */
+// .tag {
+//   background-color: #ffffff;
+//   color: #007BFF;
+//   border-radius: 16px;
+//   border: solid 1px #007BFF;
+//   padding: 5px 10px;
+//   display: inline-flex;
+//   align-items: center;
+//   margin-right: 10px;
+// }
 .side-bar-wrapper {
   display: flex;
   color: #fff;
@@ -248,15 +300,18 @@ methods: {
       right: 0;
       bottom: 0;
       padding: 10px;
-       .title-area {
-        padding: 20px 10px;
+      .title-area {
+        padding: 20px;
+        margin-left: 32px;
         input, input::placeholder, input:focus {
-          font-size: 2rem;
-          font-weight: bold;
+          font-size: 1rem;
           color: #fff;
           box-shadow: none;
           background: none;
           border: none;
+          width: 300px; /* 너비 설정 */
+          height: 90px;
+          
         }
       }
        .image-area {
@@ -280,6 +335,7 @@ methods: {
           box-shadow: none;
           background: none;
           border: none;
+          width: 450px;
         }
       }
        .rate-area {
@@ -302,6 +358,7 @@ methods: {
           background: none;
           border: none;
           box-shadow: none;
+          width: 400px;
         }
         /* width */
         ::-webkit-scrollbar {
