@@ -4,12 +4,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ReviewBoard from '../views/ReviewBoard.vue'
+import RecommendList from '../views/Recommend/RecommendList.vue'
 import RecommendListFood from '../components/RecommendList/RecommendListFood.vue' 
 import RecommendListHotel from '../components/RecommendList/RecommendListHotel.vue' 
 import RecommendListPlace from '../components/RecommendList/RecommendListPlace.vue' 
 import RecommendListEvent from '../components/RecommendList/RecommendListEvent.vue' 
-import RecommendList from '../views/RecommendList.vue'
+import RecommendDetail from '../views/Recommend/RecommendDetail.vue'
+//import RecommendDetailFood from '../components/RecommendDetail/RecommendDetailFood.vue'
+import RecommendDetailFood from '../components/RecommendDetail/RecommendDetailFood.vue'
 //import RecommendList from '../views/RecommendListPlace.vue' 
+
 
 const routes = [
   {
@@ -46,6 +50,17 @@ const routes = [
     path: '/listevent',
     name: 'listevent',
     component: RecommendListEvent
+  },
+  {
+    path: '/detail',
+    name: 'recommenddetail',
+    component: RecommendDetail
+  },
+  {
+    path: '/detailfood/:foodId',
+    name: 'detailfood',
+    component: RecommendDetailFood,
+    props: true  // 이를 통해 라우트 파라미터를 prop으로 전달합니다.
   },
   {
     path: '/about',

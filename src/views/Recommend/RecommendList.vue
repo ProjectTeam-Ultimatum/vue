@@ -48,10 +48,10 @@
 
 <script>
 // import RecommendFood from '../components/RecommendFood.vue';
-import RecommendListFood from '../components/RecommendList/RecommendListFood.vue';
-import RecommendListHotel from '../components/RecommendList/RecommendListHotel.vue';
-import RecommendListPlace from '../components/RecommendList/RecommendListPlace.vue';
-import RecommendListEvent from '../components/RecommendList/RecommendListEvent.vue';
+import RecommendListFood from '../../components/RecommendList/RecommendListFood.vue';
+import RecommendListHotel from '../../components/RecommendList/RecommendListHotel.vue';
+import RecommendListPlace from '../../components/RecommendList/RecommendListPlace.vue';
+import RecommendListEvent from '../../components/RecommendList/RecommendListEvent.vue';
 
 export default {
   components: {

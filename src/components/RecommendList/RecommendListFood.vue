@@ -55,7 +55,8 @@
         <div class="card-wrap">
         <!-- <div v-for="list in recommendList" :key="list.id"> -->
           <div :key="i" v-for="(food, i) in filteredFoods">
-            <div class="card">
+            <div @click="goToDetail(food.id)" class="card">
+              <!-- <a @click="goToDetail(food.id);" style="cursor: pointer;">id</a> -->
               <div class="card-image">
                 <img :src="food.recommendFoodImgPath || 'default-image-url'" alt="Review Image">
                 <!-- <div class="score">{{ food.recommendFoodStar }}</div> -->
@@ -206,6 +207,14 @@ export default {
     },
     getStatusMessage(closeTime) {
       return this.isOperating(closeTime);
+    },
+    goToDetail(foodId) {
+      console.log("Navigating with foodId:", foodId);
+      if (!foodId) {
+        console.error("Error: foodId is undefined");
+        return;
+      }
+      this.$router.push({ name: 'detailfood', params: { foodId: foodId } });
     }
   },
     computed: {
