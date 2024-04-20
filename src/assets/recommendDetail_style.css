@@ -21,3 +21,24 @@
     float: right;
 }
 
+.cont-main {
+    border: 1px solid #00a703;
+    border-radius: 15px;
+}
+
+
+.cont-sub {
+    border: 1px solid #ff61d7;
+    border-radius: 15px;
+}
+
+.cont-reply{
+    border: 1px solid #ff9061;
+    border-radius: 15px;
+}
+
+
+.recommend-list {
+    border: 1px solid #1275D6;
+    border-radius: 15px;
+}

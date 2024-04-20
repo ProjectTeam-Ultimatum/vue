@@ -57,7 +57,7 @@ const routes = [
     component: RecommendDetail
   },
   {
-    path: '/detailfood/:foodId',
+    path: '/detailfood/:recommendFoodId',
     name: 'detailfood',
     component: RecommendDetailFood,
     props: true  // 이를 통해 라우트 파라미터를 prop으로 전달합니다.

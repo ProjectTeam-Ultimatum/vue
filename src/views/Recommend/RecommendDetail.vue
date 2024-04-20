@@ -20,7 +20,3 @@ export default {
     },
 }
 </script>
-
-<style scoped>
-@import "@/assets/recommendDetail_style.css";
-</style>

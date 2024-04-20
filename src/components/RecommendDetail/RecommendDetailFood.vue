@@ -4,27 +4,71 @@
             <div id="contents">
                 <div id="subleft-cont">
                     <div id="div_profile">
-                        <div :key="i" v-for="(food, i) in filteredFoods">
-                            <div class="card">
-                            <div class="card-image">
-                                <img :src="food.recommendFoodImgPath || 'default-image-url'" alt="Review Image">
-                                <!-- <div class="score">{{ food.recommendFoodStar }}</div> -->
+                        <div :key="i" v-for="(food, i) in recommendListDetailFood">
+                            <div class="cont-main"  >
+                                <div >
+                                    <img :src="food.recommendFoodImgPath || 'default-image-url'" alt="Review Image">
+                                </div>
+                                <div class="card-content">
+                                    <div class="card-title-wrap">
+                                        <div class="card-title">{{ food.recommendFoodTitle }}</div>
+                                        <div class="card-subtitle">{{ food.recommendFoodIntroduction }}</div>
+                                        <div>평점</div>
+                                        <!-- <div>
+                                            <span class="status" :class="getStatusClass(food.recommendFoodClosetime)">
+                                                {{ getStatusMessage(food.recommendFoodClosetime) }}
+                                            </span>
+                                        </div> -->
+                                    </div>
+                                    <div class="card-option-blue">{{ food.recommendFoodAddress }}</div>
+                                    <div class="card-option-blue">{{ food.recommendFoodPhoneNo }}</div>
+                                    <div class="card-option-blue">{{ food.recommendFoodTag }}</div>
+                                    <div class="card-option">{{ food.recommendFoodTag }}</div>
+                                </div>
                             </div>
-                            <div class="card-content">
-                                <div class="card-title-wrap">
-                                <div class="card-title">{{ food.recommendFoodTitle }}</div>
-                                <!-- 영업시간 -->
+                            <div class="cont-sub">
+                                    <h6>영업시간</h6>
+                                    <ul>
+                                        <li>월요일
+                                            <p>{{ food.recommendFoodOpentime }}</p>
+                                            <p>{{ food.recommendFoodClosetime}}</p>
+                                        </li>
+                                        <li>화요일
+                                            <p>{{ food.recommendFoodOpentime }}</p>
+                                            <p>{{ food.recommendFoodClosetime}}</p>
+                                        </li>
+                                        <li>수요일
+                                            <p>{{ food.recommendFoodOpentime }}</p>
+                                            <p>{{ food.recommendFoodClosetime}}</p>
+                                        </li>
+                                        <li>목요일
+                                            <p>{{ food.recommendFoodOpentime }}</p>
+                                            <p>{{ food.recommendFoodClosetime}}</p>
+                                        </li>
+                                        <li>금요일
+                                            <p>{{ food.recommendFoodOpentime }}</p>
+                                            <p>{{ food.recommendFoodClosetime}}</p>
+                                        </li>
+                                        <li>토요일
+                                            <p>{{ food.recommendFoodOpentime }}</p>
+                                            <p>{{ food.recommendFoodClosetime }}</p>
+                                        </li>
+                                        <li>일요일
+                                            <p>{{ recommendFoodOpentime }}</p>
+                                            <p>{{recommendFoodClosetime}}</p>
+                                        </li>
+                                       
+                                    </ul>
+
                                 <div>
-                                    <span class="status" :class="getStatusClass(food.recommendFoodClosetime)">
-                                        {{ getStatusMessage(food.recommendFoodClosetime) }}
-                                    </span>
+                                    <h6>우진해장국 정보</h6>
+                                    <div class="card-option">{{ food.recommendFoodAllTag }}</div>
                                 </div>
-                                </div>
-                                <div class="card-option-blue">{{ food.recommendFoodRegion }}</div>
-                                <div class="card-subtitle">{{ food.recommendFoodIntroduction }}</div>
-                                <div class="card-option">{{ food.recommendFoodTag }}</div>
                             </div>
-                            </div>
+                        </div>
+                        <div class="cont-reply">
+                            <h6>방문자 평가</h6>
+                            <button>리뷰 쓰기</button>
                         </div>
                     </div>
                 </div>
@@ -34,7 +78,14 @@
                             <img alt="map" src="@/assets/map.png" style="width:160px">
                         </div>
                     </div>
-                    <div class="recommend-list"></div>
+                    <div class="recommend-list">
+                        <h6>주변 추천 맛집</h6>
+                        <ul>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
@@ -44,35 +95,41 @@
 
 <script>
 export default {
-    name: 'RecommendListDetailFood',
-    props: {
-        foodId: {
-            type: String,
-            required: true
+  name: 'RecommendListDetailFood',
+  props: {
+    recommendFoodId: {  // Prop 'recommendFoodId'
+      type: String,
+      required: true
+    }
+  },
+  data() {
+    return {
+      recommendListDetailFood: [],
+    };
+  },
+  methods: {
+    async fetchFoodDetails() {
+        if (!this.recommendFoodId) {
+            console.error("recommendFoodId is undefined!");
+            return;
+        }
+        try {
+            let response = await this.$axios.get(`/api/recommend/listfood/${this.recommendFoodId}`);
+            console.log("응답 recommendFoodId:", response.data.recommendFoodId);  // 데이터 로그 출력
+            this.recommendListDetailFood = [response.data];  // 객체를 배열에 담아서 저장
+            console.log("this.recommendListDetailFood",  this.recommendListDetailFood);
+        } catch (error) {
+            console.error('Error fetching food details:', error);
         }
     },
-    data() {
-        return {
-            recommendListDetailFood: [],
-        };
-    },
-    methods: {
-        fetchFoodDetails() {
-      if (!this.recommendFoodId) {
-        console.error("Food ID is undefined!");
-        return;
-      }
-      this.$axios.get(`api/recommend/listfood/${this.recommendFoodId}`)
-        .then(response => {
-          this.recommendListDetailFood = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching food details:', error);
-        });
-    }
-    },
-    mounted() {
-        this.fetchFoodDetails();
-    }
+    
+  },
+  mounted() {
+    this.fetchFoodDetails();
+  }
 }
 </script>
+
+<style scoped>
+@import "@/assets/recommendDetail_style.css";
+</style>
