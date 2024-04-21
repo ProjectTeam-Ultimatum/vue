@@ -7,7 +7,6 @@ import ReviewBoard from '../views/Review/ReviewBoard.vue'
 import ChattingView from '../views/Chat/ChattingView.vue'
 import ChatRoom from '../views/Chat/ChatRoom.vue';
 import BudgetView from '../views/Budget/BudgetView.vue';
-import ReviewBoard from '../views/ReviewBoard.vue'
 import RecommendList from '../views/Recommend/RecommendList.vue'
 import RecommendListFood from '../components/RecommendList/RecommendListFood.vue' 
 import RecommendListHotel from '../components/RecommendList/RecommendListHotel.vue' 

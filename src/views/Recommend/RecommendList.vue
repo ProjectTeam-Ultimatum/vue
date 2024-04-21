@@ -1,5 +1,7 @@
 <template>
   <section>
+    <!-- 헤더 크기만큼 패딩 -->
+    <div class="divider" />
     <div class="fixedTop">
       <div class="recommend-location">
         <span>지금 보고 있는 지역은
@@ -76,3 +78,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+.divider {
+  padding: 50px;
+}
+</style>

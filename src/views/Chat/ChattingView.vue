@@ -1,5 +1,8 @@
 <template>
   <div class="app-container">
+
+    <div class="divider" />
+
   <div class="title-container">
   <!-- 타이틀 -->
     <h1>여행 조인 게시판</h1>
@@ -374,7 +377,9 @@ export default {
   align-items: center;
   padding: 0 15px; /* 양쪽에 패딩을 추가해줍니다. */
 }
-
+.divider {
+  padding: 80px;
+}
 /* 채팅방 목록 카드 헤더 텍스트 스타일 */
 .title-wrapper {
   flex-grow: 1; /* title-wrapper가 가능한 많은 공간을 차지하도록 합니다. */

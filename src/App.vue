@@ -1,10 +1,12 @@
 <template>
-  <nav :class="{ 'main-page': isMainPage, scrolled: isScrolled }" />
+  <nav :class="{ 'main-page': isMainPage, scrolled: isScrolled }">
     <router-link class="main-logo" to="/">제주랑</router-link>
     <div class="nav-links">
       <router-link to="/chatting"> 메이트 찾기</router-link>
       <router-link to="/budget">예산 짜기</router-link>
       <router-link to="/reviews"> 여행후기 </router-link>
+      <router-link to="/list">리스트</router-link>
+      <router-link to="/detail">디테일</router-link>
     </div>
     <div class="login">
       <div v-if="!isAuthenticated">
@@ -19,11 +21,6 @@
       @close="showModal = false"
       @login-success="handleLoginSuccess"
     />
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/reviews">Review</router-link> |
-    <router-link to="/list">List</router-link>  |
-    <router-link to="/detail">Detail</router-link>  |
   </nav>
   <router-view />
 </template>
@@ -79,7 +76,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
