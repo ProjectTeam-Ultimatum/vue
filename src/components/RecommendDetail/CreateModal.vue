@@ -12,37 +12,36 @@
             </div>
           </div>
         </div>
-        <div class="modal-body">
-          <div class="modal-image">
-            <!-- <img src="path_to_your_image.jpg" alt="우진해장국" style="width:100%; max-height:200px; object-fit:cover;"> -->
-          </div>
-          <div class="star-rating">
-            <span
-              v-for="star in 5"
-              :key="star"
-              class="star"
-              :class="{ filled: star <= rating }"
-              @click="setRating(star)"
-            >
-              ★
-            </span>
-          </div>
-          <div class="feedback-buttons">
-            <button
-              v-for="option in feedbackOptions"
-              :key="option"
-              :class="{ 'feedback-button-selected': feedbacks.includes(option) }"
-              class="feedback-button"
-              @click="toggleFeedback(option)"
-            >
-              {{ option }}
-            </button>
-          </div>
-        </div>
-        <div class="modal-footer">
-            <button class="action-button cancel" @click="close">취소</button>
-          <button class="action-button confirm" @click="submitFeedback">제출</button>
-        </div>
+        <div class="reply-contents">
+          <form @submit.prevent="submitForm" class="review-form">
+            <div class="star-rating">
+              <span
+                v-for="star in 5"
+                :key="star"
+                class="star"
+                :class="{ filled: star <= rating }"
+                @click="setRating(star)"
+              >
+                ★
+              </span>
+            </div>
+            <div class="feedback-buttons">
+              <button
+                v-for="option in feedbackOptions"
+                :key="option"
+                :class="{ 'feedback-button-selected': feedbacks.includes(option) }"
+                class="feedback-button"
+                @click="toggleFeedback(option)"
+              >
+                {{ option }}
+              </button>
+            </div>
+            <div class="modal-footer">
+              <button class="action-button cancel" @click="close">취소</button>
+              <button class="action-button confirm" @click="submitFeedback">제출</button>
+            </div>
+          </form>
+       </div>
       </div>
     </div>
   </template>
@@ -59,7 +58,6 @@ export default {
         '음식이 맛있어요',
         '재료가 신선해요',
         '양이 많아요',
-        '단지 맛에 치우쳐요',
         '가성비가 좋아요',
         '또 가고 싶어요'
       ],
