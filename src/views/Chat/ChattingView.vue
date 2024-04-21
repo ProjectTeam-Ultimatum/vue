@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    <div class="divider" ></div>
   <div class="title-container">
   <!-- 타이틀 -->
     <h1>여행 조인 게시판</h1>
@@ -294,6 +295,11 @@ export default {
   margin: 0 auto; /* 상하 마진 0, 좌우 마진 자동으로 중앙 정렬 */
   padding: 0 20px; /* 양 옆에 20px의 패딩을 추가하여 내용과 화면 가장자리 사이에 공간을 생성 */
 }
+
+.divider {
+  padding: 50px;
+}
+
 
 /* 게시판 타이틀 스타일 */
 .title-container {

@@ -14,8 +14,13 @@
     <div class="main-content">
     <!-- 왼쪽 패널 -->
     <aside class="left-panel">
-    <!-- 왼쪽 내용 -->
-    <h2>채팅방 목록</h2>
+      <h2>채팅방 목록</h2>
+        <ul>
+          <li v-for="roomId in connectedChatRooms" :key="roomId">
+            Room ID: {{ roomId }}
+            <!-- 추가적으로 채팅방 이름 등의 정보를 표시하려면 추가 API 요청 필요 -->
+          </li>
+        </ul>
     </aside>
 
     
@@ -75,6 +80,7 @@ export default {
       newMessage: '', // 사용자가 입력한 새 메시지
       messages: [], // 채팅방의 메시지 목록
       socket: null,
+      connectedChatRooms: [],  // 사용자가 연결된 채팅방 ID 목록
     };
   },
   mounted() {
@@ -83,8 +89,26 @@ export default {
     this.fetchChatRoomDetails(this.chatRoomId); // 추출한 roomId를 사용하여 API 호출
     this.fetchMessages();  // 채팅방 메시지 내역을 불러옵니다.
     this.fetchUserInfo();  // 사용자 정보를 불러옵니다.
+    this.fetchConnectedChatRooms();
   },
   methods: {
+
+    // 연결된 채팅방 목록 요청
+    fetchConnectedChatRooms() {
+      this.$axios.get('http://localhost:8080/api/v1/chat/connected-rooms')
+        .then(response => {
+          console.log('Connected chat rooms:', response.data); // 로그로 데이터 확인
+          this.connectedChatRooms = response.data;
+          if (this.connectedChatRooms.length === 0) {
+            console.log('No connected chat rooms found.'); // 로그로 빈 배열 확인
+          }
+        })
+        .catch(error => {
+          console.error('Failed to fetch connected chat rooms:', error);
+        });
+    },
+
+
     // 이미지 파일 업로드 처리
     handleFileUpload(event) {
       const file = event.target.files[0];
@@ -110,56 +134,69 @@ export default {
         alert("이미지를 업로드하는 동안 오류가 발생했습니다.");
       });
     },
+    
     // WebSocket 연결 설정
     connectWebSocket() {
-      // 로컬 스토리지에서 인증 토큰을 가져옵니다.
+        // 이미 열려 있는 웹소켓 연결이 있는지 확인합니다.
+      if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) {
+        console.log("Using existing WebSocket connection.");
+        return;  // 이미 열려있는 연결을 재사용합니다.
+      }
+      this.setupNewWebSocketConnection();
+    },
+
+
+    setupNewWebSocketConnection() {
       const rawToken = localStorage.getItem('Authorization');
       if (!rawToken) {
         console.error('Authentication token is missing. Please login.');
         return;
       }
-      // 'Bearer ' 접두사 제거
       const token = rawToken.replace('Bearer ', '');
-
       this.socket = new WebSocket(`ws://localhost:8080/ws/chat?chatRoomId=${this.chatRoomId}&token=${encodeURIComponent(token)}`);
 
       this.socket.onopen = () => {
-        console.log("WebSocket 연결 성공");
+        console.log("WebSocket connection established.");
         this.enterChatRoom();
+        this.fetchConnectedChatRooms();
       };
 
-      // 메시지를 수신할 때 실행될 콜백 함수를 정의합니다.
-      this.socket.onmessage = (event) => {
-          const data = JSON.parse(event.data);
-          console.log("Received message:", data);
-
-          // 시스템 메시지인 경우(ENTER, LEAVE) 처리
-          if (data.messageType === 'ENTER' || data.messageType === 'LEAVE') {
-              data.isSystemMessage = true; // 시스템 메시지 플래그 설정
-              this.messages.push(data);
-          } else if (data.senderId && data.message) {
-              // 일반 채팅 메시지 처리
-              // 서버로부터 받은 메시지에 senderId가 현재 사용자의 ID와 동일한 경우
-              if (data.senderId === this.userName) {
-                  data.isMine = true;  // 메시지가 현재 사용자의 것임을 표시
-              } else {
-                  data.isMine = false; // 다른 사용자의 메시지임을 표시
-              }
-              this.messages.push(data);
-          }
-      };
-
-
+      this.socket.onmessage = this.handleWebSocketMessage;
       // 연결이 종료될 때 실행될 콜백 함수를 정의합니다.
+      // WebSocket 연결 종료 시
       this.socket.onclose = () => {
         console.log("WebSocket 연결 종료");
+        // 연결 종료 후 바로 채팅방 목록을 갱신하지 않고, 짧은 딜레이 후에 갱신을 시도합니다.
+        setTimeout(() => {
+          this.fetchConnectedChatRooms(); // 연결된 채팅방 목록을 새로고침
+        }, 1000); // 1초 후에 채팅방 목록 갱신
       };
-
-      // 오류가 발생했을 때 실행될 콜백 함수를 정의합니다.
       this.socket.onerror = (error) => {
-        console.error("WebSocket 오류 발생:", error);
+        console.error("WebSocket error:", error);
       };
     },
+
+    handleWebSocketMessage(event) {
+      const data = JSON.parse(event.data);
+      console.log("Received message:", data);
+
+      if (data.type === 'CONNECTED_CHAT_ROOMS_UPDATE') {
+        this.connectedChatRooms = data.chatRooms;
+      }
+      if (data.messageType === 'ENTER' || data.messageType === 'LEAVE') {
+        data.isSystemMessage = true;
+        this.messages.push(data);
+      } else if (data.senderId && data.message) {
+        if (data.senderId === this.userName) {
+          data.isMine = true;
+        } else {
+          data.isMine = false;
+        }
+        this.messages.push(data);
+      }
+    },
+    
+
     fetchChatRoomDetails(roomId) {
       // Axios를 사용하여 백엔드 API 호출
       this.$axios.get(`http://localhost:8080/api/v1/chat/room/${roomId}`)
@@ -172,6 +209,7 @@ export default {
           console.error("채팅방 정보를 불러오는 중 오류가 발생했습니다:", error);
         });
     },
+
     fetchUserInfo() {
       this.$axios.get('http://localhost:8080/api/v1/user/info/detail')
         .then(response => {
@@ -259,7 +297,7 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 html, body {
   margin: 0;
   padding: 0;
