@@ -208,15 +208,15 @@ export default {
     getStatusMessage(closeTime) {
       return this.isOperating(closeTime);
     },
-    goToDetail(recommendFoodId) {
-    if (!recommendFoodId) {
-      console.error("Error: recommendFoodId is undefined. Cannot navigate to details.");
-      return; // recommendFoodId가 정의되지 않았다면, 유효한 ID 없이 네비게이션을 시도하지 않도록 조기 반환합니다.
+      goToDetail(recommendFoodId) {
+      if (!recommendFoodId) {
+        console.error("Error: recommendFoodId is undefined. Cannot navigate to details.");
+        return; // recommendFoodId가 정의되지 않았다면, 유효한 ID 없이 네비게이션을 시도하지 않도록 조기 반환합니다.
+      }
+      console.log("이동 할 recommendFoodId:", recommendFoodId);
+      this.$router.push({ name: 'detailfood', params: { recommendFoodId } });
+      // Vue Router를 사용하여 'detailfood' 라우트로 이동합니다. 이 때, foodId 파라미터로 recommendFoodId를 전달합니다.
     }
-    console.log("이동 할 recommendFoodId:", recommendFoodId);
-    this.$router.push({ name: 'detailfood', params: { recommendFoodId } });
-    // Vue Router를 사용하여 'detailfood' 라우트로 이동합니다. 이 때, foodId 파라미터로 recommendFoodId를 전달합니다.
-  }
   },
     computed: {
     filteredFoods() {

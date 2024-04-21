@@ -42,3 +42,17 @@
     border: 1px solid #1275D6;
     border-radius: 15px;
 }
+
+.detail-content {
+    text-align: left;
+}
+
+.cont-sub {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.cont-time ul{
+    list-style-type: none; /* Remove default list styling */
+}
