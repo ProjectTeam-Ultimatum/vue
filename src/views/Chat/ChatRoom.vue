@@ -1,5 +1,6 @@
 <template>
   <div class="chat-room-container">
+    <div class="divider" ></div>
     <!-- 채팅방 상단 영역: 채팅방 이름 및 사용자 정보 -->
     <header class="chat-room-header">
       <div class="chat-room-title">{{ chatRoomName }}</div>
@@ -265,6 +266,10 @@ html, body {
   height: 100%;
   width: 100%;
   box-sizing: border-box;
+}
+
+.divider {
+  padding: 50px;
 }
 
 /* 전체 채팅방 컨테이너 */

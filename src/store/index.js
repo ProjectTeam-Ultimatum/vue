@@ -1,8 +1,6 @@
-import Vuex from 'vuex';
-import Vue from 'vue';
+import { createStore } from 'vuex';
 import createPersistedState from 'vuex-persistedstate';
 
-Vue.use(Vuex);
 
 
 const socket = {
@@ -166,7 +164,7 @@ const mapModule = {
 };
 
 // Vuex 스토어 인스턴스 생성
-export default new Vuex.Store({
+export default createStore({
   modules: {
     socket,
     auth: authModule,

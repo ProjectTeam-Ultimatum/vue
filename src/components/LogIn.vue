@@ -145,20 +145,20 @@ export default {
         memberPassword: this.password,
         memberAge: this.age,
         memberGender: this.gender,
-        memberAddress: this.address,
+        memberAddress: this.address
       };
 
       // 여기에서 axios 대신 this.$axios를 사용합니다.
-      this.$axios
-        .post("/api/v1/join", data)
-        .then((response) => {
+    this.$axios.post('http://localhost:8080/api/v1/join', data)
+        .then(response => {
           alert(response.data); // 성공 메시지 출력
-          this.$emit("close");
+          this.closeModal(); // 모달 창 닫기
+          this.$router.push('/login'); // 로그인 페이지로 이동
         })
-        .catch((error) => {
-          console.error("Registration failed:", error);
-          alert("회원가입 실패: " + error.response.data);
-        });
+        .catch(error => {
+          console.error('Registration failed:', error);
+          alert('회원가입 실패: ' + error.response.data);
+      });
     },
     switchView(view) {
       this.currentView = view; // 현재 뷰 전환

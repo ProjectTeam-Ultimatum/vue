@@ -141,7 +141,7 @@ export default {
       };
 
       // 여기에서 axios 대신 this.$axios를 사용합니다.
-    this.$axios.post('/api/v1/join', data)
+    this.$axios.post('http://localhost:8080/api/v1/join', data)
         .then(response => {
           alert(response.data); // 성공 메시지 출력
           this.closeModal(); // 모달 창 닫기

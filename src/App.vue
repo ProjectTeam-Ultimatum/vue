@@ -3,12 +3,10 @@
     <router-link class="main-logo" to="/">제주랑</router-link>
     <div class="nav-links">
       <router-link to="/chatting"> 메이트 찾기</router-link>
-      <router-link to="/budget">예산 짜기</router-link>
       <router-link to="/reviews"> 여행후기 </router-link>
       <router-link to="/list">리스트</router-link>
       <router-link to="/detail">디테일</router-link>
-      <MainMap/>
-    <SideBar class="side-bar"/>
+      <router-link to="/course">코스</router-link>
     </div>
     <div class="login">
       <div v-if="!isAuthenticated">
@@ -29,17 +27,11 @@
 
 <script>
 import LoginModal from "./components/LogIn.vue";
-import MainMap from '@/components/MainMap'
-import SideBar from '@/components/SideBar'
 /* eslint-disable */
 export default {
   name: "App",
   components: {
     LoginModal,
-  },
-  components: {
-    MainMap,
-    SideBar
   },
   data() {
     return {
@@ -84,7 +76,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 #app {
   position: absolute;
   top: 0;

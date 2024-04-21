@@ -4,8 +4,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import MainPage from '../views/MainPage.vue'
 import ChattingView from '../views/Chat/ChattingView.vue'
+import ReviewBoard from '../views/Review/ReviewBoard.vue'
 import ChatRoom from '../views/Chat/ChatRoom.vue';
-import BudgetView from '../views/Budget/BudgetView.vue';
 import RecommendList from '../views/Recommend/RecommendList.vue'
 import RecommendListFood from '../components/RecommendList/RecommendListFood.vue' 
 import RecommendListHotel from '../components/RecommendList/RecommendListHotel.vue' 
@@ -15,7 +15,8 @@ import RecommendDetail from '../views/Recommend/RecommendDetail.vue'
 //import RecommendDetailFood from '../components/RecommendDetail/RecommendDetailFood.vue'
 import RecommendDetailFood from '../components/RecommendDetail/RecommendDetailFood.vue'
 //import RecommendList from '../views/RecommendListPlace.vue' 
-import MainMap from '@/components/MainMap.vue'
+import MainMap from '@/components/Course/MainMap.vue'
+import CourseView from '../views/Course/CourseView.vue'
 
 
 
@@ -24,6 +25,16 @@ const routes = [
     path: '/',
     name: 'MainPage',
     component: MainPage
+  },
+  {
+    path: '/reviews',
+    name: 'reviews',
+    component: ReviewBoard
+  },
+  {
+    path: '/course',
+    name: 'course',
+    component: CourseView
   },
   {
     path: '/mainmap',
@@ -76,11 +87,6 @@ const routes = [
     name: 'ChatRoom',
     component: ChatRoom,
     props: true // 컴포넌트에 URL 파라미터를 props로 전달
-  },
-  {
-    path: '/budget',
-    name: 'budget',
-    component: BudgetView
   },
 ]
 

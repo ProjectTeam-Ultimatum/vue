@@ -7,6 +7,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { far } from '@fortawesome/free-regular-svg-icons'
+import { EventBus } from '@/EventBus';
 
 // Axios 인스턴스 생성 및 설정
 const axiosInstance = axios.create({
@@ -30,8 +31,7 @@ app.use(store).use(router).mount('#app');
 app.component('font-awesome-icon', FontAwesomeIcon)
 
 
-
 app.config.globalProperties.productionTip = false
 app.config.globalProperties.$EventBus = EventBus;
-app.config.globalProperties.$axios = axios;
+
 

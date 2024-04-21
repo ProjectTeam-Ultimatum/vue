@@ -76,7 +76,7 @@
 <script>
 import VueResizable from 'vue-resizable';
 import { EventBus } from '@/EventBus'; // EventBus를 가져옵니다.
-import FormRating from './FormRating';
+import FormRating from '@/components/Course/FormRating';
 export default {
 name: 'SideBar',
 components: {
@@ -133,7 +133,7 @@ methods: {
   },
   // saveReview() {
   //   try{
-  //   this.$axios.post('http://localhost:8081/api/map/saveMap', {
+  //   this.$axios.post('http://localhost:8080/api/map/saveMap', {
   //     title: this.title,
   //     addressCopy: this.addressCopy,
   //     grade: this.grade,
