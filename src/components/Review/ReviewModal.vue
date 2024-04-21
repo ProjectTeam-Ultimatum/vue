@@ -199,7 +199,7 @@ export default {
       }
       try {
         const response = await this.$axios.post(
-          `/api/reviews/${this.review.reviewId}/reply`,
+          `http://localhost:8080/api/reviews/${this.review.reviewId}/reply`,
           {
             reviewReplyer: this.reviewReplyer,
             reviewReplyContent: this.reviewReplyContent,
@@ -234,7 +234,7 @@ export default {
     async deleteReview(reviewId) {
       if (confirm("게시글을 정말 삭제하시겠습니까?")) {
         try {
-          await this.$axios.delete(`/api/reviews/${reviewId}`);
+          await this.$axios.delete(`http://localhost:8080/api/reviews/${reviewId}`);
           alert("게시글이 삭제 되었습니다.");
           this.$emit("close");
           this.$emit("deleted");
@@ -272,7 +272,7 @@ export default {
 
     async updateReply(reply) {
       try {
-        await this.$axios.put(`/api/reviews/${reply.reviewReplyId}/reply`, {
+        await this.$axios.put(`http://localhost:8080/api/reviews/${reply.reviewReplyId}/reply`, {
           reviewReplyContent: reply.editingContent,
         });
         reply.reviewReplyContent = reply.editingContent;
@@ -291,7 +291,7 @@ export default {
     async deleteReply(replyId) {
       if (confirm("댓글을 정말 삭제하시겠습니까?")) {
         try {
-          await this.$axios.delete(`/api/reviews/${replyId}/reply`);
+          await this.$axios.delete(`http://localhost:8080/api/reviews/${replyId}/reply`);
           alert("댓글이 삭제되었습니다.");
           this.$emit("refresh-modal", this.review);
         } catch (error) {

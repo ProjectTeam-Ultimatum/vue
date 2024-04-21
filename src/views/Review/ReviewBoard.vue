@@ -1,4 +1,5 @@
 <template>
+  <div>
   <div class="divider" style="padding: 60px" />
   <div class="main-text">여행 <span class="highlight">후기</span> 게시판</div>
   <p class="sub-text">
@@ -131,7 +132,7 @@
                 class="truncate"
                 @click="openModal(review)"
                 v-html="review.reviewContent"
-              />
+              ></div>
             </div>
             <div class="review-footer">
               <div class="footer-container">
@@ -160,6 +161,7 @@
       </div>
     </div>
   </div>
+
   <div class="pagination">
     <span
       v-for="n in totalPages"
@@ -171,6 +173,7 @@
       {{ n }}
     </span>
   </div>
+</div>
 </template>
 
 <script>
@@ -244,7 +247,7 @@ export default {
           reviewLocation: this.selectedRegion, // 선택된 지역을 파라미터로 추가
           keyword: this.searchQuery,
         };
-        const response = await this.$axios.get("/api/reviews", {
+        const response = await this.$axios.get("http://localhost:8080/api/reviews", {
           params,
         });
 
@@ -269,7 +272,7 @@ export default {
     async openModal(review) {
       try {
         const response = await this.$axios.get(
-          `/api/reviews/${review.reviewId}`
+          `http://localhost:8080/api/reviews/${review.reviewId}`
         );
         this.selectedReview = response.data;
         this.isModalVisible = true;
@@ -283,7 +286,7 @@ export default {
         );
 
         const repliesResponse = await this.$axios.get(
-          `/api/reviews/${review.reviewId}/replies`
+          `http://localhost:8080/api/reviews/${review.reviewId}/replies`
         );
         this.selectedReview.replies = repliesResponse.data;
         console.log("replies :", this.selectedReview.replies);
@@ -338,7 +341,7 @@ export default {
       try {
         // 백엔드 서버에 변경사항을 전달
         await this.$axios.post(
-          `/api/reviews/${review.reviewId}`,
+          `http://localhost:8080/api/reviews/${review.reviewId}`,
           {
             reviewLike: review.reviewLike,
           },

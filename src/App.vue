@@ -3,8 +3,9 @@
     <router-link class="main-logo" to="/">제주랑</router-link>
     <div class="nav-links">
       <router-link to="/chatting"> 메이트 찾기</router-link>
-      <router-link to="/budget">예산 짜기</router-link>
       <router-link to="/reviews"> 여행후기 </router-link>
+      <router-link to="/list">리스트</router-link>
+      <router-link to="/course">코스</router-link>
     </div>
     <div class="login">
       <div v-if="!isAuthenticated">
@@ -74,13 +75,13 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 .main-page #app {
   background-image: url("./assets/images/navbar-img.png"); /* 전체 페이지 배경 이미지 설정 */

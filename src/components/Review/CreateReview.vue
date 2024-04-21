@@ -151,7 +151,7 @@ export default {
       }
 
       try {
-        const response = await this.$axios.post(`/api/reviews`, formData, {
+        const response = await this.$axios.post(`http://localhost:8080/api/reviews`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
