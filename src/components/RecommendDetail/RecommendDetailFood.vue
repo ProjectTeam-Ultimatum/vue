@@ -61,20 +61,22 @@
                                     </ul>
                                 </div>
                                 <div>
-                                    <h6>우진해장국 정보</h6>
+                                    <h6>{{ food.recommendFoodTitle }} 정보</h6>
                                     <div>{{ food.recommendFoodAllTag }}</div>
                                 </div>
                             </div>
                         </div>
                         <div class="cont-reply">
                             <h6>방문자 평가</h6>
-                            <button @click="createModal" style="font-size: 12px; cursor: pointer">평점쓰기 </button>
-                            <CreateModal 
+                             <!-- 버튼 클릭 이벤트에 food.id 전달 -->
+                             <button @click="createModal(recommendFoodId)" style="font-size: 12px; cursor: pointer">평점쓰기</button>
+                             <!-- food.recommendFoodId를 activeFoodId로 설정하여 전달 -->
+                            <CreateModal
                                 v-if="replyModalCreate"
                                 :replyModalCreate="replyModalCreate"
-                                @close="closeModal()" />
-
-                        </div>
+                                :recommendFoodId="activeFoodId" 
+                                @close="closeModal" />
+                            </div>
                     </div>
                 </div>
                 <div id="subright-cont">
@@ -103,20 +105,21 @@ import CreateModal from './CreateModal.vue';
 
 export default {
   name: 'RecommendListDetailFood',
-  components: {
-    CreateModal
-  },
-  props: {
-    recommendFoodId: {  // Prop 'recommendFoodId'
-      type: String,
-      required: true
-    }
-  },
   data() {
     return {
       recommendListDetailFood: [],
       replyModalCreate: false,
+      activeFoodId: null  // 활성화된 음식 ID 저장, 모달 전달
     };
+  },
+  components: {
+    CreateModal
+  },
+  props: {
+    recommendFoodId: {  // 외부에서 전달받는 ID prop
+      type: Number,
+      required: true
+    }
   },
   methods: {
     async fetchFoodDetails() {
@@ -153,9 +156,12 @@ export default {
         return '영업마감';
       }
     }, //isOperating
-    createModal() {
+    createModal(recommendFoodId) {
       // 모달을 생성하는 로직
       console.log("createModal 생성");
+      console.log("모달 생성, ID:", recommendFoodId); // 로그 추가하여 ID 확인
+      // activeFoodId 설정으로 모달에 ID 전달
+      this.activeFoodId = recommendFoodId; // 모달 생성 ID
       this.replyModalCreate = true;
       console.log("createModal 생성:", this.replyModalCreate);
     }, //createModal
@@ -163,6 +169,7 @@ export default {
       // 모달을 닫는 로직
       console.log("createModal 닫기");
       this.replyModalCreate = false;
+      this.activeFoodId = null;  // 모달 닫을 때 ID 초기화
     },
     getStatusClass(closeTime) {
       const status = this.isOperating(closeTime);

@@ -1,9 +1,16 @@
 <template>
-    <div class="reply-modal-overlay">
-      <div class="reply-modal"  v-if="replyModalCreate">
+    <div class="reply-modal-overlay" v-if="replyModalCreate">
+      <div class="reply-modal">
         <div class="reply-modal-body">
-          <!-- <span class="close" @click="closeModal">&times;</span> -->
-          <h2>우진해장국을 방문하셨나요? :)</h2>
+          <div class="reply-info">
+            <div>
+                <img class="reply-image" :src="recommendFoodImgPath || 'default-image-url'" alt="Review Image">
+            </div>
+            <div class="reply-info-text">
+                <h5>{{ recommendFoodTitle }} 방문하셨나요? :)</h5>
+                <span>{{ recommendFoodIntroduction }}</span>
+            </div>
+          </div>
         </div>
         <div class="modal-body">
           <div class="modal-image">
@@ -41,9 +48,11 @@
   </template>
 
 <script>
+
 export default {
   data() {
     return {
+        
       rating: 0,
       feedbacks: [],
       feedbackOptions: [
@@ -53,39 +62,71 @@ export default {
         '단지 맛에 치우쳐요',
         '가성비가 좋아요',
         '또 가고 싶어요'
-      ]
+      ],
+      // 데이터 속성 추가
+      recommendFoodImgPath: '',
+      recommendFoodTitle: '',
+      recommendFoodIntroduction: ''
     };
   },
   props: {
-    // replyModalCreate: {
-    //   type: Boolean,
-    //   required: true,
-    // },
-    replyModalCreate: Boolean
+    recommendFoodId: Number,  // 푸드 ID
+    replyModalCreate: Boolean,
 },
   methods: {
-    setRating(star) {
-      this.rating = star;
+        async fetchFoodDetails() {
+            if (!this.recommendFoodId) {
+                console.error("recommendFoodId is not provided!");
+                return;
+            }
+            console.log("전달 받은 FoodID:", this.recommendFoodId);  // 현재 ID 로깅
+            try {
+                const response = await this.$axios.get(`/api/recommend/listfood/${this.recommendFoodId}`);
+                if (response.data) {
+                this.recommendFoodImgPath = response.data.recommendFoodImgPath;
+                this.recommendFoodTitle = response.data.recommendFoodTitle;
+                this.recommendFoodIntroduction = response.data.recommendFoodIntroduction;
+                }
+            } catch (error) {
+                console.error('Error fetching food details:', error);
+            }
+            },//fetchFoodDetails
+        setRating(star) {
+        this.rating = star;
+        }, //setRating
+        toggleFeedback(option) {
+        const index = this.feedbacks.indexOf(option);
+        if (index === -1) {
+            this.feedbacks.push(option);
+        } else {
+            this.feedbacks.splice(index, 1);
+        }
+        }, //toggleFeedback
+        close(){
+        // 이벤트를 발생시켜 부모 컴포넌트에게 모달을 닫으라고 알립니다.
+        this.$emit('close');
+        }, //close
+        submitFeedback() {
+        // 사용자가 제출 버튼을 눌렀을 때 실행될 로직을 여기에 작성하세요.
+        // 예를 들어, this.feedbacks 배열을 서버로 전송할 수 있습니다.
+        console.log('Submitted feedbacks:', this.feedbacks);
+        this.closeModal(); // 피드백을 제출한 후 모달을 닫습니다.
+        }, //submitFeedback
     },
-    toggleFeedback(option) {
-      const index = this.feedbacks.indexOf(option);
-      if (index === -1) {
-        this.feedbacks.push(option);
-      } else {
-        this.feedbacks.splice(index, 1);
-      }
-    },
-    close(){
-      // 이벤트를 발생시켜 부모 컴포넌트에게 모달을 닫으라고 알립니다.
-      this.$emit('close');
-    },
-    submitFeedback() {
-      // 사용자가 제출 버튼을 눌렀을 때 실행될 로직을 여기에 작성하세요.
-      // 예를 들어, this.feedbacks 배열을 서버로 전송할 수 있습니다.
-      console.log('Submitted feedbacks:', this.feedbacks);
-      this.closeModal(); // 피드백을 제출한 후 모달을 닫습니다.
+    watch: {
+        recommendFoodId(newVal) {
+            if (newVal) {
+                console.log("recommendFoodId has changed to:", newVal);  // ID 변경 감지 로그
+                this.fetchFoodDetails();
+        }
     }
-}
+  },
+  mounted() {
+    if (this.recommendFoodId) {
+      console.log("Mounted with recommendFoodId:", this.recommendFoodId);  // 마운트 시 ID 로깅
+      this.fetchFoodDetails();
+    }
+  }
 };
 </script>
 

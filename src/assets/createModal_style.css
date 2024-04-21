@@ -116,3 +116,18 @@
     background-color: #4CAF50;
     color: white;
   }
+
+  .reply-info {
+    display: flex;
+  }
+
+  .reply-image{
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+  }
+
+  .reply-info-text {
+    text-align: left;
+    margin-left: 20px;
+  }
