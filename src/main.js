@@ -26,4 +26,6 @@ library.add(fas, far)
 
 app.config.globalProperties.$axios = axiosInstance; // 이 부분은 이미 설정되었으므로, 이 줄만 필요
 app.use(store).use(router).mount('#app');
+
 app.component('font-awesome-icon', FontAwesomeIcon)
+
