@@ -29,3 +29,9 @@ app.use(store).use(router).mount('#app');
 
 app.component('font-awesome-icon', FontAwesomeIcon)
 
+
+
+app.config.globalProperties.productionTip = false
+app.config.globalProperties.$EventBus = EventBus;
+app.config.globalProperties.$axios = axios;
+

@@ -7,6 +7,8 @@
       <router-link to="/reviews"> 여행후기 </router-link>
       <router-link to="/list">리스트</router-link>
       <router-link to="/detail">디테일</router-link>
+      <MainMap/>
+    <SideBar class="side-bar"/>
     </div>
     <div class="login">
       <div v-if="!isAuthenticated">
@@ -27,11 +29,17 @@
 
 <script>
 import LoginModal from "./components/LogIn.vue";
+import MainMap from '@/components/MainMap'
+import SideBar from '@/components/SideBar'
 /* eslint-disable */
 export default {
   name: "App",
   components: {
     LoginModal,
+  },
+  components: {
+    MainMap,
+    SideBar
   },
   data() {
     return {
@@ -76,13 +84,13 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 .main-page #app {
   background-image: url("./assets/images/navbar-img.png"); /* 전체 페이지 배경 이미지 설정 */

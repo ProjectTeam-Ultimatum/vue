@@ -1,4 +1,9 @@
-import { createStore } from 'vuex'
+import Vuex from 'vuex';
+import Vue from 'vue';
+import createPersistedState from 'vuex-persistedstate';
+
+Vue.use(Vuex);
+
 
 const socket = {
   namespaced: true,
@@ -49,30 +54,124 @@ const socket = {
   }
 }
 
-export default createStore({
-    modules: {
-      auth: {
-        state: {
-          token: localStorage.getItem('token') // 로컬 스토리지에서 토큰 로드
-        },
-        getters: {
-          token: state => state.token
-        },
-        mutations: {
-          SET_TOKEN(state, token) {
-            state.token = token;
-            localStorage.setItem('token', token); // 로컬 스토리지에 저장
-          }
-        },
-        actions: {
-          saveToken({ commit }, token) {
-            commit('SET_TOKEN', token);
-          },
-          logout({ commit }) {
-            commit('SET_TOKEN', null);
-          }
-        }
-      },
-      socket // socket 모듈을 추가
-    }
+const authModule = {
+  namespaced: true,
+  state: {
+    token: localStorage.getItem('token') || null,
+  },
+  getters: {
+    isAuthenticated: state => !!state.token,
+    token: state => state.token,
+  },
+  mutations: {
+    SET_TOKEN(state, token) {
+      state.token = token;
+      localStorage.setItem('token', token);
+    },
+  },
+  actions: {
+    saveToken({ commit }, token) {
+      commit('SET_TOKEN', token);
+    },
+    logout({ commit }) {
+      commit('SET_TOKEN', null);
+    },
+  },
+};
+
+const mapModule = {
+  namespaced: true,
+  state: {
+    curLonCopy: undefined,
+    curLatCopy: undefined,
+    curMapId: undefined,
+    curTitle: undefined,
+    curAddress: undefined,
+    curGrade: undefined,
+    curReview: undefined,
+    review: null,
+    inputState: false,
+  },
+  mutations: {
+    SET_REVIEW(state, review) {
+      state.review = review;
+    },
+    SET_INPUT_STATE(state, status) {
+      state.inputState = status;
+    },
+    SET_MAPS(state, maps) {
+      state.maps = maps;
+    },
+    SET_LON_LAT(state, { lonCopy, latCopy }) {
+      state.curLonCopy = lonCopy;
+      state.curLatCopy = latCopy;
+    },
+    SET_CUR_MAP_ID(state, id) {
+      state.curMapId = id;
+    },
+    SET_CUR_TITLE(state, title) {
+      state.curTitle = title;
+    },
+    SET_CUR_ADDRESS(state, address) {
+      state.curAddress = address;
+    },
+    SET_CUR_GRADE(state, grade) {
+      state.curGrade = grade;
+    },
+    SET_CUR_REVIEW(state, review) {
+      state.curReview = review;
+    },
+    SET_MAP(state, map) {
+      state.curMapId = map ? map.id : undefined;
+      state.curLatCopy = map ? map.latCopy : undefined;
+      state.curLonCopy = map ? map.lonCopy : undefined;
+      state.curTitle = map ? map.title : undefined;
+      state.curGrade = map ? map.grade : undefined;
+      state.curAddress = map ? map.address : undefined;
+      state.curReview = map ? map.review : undefined;
+    },
+  },
+  actions: {
+    setReview({ commit }, review) {
+      commit('SET_REVIEW', review);
+    },
+    setInputState({ commit }, status) {
+      commit('SET_INPUT_STATE', status);
+    },
+    setMaps({ commit }, maps) {
+      commit('SET_MAPS', maps);
+    },
+    setLonLat({ commit }, { lonCopy, latCopy }) {
+      commit('SET_LON_LAT', { lonCopy, latCopy });
+    },
+    setCurMapId({ commit }, id) {
+      commit('SET_CUR_MAP_ID', id);
+    },
+    setCurTitle({ commit }, title) {
+      commit('SET_CUR_TITLE', title);
+    },
+    setCurAddress({ commit }, address) {
+      commit('SET_CUR_ADDRESS', address);
+    },
+    setCurGrade({ commit }, grade) {
+      commit('SET_CUR_GRADE', grade);
+    },
+    setCurReview({ commit }, review) {
+      commit('SET_CUR_REVIEW', review);
+    },
+    setMap({ commit }, map) {
+      commit('SET_MAP', map);
+    },
+  },
+};
+
+// Vuex 스토어 인스턴스 생성
+export default new Vuex.Store({
+  modules: {
+    socket,
+    auth: authModule,
+    map: mapModule,
+  },
+  // 만약 전역 상태가 필요하다면 여기에 추가합니다.
+  plugins: [createPersistedState()],
 });

@@ -3,7 +3,6 @@
 
 import { createRouter, createWebHistory } from 'vue-router'
 import MainPage from '../views/MainPage.vue'
-import ReviewBoard from '../views/Review/ReviewBoard.vue'
 import ChattingView from '../views/Chat/ChattingView.vue'
 import ChatRoom from '../views/Chat/ChatRoom.vue';
 import BudgetView from '../views/Budget/BudgetView.vue';
@@ -16,6 +15,7 @@ import RecommendDetail from '../views/Recommend/RecommendDetail.vue'
 //import RecommendDetailFood from '../components/RecommendDetail/RecommendDetailFood.vue'
 import RecommendDetailFood from '../components/RecommendDetail/RecommendDetailFood.vue'
 //import RecommendList from '../views/RecommendListPlace.vue' 
+import MainMap from '@/components/MainMap.vue'
 
 
 
@@ -26,9 +26,9 @@ const routes = [
     component: MainPage
   },
   {
-    path: '/reviews',
-    name: 'reviews',
-    component: ReviewBoard
+    path: '/mainmap',
+    name: 'mainmap',
+    component: MainMap
   },
   {
     path: '/list',
