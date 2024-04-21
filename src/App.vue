@@ -5,7 +5,6 @@
       <router-link to="/chatting"> 메이트 찾기</router-link>
       <router-link to="/reviews"> 여행후기 </router-link>
       <router-link to="/list">리스트</router-link>
-      <router-link to="/detail">디테일</router-link>
       <router-link to="/course">코스</router-link>
     </div>
     <div class="login">
