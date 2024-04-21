@@ -3,11 +3,9 @@
     <!-- 채팅방 상단 영역: 채팅방 이름 및 사용자 정보 -->
     <header class="chat-room-header">
       <div class="chat-room-title">{{ chatRoomName }}</div>
-      <div class="user-profile">
-        
-            <input v-model="userId" placeholder="아이디 입력" />
-    <!-- 입장 버튼 추가 -->
-    <button @click="enterChatRoom">입장</button>
+      <div class="button-container"> <!-- 버튼 컨테이너 추가 -->
+        <button class="back-button" @click="goBackToChatList">채팅 목록으로</button>
+        <button class="leave-button" @click="leaveChatRoom">나가기</button>
       </div>
     </header>
 
@@ -21,12 +19,13 @@
 
     
     <!-- 가운데 패널 -->
-    <section class="center-panel">
-    <!-- 채팅 메시지 목록 -->
+    <section class="center-panel" ref="messageContainer">
+      <!-- 채팅 메시지 목록 -->
       <ul>
-        <li v-for="message in messages" :key="message.id" class="message-item">
-          <span class="message-sender">{{ message.senderId }}:</span>
-          <!-- 이미지 URL이면 img 태그로, 그렇지 않으면 span으로 메시지를 보여줍니다. -->
+        <li v-for="message in messages" :key="message.id"
+            :class="{'my-message': message.senderId === userName, 'other-message': message.senderId !== userName, 'enter-leave-message': message.messageType === 'ENTER' || message.messageType === 'LEAVE'}">
+          <!-- 조건부 렌더링으로 senderId 표시 -->
+          <span v-if="message.messageType !== 'ENTER' && message.messageType !== 'LEAVE'" class="message-sender">{{ message.senderId }}:</span>
           <span v-if="isImageUrl(message.message)" class="message-content">
             <img :src="message.message" alt="Image" style="max-width: 200px; max-height: 200px;">
           </span>
@@ -39,9 +38,9 @@
     <aside class="right-panel">
     <!-- 오른쪽 내용 -->
     <img src="@/assets/images/profile.png" alt="User Avatar" class="user-avatar" />
-        <p class="user-name">배정현</p>
+        <p class="user-name">{{ userName }}</p>
         <p class="user-detail">신뢰도</p>
-        <p class="user-detail">나이</p>
+        <p class="user-detail">나이:  {{ userAge }}</p>
         <p class="user-detail">여행 스타일</p>
     </aside>
     </div>
@@ -67,7 +66,11 @@ export default {
     return {
       chatRoomId: null,
       chatRoomName: '',
-      userId: '',
+      userId: null,
+      userName: '',  // 사용자 이름
+      userEmail:'',
+      userGender:'',
+      userAge:'',
       newMessage: '', // 사용자가 입력한 새 메시지
       messages: [], // 채팅방의 메시지 목록
       socket: null,
@@ -75,18 +78,19 @@ export default {
   },
   mounted() {
     this.connectWebSocket(); // WebSocket 연결을 설정합니다.
-    // URL에서 roomId를 추출
-    this.chatRoomId = this.$route.params.roomId;
-    // 추출한 roomId를 사용하여 API 호출
-    this.fetchChatRoomDetails(this.chatRoomId);
-    // 채팅방 메시지 내역을 불러옵니다.
-    this.fetchMessages(); 
+    this.chatRoomId = this.$route.params.roomId; // URL에서 roomId를 추출
+    this.fetchChatRoomDetails(this.chatRoomId); // 추출한 roomId를 사용하여 API 호출
+    this.fetchMessages();  // 채팅방 메시지 내역을 불러옵니다.
+    this.fetchUserInfo();  // 사용자 정보를 불러옵니다.
   },
   methods: {
-    // 이미지 파일 처리
+    // 이미지 파일 업로드 처리
     handleFileUpload(event) {
       const file = event.target.files[0];
-      if (!file) return;
+      if (!file) {
+        console.error("파일을 선택하지 않았습니다.");
+        return;
+      }
 
       const formData = new FormData();
       formData.append('file', file);
@@ -96,34 +100,60 @@ export default {
           'Content-Type': 'multipart/form-data'
         }
       })
-    .then(response => {
-      const imageUrl = response.data;
-      this.sendMessage(imageUrl);  // 이미지 URL을 채팅으로 전송
-    })
-    .catch(error => console.error("이미지 업로드 실패:", error));
+      .then(response => {
+        const imageUrl = response.data;
+        this.sendMessage(imageUrl); // 이미지 URL을 채팅으로 전송
+      })
+      .catch(error => {
+        console.error("이미지 업로드 실패:", error);
+        alert("이미지를 업로드하는 동안 오류가 발생했습니다.");
+      });
     },
+    // WebSocket 연결 설정
     connectWebSocket() {
-      // WebSocket 연결을 생성합니다.
-      this.socket = new WebSocket(`ws://localhost:8080/ws/chat?chatRoomId=${this.chatRoomId}`);
-      
-      // 연결이 열릴 때 실행될 콜백 함수를 정의합니다.
+      // 로컬 스토리지에서 인증 토큰을 가져옵니다.
+      const rawToken = localStorage.getItem('Authorization');
+      if (!rawToken) {
+        console.error('Authentication token is missing. Please login.');
+        return;
+      }
+      // 'Bearer ' 접두사 제거
+      const token = rawToken.replace('Bearer ', '');
+
+      this.socket = new WebSocket(`ws://localhost:8080/ws/chat?chatRoomId=${this.chatRoomId}&token=${encodeURIComponent(token)}`);
+
       this.socket.onopen = () => {
         console.log("WebSocket 연결 성공");
-        // 채팅방에 입장 메시지를 전송합니다.
         this.enterChatRoom();
       };
-      
+
       // 메시지를 수신할 때 실행될 콜백 함수를 정의합니다.
       this.socket.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        this.messages.push(data); // 수신된 메시지를 메시지 목록에 추가합니다.
+          const data = JSON.parse(event.data);
+          console.log("Received message:", data);
+
+          // 시스템 메시지인 경우(ENTER, LEAVE) 처리
+          if (data.messageType === 'ENTER' || data.messageType === 'LEAVE') {
+              data.isSystemMessage = true; // 시스템 메시지 플래그 설정
+              this.messages.push(data);
+          } else if (data.senderId && data.message) {
+              // 일반 채팅 메시지 처리
+              // 서버로부터 받은 메시지에 senderId가 현재 사용자의 ID와 동일한 경우
+              if (data.senderId === this.userName) {
+                  data.isMine = true;  // 메시지가 현재 사용자의 것임을 표시
+              } else {
+                  data.isMine = false; // 다른 사용자의 메시지임을 표시
+              }
+              this.messages.push(data);
+          }
       };
-      
+
+
       // 연결이 종료될 때 실행될 콜백 함수를 정의합니다.
       this.socket.onclose = () => {
         console.log("WebSocket 연결 종료");
       };
-      
+
       // 오류가 발생했을 때 실행될 콜백 함수를 정의합니다.
       this.socket.onerror = (error) => {
         console.error("WebSocket 오류 발생:", error);
@@ -141,6 +171,20 @@ export default {
           console.error("채팅방 정보를 불러오는 중 오류가 발생했습니다:", error);
         });
     },
+    fetchUserInfo() {
+      this.$axios.get('http://localhost:8080/api/v1/user/info/detail')
+        .then(response => {
+          this.userId = response.data.id; // 사용자 ID 설정
+          this.userName = response.data.userName;  // "userName" 키에 접근
+          this.userEmail = response.data.email;    // "email" 키에 접근
+          this.userGender = response.data.gender;  // "gender" 키에 접근
+          this.userAge = response.data.age;        // "age" 키에 접근
+          this.userAddress = response.data.address;// "address" 키에 접근
+        })
+        .catch(error => {
+          console.error("사용자 정보를 불러오는 중 오류가 발생했습니다:", error);
+        });
+    },
     fetchMessages() {
       // 채팅방 메시지 내역을 불러오는 API 호출
       this.$axios.get(`http://localhost:8080/api/v1/chat/room/${this.chatRoomId}/messages`)
@@ -156,7 +200,7 @@ export default {
       const messageData = {
         messageType: "TALK",
         chatRoomId: this.chatRoomId,
-        senderId: this.userId,
+        senderId: this.userName,
         message: this.newMessage || imageUrl,
       };
       if (this.socket && this.socket.readyState === WebSocket.OPEN) {
@@ -178,7 +222,7 @@ export default {
         const enterSignal = {
           messageType: "ENTER",
           chatRoomId: this.chatRoomId,
-          senderId: this.userId,
+          senderId: this.userName,
           // 실제 메시지 내용은 서버에서 생성됩니다.
         };
         this.socket.send(JSON.stringify(enterSignal));
@@ -186,6 +230,31 @@ export default {
         console.error("WebSocket 연결이 준비되지 않았습니다.");
       }
     },
+    goBackToChatList() {
+      // 채팅 목록 페이지로 이동
+      this.$router.push('/chatting');
+    },
+    leaveChatRoom() {
+      const leaveMessage = {
+        messageType: "LEAVE",
+        chatRoomId: this.chatRoomId,
+        senderId: this.userName,
+      };
+      if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+        this.socket.send(JSON.stringify(leaveMessage));
+        this.socket.close(); // WebSocket 연결을 닫습니다.
+      }
+      this.$router.push({ name: 'chatting' });
+    },
+    scrollToBottom() {
+      this.$nextTick(() => {
+        const container = this.$refs.messageContainer;
+        container.scrollTop = container.scrollHeight;
+      });
+    },
+  },
+  updated() {
+    this.scrollToBottom();
   }
 };
 </script>
@@ -281,6 +350,8 @@ html, body {
 .center-panel {
   flex: 2.2;
   border-right: 1px solid #ddd; /* 오른쪽에 경계선 추가 */
+  overflow-y: auto; /* 내용이 많을 경우 스크롤바를 표시 */
+  height: calc(100vh - 240px); /* 뷰포트 높이에서 헤더와 푸터 높이를 빼고 설정 */
 }
 
 /* 오른쪽 세션 */
@@ -331,10 +402,55 @@ html, body {
   font-weight: bold;
   margin-right: 5px;
 }
-
-/* 채팅메시지 내용 스타일*/
+/* 기본 말풍선 스타일 */
 .message-content {
-  word-break: break-word;
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 18px;
+  margin: 5px 10px;
+  max-width: 60%;
+  position: relative;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 나의 메시지 스타일 */
+.my-message {
+  text-align: right;
+}
+
+.my-message .message-content {
+  background-color: #F7EC1D; /* 황색 */
+  border-bottom-right-radius: 0;  /* 오른쪽 아래 코너를 평평하게 */
+}
+
+.my-message .message-content::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  bottom: 0;
+  right: 10px;
+  margin-bottom: -20px;
+}
+
+/* 다른 사람의 메시지 스타일 */
+.other-message {
+  text-align: left;
+}
+
+.other-message .message-content {
+  background-color: #F3F3F3; /* 밝은 회색 */
+  border-bottom-left-radius: 0;  /* 왼쪽 아래 코너를 평평하게 */
+}
+
+.other-message .message-content::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  bottom: 0;
+  left: 10px;
+  margin-bottom: -20px;
 }
 
 /* 메시지 입력 영역 스타일 */
@@ -369,5 +485,49 @@ html, body {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.back-button {
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.back-button:hover {
+  background-color: #4CAF50;
+}
+
+.leave-button {
+  padding: 8px 16px;
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.leave-button:hover {
+  background-color: #ff7875;
+}
+
+.enter-leave-message {
+  display: flex; /* Flexbox 사용 */
+  justify-content: center; /* 가운데 정렬 */
+  width: 100%; /* 전체 너비 사용 */
+}
+
+.enter-leave-message .message-content {
+  color: #888; /* 회색으로 표시 */
+  font-style: italic;
+  text-align: center;
+  width: auto; /* 자동 너비 설정 */
+}
+
+.button-container {
+  display: flex; /* 버튼들을 가로로 나란히 배치 */
+  gap: 8px; /* 버튼 사이의 간격 */
 }
 </style>
