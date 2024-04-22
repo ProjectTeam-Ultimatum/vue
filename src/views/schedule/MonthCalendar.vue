@@ -289,6 +289,7 @@ import 'material-icons/iconfont/material-icons.css'; //npm install material-icon
 import axios from 'axios';
 
 
+
 export default {
   data() {
     return {
@@ -490,7 +491,7 @@ export default {
         planTitle: '여행 일정',
         planDays: this.daystime
       };
-      axios.post('http://localhost:8080/api/plans/create', planRequest)
+      axios.post('http://localhost:8081/api/plans/create', planRequest)
         .then(response => {
           const planId = response.data.planId;
           this.selectedItems.forEach(item => this.saveItem(planId, item));
@@ -541,7 +542,7 @@ export default {
         stayTime: this.formatStayTime(item.durationHours, item.durationMinutes)
       };
 
-      const apiUrl = `http://localhost:8080/api/plans/${categoryPath}/add`;
+      const apiUrl = `http://localhost:8081/api/plans/${categoryPath}/add`;
 
       axios.post(apiUrl, planData)
         .then(res => console.log(`${item.category} 저장 성공`, res))
