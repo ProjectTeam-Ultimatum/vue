@@ -43,12 +43,13 @@ import OlVectorLayer from 'ol/layer/Vector.js'
 import OlFeature from 'ol/Feature.js';
 import OlPoint from 'ol/geom/Point.js';
 import OlStyle from 'ol/style/Style.js';
+import {Fill, Stroke, Text} from 'ol/style';
 import OlIcon from 'ol/style/Icon.js';
 
 import markerImage from '@/assets/images/jjang.png';
 
 import OlLineString from 'ol/geom/LineString';
-import { Stroke } from 'ol/style';
+
 
 
 export default {
@@ -193,7 +194,21 @@ methods: {
           image: new OlIcon({
             scale: 0.05,
             src: markerImage 
-          })
+          }),
+
+        text: new Text({
+        text: String(location.id), // 위치 순서를 문자열로 변환
+        font: '14px Calibri,sans-serif',
+        offsetY: -25,
+        fill: new Fill({
+          color: '#ff0000'
+        }),
+        stroke: new Stroke({
+          color: '#ffffff',
+          width: 3
+        }),
+        
+      })
         }));
 
         feature.set('data', location);
@@ -269,6 +284,7 @@ this.olMap.on('click', async (e) => {
   if (addressInfo) {
     const displayAddress = this.getUiAddress(addressInfo.data.display_name);
     const point = fromLonLat([lon, lat]);
+    console.log(lon , lat)
     const featureId = `feature-${lon}-${lat}`;  // Example of generating a unique feature ID
     let feature = this.vectorSource.getFeatureById(featureId);
     if (!feature) {
@@ -405,12 +421,12 @@ this.olMap.on('click', async (e) => {
     const vectorLayer = this.olMap.getLayers().item(1); // 두 번째 레이어 가져오기
     const vectorSource = vectorLayer.getSource();
     const coordinates = [];
+
   // DB에서 가져온 각 위치 정보에 대해 아이콘을 추가합니다.
   this.locations.forEach(location => {
     if (location.course === this.course){
       const point = fromLonLat([location.lonCopy, location.latCopy]);
        coordinates.push(point);
-        this.groupAndDrawLines();
 
       const feature = new OlFeature({
        geometry: new OlPoint(fromLonLat([location.lonCopy, location.latCopy]))
@@ -422,7 +438,9 @@ this.olMap.on('click', async (e) => {
     scale: 0.05,
     src: markerImage 
   })
+
   }));
+
   feature.set('data', location);
   vectorSource.addFeature(feature);
   }});
