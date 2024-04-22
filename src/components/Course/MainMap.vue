@@ -1,5 +1,4 @@
 <template>
-<div>
   <div class="courseButton">
         <button type="button" @click="coursebutton('A')"> A 코스 </button>
         <button type="button" @click="coursebutton('B')"> B 코스 </button>
@@ -27,7 +26,6 @@
       </div>
     </div>
   </div>
-</div>
 </template>
 <script>
 import OlLayerTile from 'ol/layer/Tile.js';
@@ -45,11 +43,13 @@ import OlVectorLayer from 'ol/layer/Vector.js'
 import OlFeature from 'ol/Feature.js';
 import OlPoint from 'ol/geom/Point.js';
 import OlStyle from 'ol/style/Style.js';
+import {Fill, Stroke, Text} from 'ol/style';
 import OlIcon from 'ol/style/Icon.js';
 
 import markerImage from '@/assets/images/jjang.png';
+
 import OlLineString from 'ol/geom/LineString';
-import { Stroke } from 'ol/style';
+
 
 
 export default {
@@ -77,34 +77,24 @@ export default {
   mounted() {
     this.initializeMap();
     this.fetchBudgets();
-    EventBus.$on('courseSelected', this.handleCourseSelected);
+    EventBus.$on('courseClick', (course) => {
+    this.course = course;
+    this.updateMapIcons();  // 코스에 맞는 아이콘을 다시 불러옵니다.
+  });
 },
 
 methods: {
-  handleCourseSelected(course) {
-      this.course = course;
-      this.updateMapIcons();
-    },
   fetchBudgets() {
     this.$axios.get('http://localhost:8080/api/map/listMap')
       .then(response => {
         // response.data 형태가 [{ date: '1일차', budget: 111 }, ...]라고 가정
-        this.budgetSummary = this.processBudgetData(response.data);  // 데이터를 받아온 후 총 예산을 계산
+        this.dates = response.data;
+        this.calculateTotalBudgets();  // 데이터를 받아온 후 총 예산을 계산
       })
       .catch(error => {
         console.error('Error fetching budgets:', error);
       });
   },
-  processBudgetData(data) {
-      const summary = {};
-      data.forEach(item => {
-        if (!summary[item.course]) {
-          summary[item.course] = 0;
-        }
-        summary[item.course] += item.budget;
-      });
-      return summary;
-    },
 
   calculateTotalBudgets() {
   const budgetSummary = {};
@@ -204,7 +194,21 @@ methods: {
           image: new OlIcon({
             scale: 0.05,
             src: markerImage 
-          })
+          }),
+
+        text: new Text({
+        text: String(location.id), // 위치 순서를 문자열로 변환
+        font: '14px Calibri,sans-serif',
+        offsetY: -25,
+        fill: new Fill({
+          color: '#ff0000'
+        }),
+        stroke: new Stroke({
+          color: '#ffffff',
+          width: 3
+        }),
+        
+      })
         }));
 
         feature.set('data', location);
@@ -240,9 +244,7 @@ methods: {
 },
 
   initializeMap() {
-    this.vectorSource = new OlVectorSource({
-        source: new OlVectorSource()
-      });
+    this.vectorSource = new OlVectorSource();
  
     this.fetchLocations();
     const vectorLayer = new OlVectorLayer({
@@ -250,18 +252,23 @@ methods: {
     });
     this.olMap = new OlMap({
       target: this.$refs.map,
-    layers: [
-      new OlLayerTile({
-        source: new OSM()
-      }),
-      vectorLayer
-    ],
-    view: new OlView({
-      center: fromLonLat([126.52919839098948, 33.361753442616674]), // 경기도 성남
-      zoom: 11
+      controls: defaults({
+      attribution: false,
+      zoom: false,
+      rotate: false,
     }),
-    controls: defaults({ attribution: false, zoom: false, rotate: false })
-  });
+  
+  layers: [
+    new OlLayerTile({
+      source: new OSM()
+    }),
+    vectorLayer
+  ],
+  view: new OlView({
+    center: fromLonLat([126.52919839098948, 33.361753442616674]), // 경기도 성남
+    zoom: 11
+  })
+});
 this.olMap.on('click', async (e) => {
   geocoder.getSource().clear();
   this.clearLocationData();
@@ -277,6 +284,7 @@ this.olMap.on('click', async (e) => {
   if (addressInfo) {
     const displayAddress = this.getUiAddress(addressInfo.data.display_name);
     const point = fromLonLat([lon, lat]);
+    console.log(lon , lat)
     const featureId = `feature-${lon}-${lat}`;  // Example of generating a unique feature ID
     let feature = this.vectorSource.getFeatureById(featureId);
     if (!feature) {
@@ -413,12 +421,12 @@ this.olMap.on('click', async (e) => {
     const vectorLayer = this.olMap.getLayers().item(1); // 두 번째 레이어 가져오기
     const vectorSource = vectorLayer.getSource();
     const coordinates = [];
+
   // DB에서 가져온 각 위치 정보에 대해 아이콘을 추가합니다.
   this.locations.forEach(location => {
     if (location.course === this.course){
       const point = fromLonLat([location.lonCopy, location.latCopy]);
        coordinates.push(point);
-        this.groupAndDrawLines();
 
       const feature = new OlFeature({
        geometry: new OlPoint(fromLonLat([location.lonCopy, location.latCopy]))
@@ -430,7 +438,9 @@ this.olMap.on('click', async (e) => {
     scale: 0.05,
     src: markerImage 
   })
+
   }));
+
   feature.set('data', location);
   vectorSource.addFeature(feature);
   }});
