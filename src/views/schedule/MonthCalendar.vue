@@ -288,6 +288,7 @@ import { Calendar } from './calendar.js';
 import 'material-icons/iconfont/material-icons.css'; //npm install material-icons --save
 import axios from 'axios';
 
+
 export default {
   data() {
     return {
@@ -484,6 +485,7 @@ export default {
         return;
       }
       this.savePlan(this.createPlanRequest());
+      this.$router.push('/scheduleMap');
     },
     createPlanRequest() {
       return {
@@ -501,7 +503,7 @@ export default {
       return dateTime.toISOString(); // 'YYYY-MM-DDTHH:MM:SS' 형식
     },
     savePlan(planRequest) {
-      axios.post('http://localhost:8080/api/plans/create', planRequest)
+      axios.post('http://localhost:8081/api/plans/create', planRequest)
         .then(response => {
           this.saveSelectedItems(response.data.planId);
         })
@@ -523,7 +525,7 @@ export default {
 
       // 각 카테고리에 맞는 API 경로를 가져옴
       const categoryPath = this.getCategoryPath(item.category);
-      const apiUrl = `http://localhost:8080/api/plans/${categoryPath}/add`;
+      const apiUrl = `http://localhost:8081/api/plans/${categoryPath}/add`;
 
       // POST 요청으로 서버에 데이터 전송
       axios.post(apiUrl, planData)
@@ -574,7 +576,7 @@ export default {
       return title.length > 24 ? `${title.substring(0, 20)}...` : title;
     },
     fetchData() {
-      let baseUrl = 'http://localhost:8080/api/recommend/';
+      let baseUrl = 'http://localhost:8081/api/recommend/';
       let categoryPath = this.selectedCategory === 'all' ? 'listall' : `list${this.selectedCategory}`;
       let url = `${baseUrl}${categoryPath}`;
 
@@ -598,9 +600,9 @@ export default {
     searchData() {
         let baseUrl;
         if (this.selectedCategory === 'all') {
-            baseUrl = `http://localhost:8080/api/recommend/search/all`;
+            baseUrl = `http://localhost:8081/api/recommend/search/all`;
         } else {
-            baseUrl = `http://localhost:8080/api/recommend/search/${this.selectedCategory}`;
+            baseUrl = `http://localhost:8081/api/recommend/search/${this.selectedCategory}`;
         }
         const params = new URLSearchParams({ title: this.searchQuery }).toString();
         axios.get(`${baseUrl}?${params}`)
@@ -615,7 +617,7 @@ export default {
             .catch(error => console.error('Search error:', error));
     },
     fetchHotels() {
-      axios.get('http://localhost:8080/api/recommend/listhotel')
+      axios.get('http://localhost:8081/api/recommend/listhotel')
       .then(response => {
           this.hotels = response.data.content.map(hotels => ({
             title: this.trimTitle(hotels.recommendHotelTitle),
@@ -628,7 +630,7 @@ export default {
         });
     },
     searchDatahotel() {
-      let baseUrl = 'http://localhost:8080/api/recommend/search/hotel';
+      let baseUrl = 'http://localhost:8081/api/recommend/search/hotel';
       const params = new URLSearchParams({ title: this.hotelSearchQuery }).toString();
       axios.get(`${baseUrl}?${params}`)
         .then(response => {
