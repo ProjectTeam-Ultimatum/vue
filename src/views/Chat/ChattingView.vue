@@ -16,7 +16,9 @@
     <h2>채팅방 게시하기<font-awesome-icon icon="fa-solid fa-pen-to-square" /></h2>
     <div class="modal-header">
       <div class="profile-picture">
-        <img src="@/assets/images/profile.png" alt="Profile Picture">
+        <div v-if="userImages.length > 0">
+          <img v-for="(image, index) in userImages" :src="image" :key="index" :alt="`${userName}'s profile image ${index + 1}`" />
+        </div>
       </div>
       <p class="name-input">{{userName}}</p>
       <p class="name-input">{{userAge}} 살</p>
@@ -148,7 +150,7 @@
       <!-- 채팅방 카드 목록 -->
       <div v-for="room in filteredAndSortedChatRooms" :key="room.chatRoomId" class="card-container">
           <div class="profile-picture">
-              <img src="@/assets/images/profile.png" alt="Profile Picture">
+              <img :src="room.creatorImage || require('@/assets/images/profile.png')" alt="Profile Picture">
               <p class="profile-name">{{ room.creatorName }}</p> <!-- 작성자 이름 -->
               <p class="profile-detail">{{ room.creatorAge }}살</p> <!-- 작성자 나이 -->
           </div>
@@ -193,6 +195,7 @@ export default {
       userEmail:'',
       userGender:'',
       userAge:'',
+      userImages: [], // 사용자 이미지 URL을 저장할 배열
     };
   },
   computed: {
@@ -260,16 +263,14 @@ export default {
     fetchChatRooms() {
       this.$axios.get('http://localhost:8080/api/v1/chat/list')
         .then(response => {
-          // 데이터를 받아와서 날짜에 따라 정렬합니다.
+          console.log('API Response:', response.data); // 이 부분을 추가하여 응답 확인
           const sortedRooms = response.data.sort((a, b) => new Date(b.regDate) - new Date(a.regDate));
-          // 반응형 데이터 갱신을 위해 새로운 배열을 할당합니다.
           this.chatRooms = [...sortedRooms];
         })
         .catch(error => {
           console.error("채팅방 목록을 불러오는데 실패했습니다:", error);
         });
     },
-
     deleteChatRoom(roomId) {
       this.$axios.delete(`http://localhost:8080/api/v1/chat/room/${roomId}`)
         .then(() => {
@@ -287,11 +288,13 @@ export default {
     fetchUserInfo() {
       this.$axios.get('http://localhost:8080/api/v1/user/info/detail')
         .then(response => {
-          this.userName = response.data.userName;  // "userName" 키에 접근
-          this.userEmail = response.data.email;    // "email" 키에 접근
-          this.userGender = response.data.gender;  // "gender" 키에 접근
-          this.userAge = response.data.age;        // "age" 키에 접근
-          this.userAddress = response.data.address;// "address" 키에 접근
+          const data = response.data;
+          this.userName = data.userName;  // "userName" 키에 접근
+          this.userEmail = data.email;    // "email" 키에 접근
+          this.userGender = data.gender;  // "gender" 키에 접근
+          this.userAge = data.age;        // "age" 키에 접근
+          this.userAddress = data.address;// "address" 키에 접근
+          this.userImages = data.images;  // 이미지 URL 리스트 저장
         })
         .catch(error => {
           console.error("사용자 정보를 불러오는 중 오류가 발생했습니다:", error);
