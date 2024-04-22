@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    <div class="divider" ></div>
   <div class="title-container">
   <!-- 타이틀 -->
     <h1>여행 조인 게시판</h1>
@@ -15,16 +16,39 @@
     <h2>채팅방 게시하기<font-awesome-icon icon="fa-solid fa-pen-to-square" /></h2>
     <div class="modal-header">
       <div class="profile-picture">
-        <img src="@/assets/images/profile.png" alt="Profile Picture">
+        <div v-if="userImages.length > 0">
+          <img v-for="(image, index) in userImages" :src="image" :key="index" :alt="`${userName}'s profile image ${index + 1}`" />
+        </div>
       </div>
       <p class="name-input">{{userName}}</p>
       <p class="name-input">{{userAge}} 살</p>
     </div>
+    
     <!-- 제목 입력 부분 -->
     <div class="input-group">
-      <label for="title" class="form-label">제목</label>
-      <input type="text" id="title" v-model="newChatRoomTitle" placeholder="제목을 입력하세요" class="text-input">
+      <div class="input-group">
+        <label for="title" class="form-label">제목</label>
+        <input type="text" id="title" v-model="newChatRoomTitle" placeholder="제목을 입력하세요" class="text-input">        
+      </div>
     </div>
+
+    <!-- 드롭다운 필터 -->
+    <div class="input-group">
+      <div for="reviewLocation" class="filter-body1">
+        <label for="reviewLocation" class="form-label">지역</label>
+        <select id="reviewLocation" v-model="reviewLocation" @change="handleLocationChange" class="dropdown-select">
+          <option value="">선택하세요</option>
+          <option value="전체지역">전체지역</option>
+          <option value="제주북부">제주북부</option>
+          <option value="제주남부">제주남부</option>
+          <option value="제주동부">제주동부</option>
+          <option value="제주서부">제주서부</option>
+          <!-- 추가 지역 옵션을 여기에 더 추가할 수 있습니다. -->
+        </select>
+      </div>
+    </div>
+
+
     <div class="input-group">
       <div class="input-group">
         <label for="travelStyle" class="form-label">태그</label>
@@ -99,8 +123,11 @@
               <span>지역</span>
               <select id="regionSelect" v-model="selectedRegion" class="dropdown-select">
               <option value="">선택하세요</option>
-              <option value="서울">서울</option>
-              <option value="부산">부산</option>
+              <option value="전체지역">전체지역</option>
+              <option value="제주북부">제주북부</option>
+              <option value="제주남부">제주남부</option>
+              <option value="제주동부">제주동부</option>
+              <option value="제주서부">제주서부</option>
               <!-- 추가 지역 옵션을 여기에 더 추가할 수 있습니다. -->
             </select>
             </div>
@@ -121,14 +148,14 @@
     </div>
 
       <!-- 채팅방 카드 목록 -->
-      <div v-for="room in filteredChatRooms" :key="room.chatRoomId" class="card-container">
+      <div v-for="room in filteredAndSortedChatRooms" :key="room.chatRoomId" class="card-container">
           <div class="profile-picture">
-              <img src="@/assets/images/profile.png" alt="Profile Picture">
+              <img :src="room.creatorImage || require('@/assets/images/profile.png')" alt="Profile Picture">
               <p class="profile-name">{{ room.creatorName }}</p> <!-- 작성자 이름 -->
               <p class="profile-detail">{{ room.creatorAge }}살</p> <!-- 작성자 나이 -->
           </div>
           <div class="text-content">
-              <h3 class="chatroom-name">{{ room.chatRoomName }}</h3>
+              <h3 class="chatroom-name">[{{ room.reviewLocation }}]  {{ room.chatRoomName }}</h3>
               <p class="subtitle">{{ room.chatRoomContent }}</p>
               <div class="tag">
                   <span v-for="tag in room.travelStyleTags" :key="tag" class="travel-style-tag">
@@ -157,6 +184,7 @@ export default {
       travelStyles: [], // 사용자가 입력한 여행 스타일 태그를 저장할 배열
       newChatRoomTitle: '',  // 채팅방 제목
       newChatRoomContent: '', // 채팅방 내용
+      reviewLocation: '',
       searchQuery: '', // 사용자의 검색 쿼리를 저장할 새로운 데이터 속성
       showFilterModal: false, // 필터 모달 창 표시 여부
       ageFilter: 25, // 기본 나이 필터 값을 설정
@@ -167,14 +195,18 @@ export default {
       userEmail:'',
       userGender:'',
       userAge:'',
+      userImages: [], // 사용자 이미지 URL을 저장할 배열
     };
   },
   computed: {
-    filteredChatRooms() {
-      // 검색 쿼리를 소문자로 변환하고, 채팅방 이름도 소문자로 변환하여 비교합니다.
-      return this.chatRooms.filter(room =>
-        room.chatRoomName.toLowerCase().includes(this.searchQuery.toLowerCase())
+    filteredAndSortedChatRooms() {
+      let filtered = this.chatRooms.filter(room =>
+        room.chatRoomName.toLowerCase().includes(this.searchQuery.toLowerCase()) &&
+        (this.selectedRegion === '' || room.reviewLocation === this.selectedRegion) // 지역 필터 추가
       );
+
+      filtered.sort((a, b) => new Date(b.regDate) - new Date(a.regDate));
+      return filtered;
     }
   },
   mounted() {
@@ -186,9 +218,12 @@ export default {
         const chatRoomData = {
       chatRoomName: this.newChatRoomTitle,
       chatRoomContent: this.newChatRoomContent,
-      travelStyleTags: this.travelStyles
+      travelStyleTags: this.travelStyles,
+      reviewLocation: this.reviewLocation
     };
     
+    console.log('Sending:', chatRoomData);
+
     // Axios를 통해 서버에 채팅방 생성 요청
     this.$axios.post('http://localhost:8080/api/v1/chat/create', chatRoomData)
       .then(response => {
@@ -196,6 +231,7 @@ export default {
         console.log("채팅방 생성 성공:", response.data);
         this.newChatRoomTitle = ''; // 채팅방 이름 입력 필드 초기화
         this.newChatRoomContent = ''; // 채팅방 내용 입력 필드 초기화
+        this.reviewLocation = '';
         this.travelStyles = []; // 채팅방 태그 목록 초기화
         this.showModal = false; // 모달 창 닫기
         this.fetchChatRooms(); // 채팅방 목록 다시 불러오기
@@ -206,6 +242,9 @@ export default {
         alert('채팅방 생성에 실패했습니다: ' + (error.response?.data || error.message));
       });
     },
+    handleLocationChange() {
+        console.log('Selected location:', this.reviewLocation);
+    },
     addTravelStyle() {
     const input = document.getElementById('travelStyle');
     if (input.value.trim() !== '') {
@@ -214,46 +253,23 @@ export default {
       }
     },
     applyFilters() {
-    // 필터 로직을 여기에 구현합니다.
-    // 예를 들면, 서버에 필터링된 채팅방 데이터를 요청하는 API 호출 등을 할 수 있습니다.
-    console.log('적용된 필터:', this.ageFilter, this.distanceFilter, this.regionFilter);
-    this.showFilterModal = false; // 필터 적용 후 모달창 닫기
-  },
+      this.showFilterModal = false; // 필터 모달창 닫기
+      console.log('적용된 필터:', this.ageFilter, this.distanceFilter, this.selectedRegion);
+    },
     removeTravelStyle(index) {
     this.travelStyles.splice(index, 1); // 인덱스를 사용하여 배열에서 태그 삭제
     },
+
     fetchChatRooms() {
       this.$axios.get('http://localhost:8080/api/v1/chat/list')
         .then(response => {
-            console.log("Fetched chat rooms:", response.data);  // 데이터 확인
-            this.chatRooms = response.data;
+          console.log('API Response:', response.data); // 이 부분을 추가하여 응답 확인
+          const sortedRooms = response.data.sort((a, b) => new Date(b.regDate) - new Date(a.regDate));
+          this.chatRooms = [...sortedRooms];
         })
         .catch(error => {
-            console.error("채팅방 목록을 불러오는데 실패했습니다:", error);
+          console.error("채팅방 목록을 불러오는데 실패했습니다:", error);
         });
-    },
-
-    createChatRoom() {
-      const newChatRoom = {
-          chatRoomName: this.newChatRoomTitle, // 채팅방 이름
-          chatRoomContent: this.newChatRoomContent, // 채팅방 내용
-          travelStyleTags: this.travelStyles // 여행 스타일 태그
-      };
-      this.$axios.post('http://localhost:8080/api/v1/chat/create', newChatRoom)
-      .then(response => {
-          console.log("채팅방 생성 성공:", response.data);
-          this.resetForm();
-      })
-      .catch(error => {
-          console.error("채팅방 생성 실패:", error.response.data);
-      });
-    },
-    resetForm() {
-        this.newChatRoomTitle = '';
-        this.newChatRoomContent = '';
-        this.travelStyles = [];
-        this.showModal = false;
-        this.fetchChatRooms();
     },
     deleteChatRoom(roomId) {
       this.$axios.delete(`http://localhost:8080/api/v1/chat/room/${roomId}`)
@@ -272,11 +288,13 @@ export default {
     fetchUserInfo() {
       this.$axios.get('http://localhost:8080/api/v1/user/info/detail')
         .then(response => {
-          this.userName = response.data.userName;  // "userName" 키에 접근
-          this.userEmail = response.data.email;    // "email" 키에 접근
-          this.userGender = response.data.gender;  // "gender" 키에 접근
-          this.userAge = response.data.age;        // "age" 키에 접근
-          this.userAddress = response.data.address;// "address" 키에 접근
+          const data = response.data;
+          this.userName = data.userName;  // "userName" 키에 접근
+          this.userEmail = data.email;    // "email" 키에 접근
+          this.userGender = data.gender;  // "gender" 키에 접근
+          this.userAge = data.age;        // "age" 키에 접근
+          this.userAddress = data.address;// "address" 키에 접근
+          this.userImages = data.images;  // 이미지 URL 리스트 저장
         })
         .catch(error => {
           console.error("사용자 정보를 불러오는 중 오류가 발생했습니다:", error);
@@ -294,6 +312,11 @@ export default {
   margin: 0 auto; /* 상하 마진 0, 좌우 마진 자동으로 중앙 정렬 */
   padding: 0 20px; /* 양 옆에 20px의 패딩을 추가하여 내용과 화면 가장자리 사이에 공간을 생성 */
 }
+
+.divider {
+  padding: 50px;
+}
+
 
 /* 게시판 타이틀 스타일 */
 .title-container {
@@ -570,6 +593,11 @@ export default {
 .filter-body {
   display: flex;
   justify-content: space-between;
+  width: 100%;
+}
+
+.filter-body1 {
+  display: flex;
   width: 100%;
 }
 

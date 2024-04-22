@@ -54,6 +54,10 @@
       <!-- 회원가입 폼 -->
       <form v-else @submit.prevent="register" class="signup-form">
         <div class="form-group">
+          <label for="profileImage">프로필 이미지</label>
+          <input type="file" id="profileImage" ref="profileImage" @change="handleFileChange">
+        </div>
+        <div class="form-group">
           <label for="name">이름</label>
           <input type="text" id="name" v-model="name" required />
         </div>
@@ -102,6 +106,7 @@ export default {
       age: null,
       gender: "",
       address: "",
+      profileImageFile: null,  // 선택된 파일 저장
     };
   },
   methods: {
@@ -138,28 +143,43 @@ export default {
       this.showModal = false; // 로그인 모달 닫기
       this.showSignupModal = true; // 회원가입 모달 열기
     },
+    handleFileChange() {
+      this.profileImageFile = this.$refs.profileImage.files[0];
+    },
     register() {
-      const data = {
+      const formData = new FormData();
+      // 'member' 객체 전체를 JSON 문자열로 변환하여 추가
+      formData.append('member', JSON.stringify({
         memberName: this.name,
         memberEmail: this.email,
         memberPassword: this.password,
         memberAge: this.age,
         memberGender: this.gender,
         memberAddress: this.address
-      };
+      }));
 
-      // 여기에서 axios 대신 this.$axios를 사용합니다.
-    this.$axios.post('http://localhost:8080/api/v1/join', data)
-        .then(response => {
-          alert(response.data); // 성공 메시지 출력
-          this.closeModal(); // 모달 창 닫기
-          this.$router.push('/login'); // 로그인 페이지로 이동
-        })
-        .catch(error => {
-          console.error('Registration failed:', error);
-          alert('회원가입 실패: ' + error.response.data);
+      // 프로필 이미지 파일 추가
+      if (this.profileImageFile) {
+        formData.append('files', this.profileImageFile);
+      }
+
+      this.$axios.post('http://localhost:8080/api/v1/join', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then(response => {
+        console.log('Registration successful:', response);
+        alert('회원가입이 성공적으로 완료되었습니다.');
+        this.closeModal();
+        this.$router.push('/login');
+      })
+      .catch(error => {
+        console.error('Registration failed:', error);
+        alert('회원가입 실패: ' + (error.response.data.message || '오류가 발생했습니다.'));
       });
     },
+
     switchView(view) {
       this.currentView = view; // 현재 뷰 전환
     },

@@ -2,7 +2,7 @@ import { createStore } from 'vuex';
 import createPersistedState from 'vuex-persistedstate';
 
 
-
+/*
 const socket = {
   namespaced: true,
   state: () => ({
@@ -22,36 +22,43 @@ const socket = {
     },
   },
   actions: {
-    connect({ commit }) {
-      const ws = new WebSocket('wss://example.com/socket');
-      ws.onopen = () => {
-        commit('SOCKET_CONNECT');
-      };
-      ws.onmessage = (event) => {
-        commit('SOCKET_MESSAGE', event.data);
-      };
-      ws.onclose = () => {
-        commit('SOCKET_DISCONNECT');
-      };
-      ws.onerror = (error) => {
-        console.error('WebSocket Error:', error);
-        commit('SOCKET_DISCONNECT');
-      };
-      this.state.connection = ws;
-    },
-    disconnect({ state }) {
+ connect({ commit, state }) {
+    // 이미 연결된 WebSocket이 있는지 확인하고, 연결이 열려 있으면 재연결을 시도하지 않습니다.
+    if (state.isConnected) {
+      console.log("WebSocket is already open using existing connection.");
+      return;
+    }
+    const ws = new WebSocket('wss://example.com/socket');
+    ws.onopen = () => {
+      commit('SOCKET_CONNECT');
+    };
+    ws.onmessage = (event) => {
+      commit('SOCKET_MESSAGE', event.data);
+    };
+    ws.onclose = () => {
+      commit('SOCKET_DISCONNECT');
+    };
+    ws.onerror = (error) => {
+      console.error('WebSocket Error:', error);
+      commit('SOCKET_DISCONNECT');
+    };
+    state.connection = ws;  // WebSocket 연결 객체를 Vuex 상태에 저장합니다.
+  },
+    disconnect({ commit, state }) {
       if (state.connection) {
         state.connection.close();
+        console.log("WebSocket connection is being closed.");
+        commit('SOCKET_DISCONNECT');
       }
     },
     sendMessage({ state }, message) {
-      if (state.connection && state.isConnected) {
+      if (state.connection && state.connection.readyState === WebSocket.OPEN) {
         state.connection.send(message);
       }
     }
   }
 }
-
+*/
 const authModule = {
   namespaced: true,
   state: {
@@ -166,7 +173,6 @@ const mapModule = {
 // Vuex 스토어 인스턴스 생성
 export default createStore({
   modules: {
-    socket,
     auth: authModule,
     map: mapModule,
   },

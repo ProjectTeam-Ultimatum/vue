@@ -1,7 +1,5 @@
 <template>
   <div>
-    <!-- 헤더 크기만큼 패딩 -->
-    <div class="divider" />
     <RecommendDetailFood />
   </div>
   
@@ -26,8 +24,3 @@ export default {
     },
 }
 </script>
-<style scoped>
-.divider {
-  padding: 50px;
-}
-</style>
