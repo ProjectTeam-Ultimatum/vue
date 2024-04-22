@@ -2,7 +2,7 @@ import { createStore } from 'vuex';
 import createPersistedState from 'vuex-persistedstate';
 
 
-
+/*
 const socket = {
   namespaced: true,
   state: () => ({
@@ -58,7 +58,7 @@ const socket = {
     }
   }
 }
-
+*/
 const authModule = {
   namespaced: true,
   state: {
@@ -173,7 +173,6 @@ const mapModule = {
 // Vuex 스토어 인스턴스 생성
 export default createStore({
   modules: {
-    socket,
     auth: authModule,
     map: mapModule,
   },

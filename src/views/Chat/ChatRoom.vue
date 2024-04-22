@@ -16,9 +16,12 @@
     <aside class="left-panel">
       <h2>채팅방 목록</h2>
         <ul>
-          <li v-for="roomId in connectedChatRooms" :key="roomId">
-            Room ID: {{ roomId }}
-            <!-- 추가적으로 채팅방 이름 등의 정보를 표시하려면 추가 API 요청 필요 -->
+          <li v-for="room in connectedChatRooms" :key="room.chatRoomId">
+              Room Name: {{ room.chatRoomName }}
+              <br>
+              Created by: {{ room.creatorName }} ({{ room.creatorAge }} years old)
+              <br>
+              Location: {{ room.reviewLocation }}
           </li>
         </ul>
     </aside>
