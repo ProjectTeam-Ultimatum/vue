@@ -131,3 +131,12 @@
     text-align: left;
     margin-left: 20px;
   }
+
+.star {
+  cursor: pointer;
+  color: grey; /* 기본 색상 */
+}
+
+.filled {
+  color: gold; /* 선택된 별의 색상 */
+}
