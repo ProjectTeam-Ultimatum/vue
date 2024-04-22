@@ -53,39 +53,43 @@
 
       <!-- 회원가입 폼 -->
       <form v-else @submit.prevent="register" class="signup-form">
-        <div class="form-group">
-          <label for="profileImage">프로필 이미지</label>
-          <input type="file" id="profileImage" ref="profileImage" @change="handleFileChange">
+        <div class="signup-group">
+          <div class="file-upload-wrapper">
+            <button @click="triggerFileInput" class="file-upload-button"></button>
+            <input type="file" id="profileImage" ref="profileImage" @change="handleFileChange" style="display: none;">
+          </div>
         </div>
-        <div class="form-group">
+        <div class="signup-group">
           <label for="name">이름</label>
           <input type="text" id="name" v-model="name" required />
         </div>
-        <div class="form-group">
+        <div class="signup-group">
           <label for="email">이메일</label>
           <input type="email" id="email" v-model="email" required />
         </div>
-        <div class="form-group">
+        <div class="signup-group">
           <label for="password">비밀번호</label>
           <input type="password" id="password" v-model="password" required />
         </div>
-        <div class="form-group">
+        <div class="signup-group">
           <label for="age">나이</label>
           <input type="number" id="age" v-model="age" required />
         </div>
-        <div class="form-group">
+        <div class="signup-group">
           <label for="gender">성별</label>
           <select id="gender" v-model="gender" required>
             <option value="M">남성</option>
             <option value="F">여성</option>
           </select>
         </div>
-        <div class="form-group">
+        <div class="signup-group">
           <label for="address">주소</label>
           <input type="text" id="address" v-model="address" required />
         </div>
         <button type="submit" class="submit-button">회원가입</button>
       </form>
+
+
     </div>
   </div>
 </template>
@@ -143,6 +147,9 @@ export default {
       this.showModal = false; // 로그인 모달 닫기
       this.showSignupModal = true; // 회원가입 모달 열기
     },
+    triggerFileInput() {
+    this.$refs.profileImage.click();
+    },
     handleFileChange() {
       this.profileImageFile = this.$refs.profileImage.files[0];
     },
@@ -191,7 +198,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .login-container {
   max-width: 400px;
   margin: 40px auto;
@@ -256,9 +263,10 @@ export default {
 }
 
 .modal-title {
-  font-size: 24px;
+  font-size: 28px;
   margin-bottom: 20px;
-  margin-top: 70px;
+  margin-top: 20px;
+  font-weight: bold;
 }
 
 .login-form {
@@ -273,8 +281,16 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center; /* 모든 자식 요소를 중앙 정렬 */
-  width: 400px;
-  height: 550px;
+  width: 550px;
+  height: 750px;
+}
+
+.signup-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* 요소들을 컨테이너의 왼쪽 가장자리에 정렬합니다. */
+  margin-bottom: 10px;
+  width: 80%;
 }
 
 .form-group {
@@ -333,6 +349,21 @@ export default {
 
 .signup-prompt a {
   color: #008cba;
+  cursor: pointer;
+}
+
+.file-upload-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.file-upload-button {
+  background-image: url('@/assets/images/profile_add.png');
+  background-size: cover;
+  border: none;
+  border-radius: 23%;
+  width: 100px;  /* 이미지 크기에 맞춰 조절 */
+  height: 100px;
   cursor: pointer;
 }
 </style>

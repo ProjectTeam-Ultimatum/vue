@@ -46,7 +46,7 @@ export default {
   components: {},
 };
 </script>
-<style>
+<style scoped>
 .full-screen-background {
   background-image: url("https://ultimatum0807.s3.ap-northeast-2.amazonaws.com/uploads/high-angle-shot-rock-formations-water-pukerua-bay-new-zealand.jpg");
   background-position: center center;
