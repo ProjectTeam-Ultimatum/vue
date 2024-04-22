@@ -289,7 +289,6 @@ import 'material-icons/iconfont/material-icons.css'; //npm install material-icon
 import axios from 'axios';
 
 
-
 export default {
   data() {
     return {
@@ -473,33 +472,20 @@ export default {
       return this.isHoverSelected(date);
     },
     getCategoryPath(categoryName) {
-      return {
-        '음식점': 'food',
-        '관광지': 'place',
-        '축제/행사': 'event'
-      }[categoryName] || categoryName;
+      const categoryMap = {
+        "음식점": "food",
+        "관광지": "place",
+        "축제/행사": "event"
+      };
+      return categoryMap[categoryName] || categoryName;
     },
     submitDates() {
       if (this.daystime.length === 0) {
         alert("시간 설정이 완료되지 않았습니다.");
         return;
       }
-      const planRequest = {
-        memberId: '회원ID',
-        planStartDay: this.selectedDates[0],
-        planEndDay: this.selectedDates[this.selectedDates.length - 1],
-        planTitle: '여행 일정',
-        planDays: this.daystime
-      };
-      axios.post('http://localhost:8081/api/plans/create', planRequest)
-        .then(response => {
-          const planId = response.data.planId;
-          this.selectedItems.forEach(item => this.saveItem(planId, item));
-        })
-        .catch(error => {
-          console.error("일정 저장 실패", error);
-          alert('일정 저장에 실패했습니다: ' + error.message);
-        });
+      this.savePlan(this.createPlanRequest());
+      this.$router.push('/scheduleMap');
     },
     createPlanRequest() {
       return {
@@ -511,10 +497,10 @@ export default {
       };
     },
     formatStayTime(hours, minutes) {
-      let hoursFormatted = hours.toString().padStart(2, '0');
-      let minutesFormatted = minutes.toString().padStart(2, '0');
-
-      return `${hoursFormatted}:${minutesFormatted}:00`;
+      // 현재 날짜에 시간과 분을 설정하여 ISO8601 문자열로 반환
+      const dateTime = new Date();
+      dateTime.setHours(hours, minutes, 0);
+      return dateTime.toISOString(); // 'YYYY-MM-DDTHH:MM:SS' 형식
     },
     savePlan(planRequest) {
       axios.post('http://localhost:8081/api/plans/create', planRequest)
@@ -530,26 +516,25 @@ export default {
       this.selectedItems.forEach(item => this.saveItem(planId, item));
     },
     saveItem(planId, item) {
-      const categoryPath = this.getCategoryPath(item.category);
-      const recommendIdKey = this.getIdFieldNameByCategory(item.category);
-      const recommendId = item[recommendIdKey]; 
-
+      // 항목별 ID와 stayTime을 설정
       const planData = {
         planId: planId,
-        recommendFoodId: recommendId,
-        recommendPlaceId: recommendId,
-        recommendEventId: recommendId,
-        stayTime: this.formatStayTime(item.durationHours, item.durationMinutes)
+        recommendId: item.id, // 이는 각 항목의 ID, 예: recommend_food_id
+        stayTime: this.formatStayTime(item.durationHours, item.durationMinutes) // LocalDateTime 형식으로 변환
       };
 
+      // 각 카테고리에 맞는 API 경로를 가져옴
+      const categoryPath = this.getCategoryPath(item.category);
       const apiUrl = `http://localhost:8081/api/plans/${categoryPath}/add`;
 
+      // POST 요청으로 서버에 데이터 전송
       axios.post(apiUrl, planData)
         .then(res => console.log(`${item.category} 저장 성공`, res))
         .catch(err => {
           console.error(`${item.category} 저장 오류`, err);
           alert(`저장 오류: ${item.category} - ${err.message}`);
           if (err.response) {
+            // 에러 응답 상세 정보 로깅
             console.log('에러 응답:', err.response.data);
           }
         });
@@ -595,28 +580,22 @@ export default {
       let categoryPath = this.selectedCategory === 'all' ? 'listall' : `list${this.selectedCategory}`;
       let url = `${baseUrl}${categoryPath}`;
 
+      let params = new URLSearchParams();
+      if (this.searchQuery) {
+        params.append('search', this.searchQuery);
+      }
+      url += params.toString() ? `?${params.toString()}` : '';
+
       axios.get(url)
         .then(response => {
-          this.items = response.data.content.map(item => {
-            const categoryKey = this.getCategoryKey(item);
-            return {
-              recommendFoodId: item[`${categoryKey}Id`],
-              recommendEventId: item[`${categoryKey}Id`],
-              recommendPlaceId: item[`${categoryKey}Id`],
-              title: item[`${categoryKey}Title`],
-              address: item[`${categoryKey}Address`],
-              imgPath: item[`${categoryKey}ImgPath`],
-              category: categoryKey.replace('recommend', '').toLowerCase() // 'recommendFood' -> 'food'
-            };
-          });
+          this.items = response.data.content.map(item => ({
+            title: this.trimTitle(item.recommendFoodTitle || item.recommendPlaceTitle || item.recommendEventTitle),
+            address: this.trimAddress(item.recommendPlaceAddress || item.recommendFoodAddress || item.recommendEventAddress),
+            imgPath: item.recommendFoodImgPath || item.recommendPlaceImgPath || item.recommendEventImgPath,
+            category: item.recommendFoodCategory || item.recommendPlaceCategory || item.recommendEventCategory,
+          }));
         })
         .catch(error => console.error('Error fetching data:', error));
-    },
-    getCategoryKey(item) {
-      if (item.recommendFoodId) return 'recommendFood';
-      if (item.recommendPlaceId) return 'recommendPlace';
-      if (item.recommendEventId) return 'recommendEvent';
-      return null;
     },
     searchData() {
         let baseUrl;
@@ -666,28 +645,27 @@ export default {
           console.error('Hotel search error:', error);
         });
     },
-    getIdFieldNameByCategory(category) {
-      return {
-        'food': 'recommendFoodId',
-        'place': 'recommendPlaceId',
-        'event': 'recommendEventId'
-      }[category];
-    },
-    addToSelected(item) {
-      if (!this.selectedItems.some(selected => selected.id === item.id)) {
+    addToSelected(item, category) {
+      if (!this.selectedItems.find(selected => selected.title === item.title)) {
         this.selectedItems.push({
           ...item,
+          category: category, // category를 여기서 설정합니다.
           order: this.selectedItems.length + 1,
           durationHours: 2,
           durationMinutes: 0
         });
+        this.itemCount = this.selectedItems.length;
         this.updateTotalItemHours();
       }
     },
     updateTotalItemHours() {
-      let totalMinutes = this.selectedItems.reduce((sum, item) => sum + item.durationHours * 60 + item.durationMinutes, 0);
+      let totalMinutes = this.selectedItems.reduce((sum, item) => {
+        return sum + item.durationHours * 60 + item.durationMinutes;
+      }, 0);
+
       const hours = Math.floor(totalMinutes / 60);
       const minutes = totalMinutes % 60;
+
       this.totalItemHours = `${hours}시간 ${minutes.toString().padStart(2, '0')}분`;
     },
     calculateTotalScheduledHours() {
