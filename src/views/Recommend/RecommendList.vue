@@ -18,8 +18,8 @@
           <ul>
             <!-- RecommendListFood에 selectedRegion prop으로 전달 -->
             <!-- <li :class="{ 'active': activeSection === 'all' }" @click="setActiveSection('all')">전체</li> -->
-            <li :class="{ 'active': activeSection === 'listfood' }" @click="setActiveSection('listfood')">음식점</li>
             <li :class="{ 'active': activeSection === 'listplace' }" @click="setActiveSection('listplace')">관광지</li>
+            <li :class="{ 'active': activeSection === 'listfood' }" @click="setActiveSection('listfood')">음식점</li>
             <li :class="{ 'active': activeSection === 'listhotel' }" @click="setActiveSection('listhotel')">숙박</li>
             <li :class="{ 'active': activeSection === 'listevent' }" @click="setActiveSection('listevent')">축제/행사</li>
             <!--
@@ -37,10 +37,11 @@
     각 섹션을 표시하는 컴포넌트에는 v-if나 v-show를 사용하여 
     activeSection의 값에 따라 표시 여부를 결정합니다 -->
     <!-- <RecommendFood v-if="activeSection === 'food' || activeSection === 'all'" />  -->
+    <RecommendListPlace v-if="activeSection === 'listplace'" :region="selectedRegion" />
     <RecommendListFood v-if="activeSection === 'listfood'" :region="selectedRegion"/>
     <RecommendListHotel v-if="activeSection === 'listhotel'" :region="selectedRegion" />
     <RecommendListEvent v-if="activeSection === 'listevent'" :region="selectedRegion" />
-    <RecommendListPlace v-if="activeSection === 'listplace'" :region="selectedRegion" />
+
    
 
   </section>
@@ -62,14 +63,14 @@ export default {
   },
   data() {
     return {
-      activeSection: 'listfood',
+      activeSection: 'listplace',
       selectedRegion: '' // 초기값을 설정합니다.
     };
   },
   methods: {
     setActiveSection(section) {
       this.activeSection = section;
-      if (section === 'listfood') {
+      if (section === 'listplace') {
         this.selectedRegion = ''; // "음식점"이 선택되었을 때만 selectedRegion 초기화
       }
     },

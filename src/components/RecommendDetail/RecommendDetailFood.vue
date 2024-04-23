@@ -2,9 +2,9 @@
     <div id="container-wrap">
         <div id="container-wrap" class="div-cont">
             <div id="contents">
+              <div :key="i" v-for="(food, i) in recommendListDetailFood">
                 <div id="subleft-cont">
                     <div id="div_profile">
-                        <div :key="i" v-for="(food, i) in recommendListDetailFood">
                             <div class="cont-main"  >
                                 <div >
                                     <img :src="food.recommendFoodImgPath || 'default-image-url'" alt="Review Image">
@@ -14,7 +14,7 @@
                                         <h4>{{ food.recommendFoodTitle }}</h4>
                                         <div class="detail-subtitle">{{ food.recommendFoodIntroduction }}</div>
                                         <div>평점</div>
-                                        <!-- 영엉상태 -->
+                                        <!-- 영업상태 -->
                                         <div>
                                             <span class="status" :class="getStatusClass(food.recommendFoodClosetime)">
                                                 {{ getStatusMessage(food.recommendFoodClosetime) }}
@@ -30,33 +30,8 @@
                                 <div class="cont-time">
                                     <h6>영업시간</h6>
                                     <ul>
-                                        <li>월요일
-                                            <span>{{ food.recommendFoodOpentime }}</span>
-                                            <span>{{ food.recommendFoodClosetime}}</span>
-                                        </li>
-                                        <li>화요일
-                                            <span>{{ food.recommendFoodOpentime }}</span>
-                                            <span>{{ food.recommendFoodClosetime}}</span>
-                                        </li>
-                                        <li>수요일
-                                            <span>{{ food.recommendFoodOpentime }}</span>
-                                            <span>{{ food.recommendFoodClosetime}}</span>
-                                        </li>
-                                        <li>목요일
-                                            <span>{{ food.recommendFoodOpentime }}</span>
-                                            <span>{{ food.recommendFoodClosetime}}</span>
-                                        </li>
-                                        <li>금요일
-                                            <span>{{ food.recommendFoodOpentime }}</span>
-                                            <span>{{ food.recommendFoodClosetime}}</span>
-                                        </li>
-                                        <li>토요일
-                                            <span>{{ food.recommendFoodOpentime }}</span>
-                                            <span>{{ food.recommendFoodClosetime }}</span>
-                                        </li>
-                                        <li>일요일
-                                            <span>{{ food.recommendFoodOpentime }}</span>
-                                            <span>{{ food.recommendFoodClosetime }}</span>
+                                        <li v-for="day in ['월', '화', '수', '목', '금', '토', '일']" :key="day">
+                                        {{ day }}요일: <span>{{ food.recommendFoodOpentime }}</span> - <span>{{ food.recommendFoodClosetime }}</span>
                                         </li>
                                     </ul>
                                 </div>
@@ -71,14 +46,14 @@
                              <!-- 버튼 클릭 이벤트에 food.id 전달 -->
                              <button @click="createModal(recommendFoodId)" style="font-size: 12px; cursor: pointer">평점쓰기</button>
                              <!-- food.recommendFoodId를 activeFoodId로 설정하여 전달 -->
-                            <CreateModal
+                            <CreateModalFood
                                 v-if="replyModalCreate"
                                 :replyModalCreate="replyModalCreate"
                                 :recommendFoodId="activeFoodId" 
+                                :type="currentType"
                                 @close="closeModal" />
                             </div>
                     </div>
-                </div>
                 <div id="subright-cont">
                     <div class="mini-map">
                         <div>
@@ -86,14 +61,18 @@
                         </div>
                     </div>
                     <div class="recommend-list">
-                        <h6>주변 추천 맛집</h6>
+                        <h6>{{ food.recommendFoodRegion }} 추전 맛집</h6>
+                        <div>
                         <ul>
                             <li></li>
                             <li></li>
                             <li></li>
+                            <li></li>
                         </ul>
+                        </div>
                     </div>
                 </div>
+              </div>
             </div>
 
         </div>
@@ -101,7 +80,7 @@
 </template>
 
 <script>
-import CreateModal from './CreateModal.vue';
+import CreateModalFood from './CreateModalFood.vue';
 
 export default {
   name: 'RecommendListDetailFood',
@@ -109,11 +88,12 @@ export default {
     return {
       recommendListDetailFood: [],
       replyModalCreate: false,
-      activeFoodId: null  // 활성화된 음식 ID 저장, 모달 전달
+      activeFoodId: null,  // 활성화된 음식 ID 저장, 모달 전달
+      currentType: 'food',
     };
   },
   components: {
-    CreateModal
+    CreateModalFood
   },
   props: {
     recommendFoodId: {  // 외부에서 전달받는 ID prop
@@ -159,9 +139,10 @@ export default {
     createModal(recommendFoodId) {
       // 모달을 생성하는 로직
       console.log("createModal 생성");
-      console.log("모달 생성, ID:", recommendFoodId); // 로그 추가하여 ID 확인
+      //console.log("모달 생성, ID:", recommendFoodId); // 로그 추가하여 ID 확인
       // activeFoodId 설정으로 모달에 ID 전달
       this.activeFoodId = recommendFoodId; // 모달 생성 ID
+      console.log("모달에 전달될 ID:", this.activeFoodId);  // 모달에 전달될 ID가 올바르게 설정되었는지 확인
       this.replyModalCreate = true;
       console.log("createModal 생성:", this.replyModalCreate);
     }, //createModal

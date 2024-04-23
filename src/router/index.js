@@ -12,6 +12,7 @@ import RecommendListEvent from '../components/RecommendList/RecommendListEvent.v
 import RecommendDetail from '../views/Recommend/RecommendDetail.vue'
 //import RecommendDetailFood from '../components/RecommendDetail/RecommendDetailFood.vue'
 import RecommendDetailFood from '../components/RecommendDetail/RecommendDetailFood.vue'
+import RecommendDetailPlace from '../components/RecommendDetail/RecommendDetailPlace.vue'
 //import RecommendList from '../views/RecommendListPlace.vue' 
 
 
@@ -37,14 +38,14 @@ const routes = [
     component: RecommendListFood
   },
   {
-    path: '/listhotel',
-    name: 'listhotel',
-    component: RecommendListHotel
-  },
-  {
     path: '/listplace',
     name: 'listplace',
     component: RecommendListPlace
+  },
+  {
+    path: '/listhotel',
+    name: 'listhotel',
+    component: RecommendListHotel
   },
   {
     path: '/listevent',
@@ -61,6 +62,12 @@ const routes = [
     name: 'detailfood',
     component: RecommendDetailFood,
     props: true  // 이를 통해 라우트 파라미터를 prop으로 전달합니다.
+  },
+  {
+    path: '/detailplace/:recommendPlaceId',
+    name: 'detailplace',
+    component: RecommendDetailPlace,
+    props: true
   },
   {
     path: '/about',

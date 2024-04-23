@@ -52,18 +52,21 @@
 <script>
 
 export default {
+  props: {
+    recommendFoodId: Number,  // 푸드 ID
+    replyModalCreate: Boolean,
+    type: {
+      type: String,
+      default: 'food',  // 기본적으로 제공되는 유형
+      validator: function (value) {
+        // type이 지정된 값 중 하나인지 검증
+        return ['food', 'hotel', 'event', 'place'].includes(value);
+      }
+    }
+  },
   data() {
     return {
       rating: 0,
-      feedbacks: [],
-      feedbackOptions: [
-        '음식이 맛있어요',
-        '재료가 신선해요',
-        '양이 많아요',
-        '가성비가 좋아요',
-        '또 가고 싶어요'
-      ],
-      // 데이터 속성 추가
       recommendFoodImgPath: '',
       recommendFoodTitle: '',
       recommendFoodIntroduction: '',
@@ -74,9 +77,17 @@ export default {
       }
     };
   },
-  props: {
-    recommendFoodId: Number,  // 푸드 ID
-    replyModalCreate: Boolean,
+  computed: {
+    feedbackOptions() {
+      // 항목 유형에 따른 피드백 옵션 제공
+      const options = {
+        food: ['음식이 맛있어요', '재료가 신선해요', '양이 많아요', '가성비가 좋아요', '또 가고 싶어요'],
+        hotel: ['객실이 깨끗해요', '위치가 좋아요', '서비스가 만족스러워요', '조식이 맛있어요', '경치가 좋아요'],
+        event: ['내용이 흥미로워요', '접근성이 좋아요', '시설이 만족스러워요', '분위기가 좋아요', '다시 참여하고 싶어요'],
+        place: ['경치가 멋져요', '접근성이 좋아요', '편의시설이 잘 갖춰져 있어요', '안전해요', '사진 찍기 좋아요']
+      };
+      return options[this.type] || [];  // type이 유효하지 않은 경우 빈 배열 반환
+    }
   },
   methods: {
     async fetchFoodDetails() {
@@ -101,15 +112,15 @@ export default {
     },
     async createModal(){
       const formData = new FormData();
-  formData.append("recommendFoodId", this.reply.recommendFoodId);
-  formData.append("recommendReplyStar", this.reply.recommendReplyStar);
-  formData.append("recommendReplyTagValue", this.reply.recommendReplyTagValue);
-  // formData.append("recommendReplyTagValue", JSON.stringify(this.reply.recommendReplyTagValue));
-  
-  console.log("POST요청 푸드ID:", this.reply.recommendFoodId);
-  console.log("POST요청 data:", {
-    recommendReplyStar: this.reply.recommendReplyStar,
-    recommendReplyTagValue: this.reply.recommendReplyTagValue
+      formData.append("recommendFoodId", this.reply.recommendFoodId);
+      formData.append("recommendReplyStar", this.reply.recommendReplyStar);
+      formData.append("recommendReplyTagValue", this.reply.recommendReplyTagValue);
+      // formData.append("recommendReplyTagValue", JSON.stringify(this.reply.recommendReplyTagValue));
+      
+      console.log("POST요청 푸드ID:", this.reply.recommendFoodId);
+      console.log("POST요청 data:", {
+      recommendReplyStar: this.reply.recommendReplyStar,
+      recommendReplyTagValue: this.reply.recommendReplyTagValue
   });
 
   try {
@@ -173,7 +184,8 @@ export default {
       console.log("Mounted with recommendFoodId:", this.recommendFoodId);  // 마운트 시 ID 로깅
       this.fetchFoodDetails();
     }
-  }
+  },
+  
 };
 </script>
 

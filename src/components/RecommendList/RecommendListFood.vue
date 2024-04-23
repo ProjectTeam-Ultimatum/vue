@@ -41,22 +41,22 @@
               <button type="button" class="btn btn-outline-primary"
               :class="{ 'active': selectedTag === '반려동물동반입장' }"
               @click="selectTag('반려동물동반입장')">반려동물동반입장</button>    
-          </div>
+          </div> <!-- tag-wrap-->
         </div>
         <div>
           <img alt="map" src="@/assets/map.png" style="width:160px">
         </div>
-      </div>
+      </div> <!--recomemnd_info -->
+
       <div class="content_list">
         <div style="width: 820px; margin: 16px auto; text-align:left;">
             <span class="headline2" >추천 맛집</span>
             <span style="margin-left: 5px;">제주랑 고객님들이 엄선한 맛집 입니다</span>
         </div>
         <div class="card-wrap">
-        <!-- <div v-for="list in recommendList" :key="list.id"> -->
           <div :key="i" v-for="(food, i) in filteredFoods">
+            <!-- 상세페이지 이동 -->
             <div @click="goToDetail(food.recommendFoodId)" class="card">
-              <!-- <a @click="goToDetail(food.id);" style="cursor: pointer;">id</a> -->
               <div class="card-image">
                 <img :src="food.recommendFoodImgPath || 'default-image-url'" alt="Review Image">
                 <!-- <div class="score">{{ food.recommendFoodStar }}</div> -->
@@ -74,11 +74,11 @@
                 <div class="card-option-blue">{{ food.recommendFoodRegion }}</div>
                 <div class="card-subtitle">{{ food.recommendFoodIntroduction }}</div>
                 <div class="card-option">{{ food.recommendFoodTag }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+              </div> <!-- card-content -->
+            </div> <!-- goToDetail -->
+          </div> <!-- v-for -->
+        </div> <!-- card-wrap -->
+      </div> <!-- content_list -->
       <!-- paging 처리  2 컴포넌트 불러오기 -->
       <PaginationComponent
           :total-pages="totalPages"
@@ -107,8 +107,8 @@ export default {
   data(){
     return {
       loading: false,
-      selectedRegion: this.region, // prop을 직접 사용
       recommendListFood: [],
+      selectedRegion: this.region, // prop을 직접 사용
       selectedTag: '',  // 초기값으로 '전체' 태그 활성화
       currentPage: 1, // currentPage로 업데이트
       totalPages: 0,
@@ -139,7 +139,7 @@ export default {
     console.log('Requesting data with params:', params); 
     
   // Axios 요청에 params 적용
-  this.$axios.get("http://localhost:8080/api/recommend/listfood", { params })
+  this.$axios.get(`/api/recommend/listfood`, { params })
   .then((response) => {
         if (response.data.content.length === 0) {
           console.error('No data returned for the page:', this.currentPage);
@@ -215,8 +215,7 @@ export default {
       }
       console.log("이동 할 recommendFoodId:", recommendFoodId);
       this.$router.push({ name: 'detailfood', params: { recommendFoodId } });
-      // Vue Router를 사용하여 'detailfood' 라우트로 이동합니다. 이 때, foodId 파라미터로 recommendFoodId를 전달합니다.
-    }
+    } //goToDetail
   },
     computed: {
     filteredFoods() {
