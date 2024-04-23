@@ -145,7 +145,6 @@ export default {
   flex: 1;
   min-width: 15%; /* 최소 너비 */
   background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   border-radius: 10px; /* 모서리 둥글게 */
   overflow: hidden; /* 내용이 넘칠 경우 숨김 */
   margin: 10px;
