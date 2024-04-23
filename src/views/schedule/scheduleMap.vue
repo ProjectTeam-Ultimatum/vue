@@ -24,7 +24,6 @@ import {defaults} from 'ol/control.js';
 import {toLonLat} from 'ol/proj.js'
 import axios from 'axios'
 import { EventBus } from '@/EventBus';
-import Geocoder from 'ol-geocoder'
 import OlVectorSource from 'ol/source/Vector.js'
 import OlVectorLayer from 'ol/layer/Vector.js'
 import OlFeature from 'ol/Feature.js';
@@ -208,74 +207,6 @@ methods: {
     zoom: 11
   })
 });
-this.olMap.on('click', async (e) => {
-  geocoder.getSource().clear();
-  this.clearLocationData();
-
-  if (this.lastFeature) {
-    this.vectorSource.removeFeature(this.lastFeature);
-    this.lastFeature = null;
-  }
-
-  const [lon, lat] = toLonLat(e.coordinate);
-  const addressInfo = await this.getAddress(lon, lat);
-  console.log(addressInfo)
-  if (addressInfo) {
-    const displayAddress = this.getUiAddress(addressInfo.data.display_name);
-    const point = fromLonLat([lon, lat]);
-    console.log(lon , lat)
-    const featureId = `feature-${lon}-${lat}`;  // Example of generating a unique feature ID
-    let feature = this.vectorSource.getFeatureById(featureId);
-    if (!feature) {
-      feature = new OlFeature({
-        geometry: new OlPoint(point),
-        id: featureId
-      });
-      feature.setStyle(new OlStyle({
-        image: new OlIcon({
-          scale: 0.7,
-          src: '//cdn.rawgit.com/jonataswalker/map-utils/master/images/marker.png'
-        })
-      }));
-      this.vectorSource.addFeature(feature);
-      this.lastFeature = feature;
-    } else {
-      feature.setGeometry(new OlPoint(point));
-      this.lastFeature = feature;
-    }
-  
-    EventBus.$emit('mapClick', {
-      title: this.title,
-      address: displayAddress,
-      grade: this.grade,
-      review: this.review,
-      lonCopy: lon,
-      latCopy: lat,
-      image: this.image,
-      mapTag: this.mapTag,
-      course: this.course,
-      category: this.category,
-    });
-  } else {
-    console.error('Failed to fetch address information');
-  }
-});
-
-  const geocoder = new Geocoder('nominatim', {
-    provider: 'osm',
-    lang: 'kr',
-    placeholder: '주소 검색',
-    limit: 5, // 자동 완성 결과 최대 개수
-    autoComplete: true,
-    keepOpen: true
-  });
-    this.olMap.addControl(geocoder);
-    geocoder.on('addresschosen', (evt) => {
-      this.setUiAddress(evt.address.details.name);
-  });
-      this.olMap.once('rendercomplete', () => {
-      this.fetchLocations(); // 지도 렌더링이 완료된 후에 위치 데이터를 가져오고 마커를 추가합니다.
-  });
   },
 
   clearLocationData() {
@@ -382,17 +313,6 @@ this.olMap.on('click', async (e) => {
   vectorSource.addFeature(feature);
   }});
 
-  this.olMap.on('click', (evt) => {
-    const feature = this.olMap.forEachFeatureAtPixel(evt.pixel, (feature) => {
-      return feature;
-    });
-    if (feature) {
-      this.onMarkerClick(feature);
-      const data = feature.get('data');
-    if (data) {
-      this.displayLocationData(data);
-    }
-  }});
 },
 
   displayLocationData(data) {
@@ -411,6 +331,8 @@ this.olMap.on('click', async (e) => {
   }
 }
 </script>
+
+
 <style>
 .main-map {
   width: 65%;
