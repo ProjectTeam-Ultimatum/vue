@@ -16,6 +16,7 @@
           "
           alt="ReviewImage"
         />
+        <div class="review-hover-text">자세한 후기 보기</div>
       </div>
 
       <h5>{{ review.reviewTitle }}</h5>
@@ -121,6 +122,7 @@ export default {
   overflow: hidden; /* 내용이 넘칠 경우 숨김 */
   margin: 10px;
   cursor: pointer;
+  position: relative; /* 호버 텍스트 위치 지정을 위해 상대 위치 설정 */
 }
 .latestReview-image {
   height: 200px; /* 이미지 컨테이너의 높이를 고정 */
@@ -150,5 +152,25 @@ export default {
   margin-top: 20px;
   text-decoration: none;
   /* 더보기 링크 스타일 */
+}
+.review-hover-text {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.7); /* 배경색 설정 */
+  color: #fff;
+  padding: 10px 0;
+  opacity: 0; /* 기본적으로 텍스트는 보이지 않음 */
+  transition: opacity 0.3s; /* 페이드 효과 */
+  font-weight: bold; /* 글자 두께 */
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  cursor: pointer;
+}
+
+.latestReview-card:hover .review-hover-text {
+  opacity: 1; /* 호버 시 텍스트 보임 */
 }
 </style>

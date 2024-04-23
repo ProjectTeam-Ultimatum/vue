@@ -49,18 +49,32 @@
             <span class="review-author">{{ review.author }}</span>
           </div>
         </div>
-
+        <!-- 이미지 부분-->
         <div class="review-slider-container">
           <div class="review-click" @click="prevImage">
             <font-awesome-icon :icon="['fas', 'chevron-left']" size="2xl" />
           </div>
-          <img :src="currentImageUrl" alt="Images" @click="openImageModal" />
+          <div
+            class="image-container"
+            @click="openImageModal"
+            @mouseover="hover = true"
+            @mouseleave="hover = false"
+          >
+            <div v-if="isHovering" class="image-hover-text">
+              이미지 전체보기
+            </div>
+            <img :src="currentImageUrl" alt="Images" />
+            <!-- Image count overlay -->
+            <div class="image-count-overlay">
+              {{ currentImageIndex + 1 }} / {{ review.reviewImages.length }}
+            </div>
+          </div>
           <div class="review-click" @click="nextImage">
             <font-awesome-icon :icon="['fas', 'chevron-right']" size="2xl" />
           </div>
         </div>
 
-        <!-- 이미지 모달 -->
+        <!-- 이미지 전체창 모달 -->
         <div
           v-if="isImageModalVisible"
           class="imageModal-overlay"
@@ -190,7 +204,7 @@ export default {
     },
     isOwner() {
       const ownerStatus = this.$store.state.auth.email === this.review.author;
-      console.log("누가 로그인햇는가 ? ", this.$store.state.auth.email);
+      console.log("로그인한 사용자의 게시글이 맞는가?", ownerStatus);
 
       return ownerStatus;
     },
@@ -388,5 +402,9 @@ export default {
 .imageModal-content img {
   max-width: 100%; /* 이미지의 실제 크기를 유지하되, 컨테이너 너비를 초과하지 않도록 함 */
   max-height: 100%; /* 이미지의 실제 크기를 유지하되, 컨테이너 높이를 초과하지 않도록 함 */
+}
+.image-container {
+  position: relative;
+  cursor: pointer;
 }
 </style>

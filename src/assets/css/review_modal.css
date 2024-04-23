@@ -88,19 +88,62 @@
   border-bottom: 1px solid #e1e1e1;
 }
 
+/* 리뷰 이미지 부분 */
+
+.image-container:hover .image-hover-text {
+  opacity: 1;
+}
+.image-container {
+  position: relative;
+  width: 100%; /* 이미지 컨테이너 너비 */
+  cursor: pointer;
+}
+
+.image-count-overlay {
+  position: absolute;
+  bottom: 20px;
+  right: 30px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 5px 10px;
+}
+
 .review-slider-container {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  width: 100%; /* 슬라이더 전체 너비 */
 }
 
-.review-slider-container img {
-  height: 470px;
-  width: 80%;
-  object-fit: cover;
-  margin: 10px;
-  object-position: center;
+.review-slider-container .review-click {
+  flex: 1; /* 체비론과 다음 버튼이 동일한 공간을 차지하도록 설정 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
 }
+
+.image-container img {
+  width: 100%;
+  height: 470px;
+  object-fit: cover; /* 이미지 비율 유지 */
+}
+.image-hover-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 20px;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  border-radius: 5px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/*-------------------*/
+
 .review-replies {
   text-align: start;
   margin-left: 50px;
@@ -216,7 +259,4 @@
   margin-left: 15px;
   margin-right: 15px;
   color: #1b1f23;
-}
-.review-click {
-  cursor: pointer;
 }
