@@ -1,6 +1,8 @@
 <template>
   <nav :class="{ 'main-page': isMainPage, scrolled: isScrolled }">
-    <router-link class="main-logo" to="/">제주랑</router-link>
+    <router-link class="main-logo" to="/"
+      ><img src="./assets/images/logoImage.png" style="width: 40px" />제주랑
+    </router-link>
     <div class="nav-links">
       <router-link to="/chatting"> 메이트 찾기</router-link>
       <router-link to="/reviews"> 여행후기 </router-link>
