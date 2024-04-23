@@ -360,21 +360,20 @@ export default {
       return [];
     },
     totalScheduledHours() {
-      if (!this.daystime.length) return 0;  // daystime 배열이 비어있으면 0을 반환
-
+      if (!this.daystime.length) return 0;
       return this.daystime.reduce((total, { startTime, endTime }) => {
         const start = this.parseTime(startTime);
         const end = this.parseTime(endTime);
-        if (isNaN(start) || isNaN(end)) {
-          console.error('Invalid date time found', { startTime, endTime });
-          return total;
-        }
-        const duration = (end - start) / (3600 * 1000); // 밀리초 단위로 나누어 시간 단위로 변환
+        if (!start || !end) return total; // parseTime에서 null이 반환된 경우 무시
+        const duration = (end - start) / (3600 * 1000);
         return total + duration;
       }, 0);
     },
     formattedTotalScheduledHours() {
       const totalHours = this.totalScheduledHours;
+      if (isNaN(totalHours) || totalHours === 0) {
+        return "0시간 0분"; // NaN이나 0시간 처리
+      }
       const hours = Math.floor(totalHours);
       const minutes = Math.round((totalHours - hours) * 60);
       return `${hours}시간 ${minutes}분`;
@@ -484,7 +483,8 @@ export default {
       return {
         '음식점': 'food',
         '관광지': 'place',
-        '축제/행사': 'event'
+        '축제/행사': 'event',
+        '숙박': 'hotel'
       }[categoryName] || categoryName;
     },
     formatToLocalTime(time) {
@@ -514,15 +514,17 @@ export default {
         planDays: this.daystime
       };
 
-      axios.post('http://localhost:8080/api/plans/create', planRequest)
-        .then(response => {
-          const planId = response.data.planId;
-          this.selectedItems.forEach(item => this.saveItem(planId, item));
-        })
-        .catch(error => {
-          console.error("일정 저장 실패", error);
-          alert('일정 저장에 실패했습니다: ' + error.message);
-        });
+      axios.post('http://localhost:8081/api/plans/create', planRequest)
+      .then(response => {
+        const planId = response.data.planId;
+        this.planId = planId;  // 이제 planId를 저장
+        this.selectedItems.forEach(item => this.saveItem(planId, item));
+        this.selectedHotels.forEach(hotel => this.saveHotel(planId, hotel));
+      })
+      .catch(error => {
+        console.error("일정 저장 실패", error);
+        alert('일정 저장에 실패했습니다: ' + error.message);
+      });
     },
     validateAndSubmitPlan() {
       // planDays의 데이터 검증
@@ -576,7 +578,7 @@ export default {
       return `${hoursFormatted}:${minutesFormatted}:00`;
     },
     savePlan(planRequest) {
-      axios.post('http://localhost:8080/api/plans/create', planRequest)
+      axios.post('http://localhost:8081/api/plans/create', planRequest)
         .then(response => {
           this.saveSelectedItems(response.data.planId);
         })
@@ -598,10 +600,11 @@ export default {
         recommendFoodId: recommendId,
         recommendPlaceId: recommendId,
         recommendEventId: recommendId,
+        recommendHotelId: recommendId,
         stayTime: this.formatStayTime(item.durationHours, item.durationMinutes)
       };
 
-      const apiUrl = `http://localhost:8080/api/plans/${categoryPath}/add`;
+      const apiUrl = `http://localhost:8081/api/plans/${categoryPath}/add`;
 
       axios.post(apiUrl, planData)
         .then(res => console.log(`${item.category} 저장 성공`, res))
@@ -654,7 +657,7 @@ export default {
       return title.length > 24 ? `${title.substring(0, 20)}...` : title;
     },
     fetchData() {
-      let baseUrl = 'http://localhost:8080/api/recommend/';
+      let baseUrl = 'http://localhost:8081/api/recommend/';
       let categoryPath = this.selectedCategory === 'all' ? 'listall' : `list${this.selectedCategory}`;
       let url = `${baseUrl}${categoryPath}`;
 
@@ -684,9 +687,9 @@ export default {
     searchData() {
         let baseUrl;
         if (this.selectedCategory === 'all') {
-            baseUrl = `http://localhost:8080/api/recommend/search/all`;
+            baseUrl = `http://localhost:8081/api/recommend/search/all`;
         } else {
-            baseUrl = `http://localhost:8080/api/recommend/search/${this.selectedCategory}`;
+            baseUrl = `http://localhost:8081/api/recommend/search/${this.selectedCategory}`;
         }
         const params = new URLSearchParams({ title: this.searchQuery }).toString();
         axios.get(`${baseUrl}?${params}`)
@@ -701,20 +704,22 @@ export default {
             .catch(error => console.error('Search error:', error));
     },
     fetchHotels() {
-      axios.get('http://localhost:8080/api/recommend/listhotel')
-      .then(response => {
-          this.hotels = response.data.content.map(hotels => ({
-            title: this.trimTitle(hotels.recommendHotelTitle),
-            address: this.trimAddress(hotels.recommendHotelAddress),
-            imgPath: hotels.recommendHotelImgPath
-          }));
-        })
-        .catch(error => {
-          console.error('Error fetching hotels:', error);
-        });
+      axios.get('http://localhost:8081/api/recommend/listhotel')
+        .then(response => {
+            this.hotels = response.data.content.map(hotel => ({
+              recommendHotelId: hotel.recommendHotelId,
+              title: this.trimTitle(hotel.recommendHotelTitle),
+              address: this.trimAddress(hotel.recommendHotelAddress),
+              imgPath: hotel.recommendHotelImgPath,
+              category: 'hotel'
+            }));
+          })
+          .catch(error => {
+            console.error('Error fetching hotels:', error);
+          });
     },
     searchDatahotel() {
-      let baseUrl = 'http://localhost:8080/api/recommend/search/hotel';
+      let baseUrl = 'http://localhost:8081/api/recommend/search/hotel';
       const params = new URLSearchParams({ title: this.hotelSearchQuery }).toString();
       axios.get(`${baseUrl}?${params}`)
         .then(response => {
@@ -733,13 +738,13 @@ export default {
       return {
         'food': 'recommendFoodId',
         'place': 'recommendPlaceId',
-        'event': 'recommendEventId'
+        'event': 'recommendEventId',
+        'hotel': 'recommendHotelId'
       }[category];
     },
     addToSelected(item) {
       const recommendIdKey = this.getIdFieldNameByCategory(item.category);
       if (!this.selectedItems.some(selected => selected[recommendIdKey] === item[recommendIdKey])) {
-        // 숫자가 아닌 값은 0으로 처리
         const newItemDuration = (parseFloat(item.durationHours) || 0) + (parseFloat(item.durationMinutes) || 0) / 60;
         const currentTotalDuration = parseFloat(this.calculateTotalItemDuration());
         const scheduledHours = parseFloat(this.totalScheduledHours);
@@ -764,7 +769,6 @@ export default {
     },
     calculateTotalItemDuration() {
       const total = this.selectedItems.reduce((sum, item) => {
-        // 숫자 변환 실패 시 0으로 처리
         return sum + (parseFloat(item.durationHours) || 0) + (parseFloat(item.durationMinutes) || 0) / 60;
       }, 0);
       const hours = Math.floor(total);
@@ -779,18 +783,14 @@ export default {
       this.itemCount = this.selectedItems.length;  // 항목 수 업데이트
     },
     parseTime(timeString) {
-      if (!timeString) {
-        console.error('parseTime was called with a null or undefined time string');
-        return new Date();
-      }
-      
-      const parts = timeString.split(':');
-      if (parts.length < 2) {
-        console.error('Invalid time string:', timeString);
-        return new Date();
+      const timePart = timeString.split('T')[1] ? timeString.split('T')[1].substring(0, 5) : timeString;
+      const [hours, minutes] = timePart.split(':').map(Number);
+
+      if (isNaN(hours) || isNaN(minutes)) {
+        console.error('Invalid time format:', timeString);
+        return null;
       }
 
-      const [hours, minutes] = parts.map(Number);
       const time = new Date();
       time.setHours(hours, minutes, 0, 0);
       return time;
@@ -840,6 +840,7 @@ export default {
         this.selectedHotels.push({
           ...hotel,
           order: this.selectedHotels.length + 1,
+          planId: this.planId,
           checkIn: this.formatStayDate(checkInDate),
           checkOut: this.formatStayDate(checkOutDate),
         });

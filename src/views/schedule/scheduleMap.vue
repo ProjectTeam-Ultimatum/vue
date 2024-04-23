@@ -1,15 +1,10 @@
 <template>
-  <div class="courseButton">
-        <button type="button" @click="coursebutton('A')"> A 코스 </button>
-        <button type="button" @click="coursebutton('B')"> B 코스 </button>
-        <button type="button" @click="coursebutton('C')"> C 코스 </button>
-        <button type="button" @click="coursebutton('D')"> D 코스 </button>
-        <button type="button" @click="coursebutton('E')"> E 코스 </button>
-        <button type="button" @click="coursebutton('F')"> F 코스 </button>
-        <button type="button" @click="coursebutton('G')"> G 코스 </button>
-        <button type="button" @click="coursebutton('H')"> H 코스 </button>
-        <button type="button" @click="coursebutton('I')"> I 코스 </button>
-        <button type="button" @click="coursebutton('J')"> J 코스 </button>
+  <div class="dateButton">
+        <button type="button" @click="datebutton('1')"> 1일차 </button>
+        <button type="button" @click="datebutton('2')"> 2일차 </button>
+        <button type="button" @click="datebutton('3')"> 3일차 </button>
+        <button type="button" @click="datebutton('4')"> 4일차 </button>
+        <button type="button" @click="datebutton('5')"> 5일차 </button>
   </div>
   <div class="main-map" ref="map">
   </div>
@@ -50,34 +45,36 @@ export default {
       grade: 0,
       review: '',
       mapTag: '#',
-      course: '',
+      plan_id: 0,
       category: '',
       lastFeature: undefined,
       lastClickedFeature: undefined,
       dates: [],
       showModal: false,
+      planDayDetails: [],
+
     }
   },
   mounted() {
     this.initializeMap();
-    EventBus.$on('courseClick', (course) => {
-    this.course = course;
+    EventBus.$on('dateClick', (plan_id) => {
+    this.plan_id = plan_id;
     this.updateMapIcons();  // 코스에 맞는 아이콘을 다시 불러옵니다.
   });
 },
 
 methods: {
 
-  coursebutton(course) {
-    this.course = course; // 사용자가 선택한 코스를 저장
-    EventBus.$emit('courseClick', course);
+  datebutton(plan_id) {
+    this.plan_id = plan_id; // 사용자가 선택한 코스를 저장
+    EventBus.$emit('dateClick', plan_id);
   },
 
   groupAndDrawLines() {
     const groupedByDate = {};
     // 현재 코스에 해당하는 위치 데이터만 날짜별로 그룹화
     this.locations.forEach(location => {
-      if (location.course === this.course) {
+      if (location.date === this.date) {
         if (!groupedByDate[location.date]) {
           groupedByDate[location.date] = [];
         }
@@ -123,7 +120,7 @@ methods: {
 
     // 새로운 코스에 해당하는 마커들만 추가
     this.locations.forEach(location => {
-      if (location.course === this.course) {
+      if (location.plan_id === this.plan_id) {
         const point = fromLonLat([location.lonCopy, location.latCopy]);
         const feature = new OlFeature({
           geometry: new OlPoint(point),
@@ -219,7 +216,7 @@ methods: {
     this.review = '';
     this.image = '';
     this.mapTag = '';
-    this.course = '';
+    this.plan_id = '';
     this.category = '';
   },
 
@@ -260,17 +257,27 @@ methods: {
   );
       vectorSource.addFeature(feature);
   },
-  async fetchLocations() {
-    try {
-      const response = await axios.get('http://localhost:8081/api/plans/readPlan/{planId}');
-        this.locations = response.data; // 응답 데이터를 locations 배열에 저장
-        this.addMapIcons(); // 가져온 위치 정보를 기반으로 지도에 아이콘을 추가
-    } catch (error) {
-        console.error('Error fetching locations:', error);
-    }
-        console.log('Received locations:', this.locations);
+
+  async PlanDayId() {
+    const response = await axios.get(`http://localhost:8081/api/plans/readPlan/{planDayId}`);
+    this.planDayDetails = response.data;
   },
+
+  async fetchLocations() {
+    const planDayId = await this.PlanDayId(); // 함수를 만들어서 현재 계획의 ID를 가져오거나 다른 방법으로 설정
+  if (!planDayId) {
+    console.error('Plan ID is not set');
+    return;
+  }
   
+  try {
+    const response = await axios.get(`http://localhost:8081/api/plans/readPlan/{planDayId}`);
+    this.locations = response.data; // 응답 데이터를 locations 배열에 저장
+    this.updateMapIcons(); // 가져온 위치 정보를 기반으로 지도에 아이콘을 추가
+  } catch (error) {
+    console.error('Error fetching locations:', error);
+  }
+},
   getAddress (lon, lat) {.0
     return axios.get(
         'https://nominatim.openstreetmap.org/reverse',
@@ -294,7 +301,7 @@ methods: {
 
   // DB에서 가져온 각 위치 정보에 대해 아이콘을 추가합니다.
   this.locations.forEach(location => {
-    if (location.course === this.course){
+    if (location.plan_id === this.plan_id){
       const point = fromLonLat([location.lonCopy, location.latCopy]);
        coordinates.push(point);
 
@@ -325,7 +332,7 @@ methods: {
     this.review = data.review;
     this.image = data.image;
     this.mapTag = data.mapTag;
-    this.course = data.course;
+    this.plan_id = data.plan_id;
     this.category = data.category;
     // 이외에 필요한 UI 업데이트 로직
   }
@@ -385,14 +392,14 @@ methods: {
 .ol-geocoder ul li a .gcd-road {
   color: white;
 }
-.courseButton {
+.dateButton {
     display: flex;
     justify-content: center; /* 내부 요소를 가로축 중앙에 배치 */
     flex-wrap: wrap; /* 요소가 너무 많으면 다음 줄로 넘김 */
     margin-top: 150px;
     margin-left: 385px;
 }
-.courseButton button {
+.dateButton button {
     margin: 5px; /* 버튼 주변에 약간의 여백 추가 */
 }
 </style>

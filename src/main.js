@@ -9,6 +9,7 @@ import { EventBus } from '@/EventBus';
 const app = createApp(App);
 
 app.use(store).use(router).use(VueAxios, axios).mount('#app');
+
 app.config.globalProperties.$EventBus = EventBus;
 app.config.globalProperties.$http = axios;
 
