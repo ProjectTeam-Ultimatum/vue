@@ -193,7 +193,6 @@ export default {
     UpdateReview,
     CreateReview,
   },
-
   data() {
     return {
       allReviews: [], // 복수형으로 변경하여 여러 후기 데이터를 담을 수 있도록 함
@@ -275,7 +274,7 @@ export default {
     async openModal(review) {
       try {
         const response = await this.$axios.get(
-          `http://localhost:8080/api/reviews/${review.reviewId}`
+          `/api/reviews/${review.reviewId}`
         );
         this.selectedReview = response.data;
         this.isModalVisible = true;
@@ -289,7 +288,7 @@ export default {
         );
 
         const repliesResponse = await this.$axios.get(
-          `http://localhost:8080/api/reviews/${review.reviewId}/replies`
+          `/api/reviews/${review.reviewId}/replies`
         );
         this.selectedReview.replies = repliesResponse.data;
         console.log("replies :", this.selectedReview.replies);
@@ -344,7 +343,7 @@ export default {
       try {
         // 백엔드 서버에 변경사항을 전달
         await this.$axios.post(
-          `http://localhost:8080/api/reviews/${review.reviewId}`,
+          `/api/reviews/${review.reviewId}`,
           {
             reviewLike: review.reviewLike,
           },
