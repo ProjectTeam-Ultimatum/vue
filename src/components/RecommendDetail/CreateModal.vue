@@ -23,7 +23,7 @@
               class="star"
               v-for="star in 5"
               :key="star"
-              :class="{ filled: star <= recommendReplyStar }"
+              :class="{ filled: star <= reply.recommendReplyStar }"
               @click="setRating(star)">
               ★
               </span>
@@ -103,7 +103,8 @@ export default {
       const formData = new FormData();
   formData.append("recommendFoodId", this.reply.recommendFoodId);
   formData.append("recommendReplyStar", this.reply.recommendReplyStar);
-  formData.append("recommendReplyTagValue", JSON.stringify(this.reply.recommendReplyTagValue));
+  formData.append("recommendReplyTagValue", this.reply.recommendReplyTagValue);
+  // formData.append("recommendReplyTagValue", JSON.stringify(this.reply.recommendReplyTagValue));
   
   console.log("POST요청 푸드ID:", this.reply.recommendFoodId);
   console.log("POST요청 data:", {

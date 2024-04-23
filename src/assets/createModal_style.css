@@ -55,14 +55,23 @@
     margin: 20px 0;
   }
   
-  .star {
+  /* .star {
     cursor: pointer;
   }
   
   .star.filled {
-    color: gold;
+    color: rgb(243, 212, 34);
   }
-  
+   */
+   
+.star {
+  cursor: pointer;
+  color: grey; /* 기본 색상 */
+}
+
+.filled {
+  color: rgb(230, 199, 24); /* 선택된 별의 색상 */
+}
   .feedback-buttons {
     /* 피드백 버튼의 스타일 */
     display: flex;
@@ -131,12 +140,3 @@
     text-align: left;
     margin-left: 20px;
   }
-
-.star {
-  cursor: pointer;
-  color: grey; /* 기본 색상 */
-}
-
-.filled {
-  color: gold; /* 선택된 별의 색상 */
-}
