@@ -19,6 +19,7 @@
       </div>
 
       <h5>{{ review.reviewTitle }}</h5>
+      <div>{{ review.reviewSubtitle }}</div>
       <div>{{ formatDate(review.reg_date) }}</div>
     </div>
     <!--조회 모달창 -->
