@@ -67,10 +67,12 @@ export default {
 },
 
 methods: {
+
   coursebutton(course) {
     this.course = course; // 사용자가 선택한 코스를 저장
     EventBus.$emit('courseClick', course);
   },
+
   groupAndDrawLines() {
     const groupedByDate = {};
     // 현재 코스에 해당하는 위치 데이터만 날짜별로 그룹화
@@ -260,7 +262,7 @@ methods: {
   },
   async fetchLocations() {
     try {
-      const response = await axios.get('http://localhost:8081/api/plans/readPlan');
+      const response = await axios.get('http://localhost:8081/api/plans/readPlan/{planId}');
         this.locations = response.data; // 응답 데이터를 locations 배열에 저장
         this.addMapIcons(); // 가져온 위치 정보를 기반으로 지도에 아이콘을 추가
     } catch (error) {
