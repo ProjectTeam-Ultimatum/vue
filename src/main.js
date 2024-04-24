@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { far } from '@fortawesome/free-regular-svg-icons'
 import { EventBus } from '@/EventBus';
 
+
 // Axios 인스턴스 생성 및 설정
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:8080'
@@ -21,6 +22,8 @@ axiosInstance.interceptors.request.use(function (config) {
   }
   return config;
 });
+
+
 
 const app = createApp(App);
 library.add(fas, far)

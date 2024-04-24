@@ -183,7 +183,7 @@ export default {
 
       try {
         const response = await this.$axios.put(
-          `http://localhost:8080/api/reviews/${this.review.reviewId}`,
+          `/api/reviews/${this.review.reviewId}`,
           formData,
           {
             headers: {

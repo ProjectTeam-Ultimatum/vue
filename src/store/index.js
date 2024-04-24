@@ -1,7 +1,6 @@
 import { createStore } from 'vuex';
 import createPersistedState from 'vuex-persistedstate';
 
-
 /*
 const socket = {
   namespaced: true,
@@ -73,6 +72,11 @@ const authModule = {
       state.token = token;
       localStorage.setItem('token', token);
     },
+    SET_USER_EMAIL(state, email){
+      state.email = email;
+      console.log('로그인 사용자 : ',state.email)
+      localStorage.setItem('email', email);
+    }
   },
   actions: {
     saveToken({ commit }, token) {
@@ -80,6 +84,7 @@ const authModule = {
     },
     logout({ commit }) {
       commit('SET_TOKEN', null);
+     
     },
   },
 };
