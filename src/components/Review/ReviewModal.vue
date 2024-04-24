@@ -205,7 +205,6 @@ export default {
     isOwner() {
       const ownerStatus = this.$store.state.auth.email === this.review.author;
       console.log("로그인한 사용자의 게시글이 맞는가?", ownerStatus);
-
       return ownerStatus;
     },
   },

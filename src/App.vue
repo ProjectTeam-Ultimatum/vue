@@ -13,8 +13,15 @@
       <div v-if="!isAuthenticated">
         <button @click="showLoginModal">로그인</button>
       </div>
-      <div v-else>
-        {{ userNamee }}님 환영합니다.<button @click="logout">로그아웃</button>
+      <div v-else class="user-info">
+        <img
+          :src="userImage || 'default-image-url'"
+          alt="User Image"
+          class="user-image"
+        />
+        {{ userName }}님 환영합니다.
+
+        <button @click="logout">로그아웃</button>
       </div>
     </div>
     <login-modal
@@ -45,8 +52,11 @@ export default {
     isMainPage() {
       return this.$route.path === "/";
     },
-    userNamee() {
+    userName() {
       return this.$store.state.auth.userName; // Vuex 스토어에서 사용자 이름 가져오기
+    },
+    userImage() {
+      return this.$store.state.auth.images;
     },
   },
   created() {
@@ -57,8 +67,10 @@ export default {
       try {
         const response = await this.$axios.get("/api/v1/user/info/detail");
         this.$store.commit("auth/SET_USER_NAME", response.data.userName);
+        this.$store.commit("auth/SET_USER_IMAGE", response.data.images);
+
         this.isAuthenticated = true;
-        console.log("API response:", response); // API 응답 로깅
+        console.log("API response:", response.data); // API 응답 로깅
       } catch (error) {
         console.error("인증된 사용자가 아닙니다. : ", error);
         this.isAuthenticated = false; // 에러 발생 시 인증 상태 업데이트
@@ -71,7 +83,8 @@ export default {
       // Vuex 상태 초기화
       this.$store.commit("auth/SET_TOKEN", null);
       this.$store.commit("auth/SET_USER_EMAIL", null);
-      this.$store.commit("auth/SET_USER_USERNAME", null);
+      this.$store.commit("auth/SET_USER_NAME", null);
+      this.$store.commit("auth/SET_USER_IMAGES", null);
 
       // 로컬 스토리지에서 토큰 제거
       localStorage.removeItem("Authorization");
@@ -194,6 +207,18 @@ nav a.router-link-exact-active {
   right: 30px;
   font-size: 18px;
   cursor: pointer;
+}
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-image {
+  width: 40px; /* 이미지 크기 설정 */
+  height: 40px; /* 이미지 크기 설정 */
+  border-radius: 50%; /* 원형 이미지 */
+  object-fit: cover; /* 이미지 비율 유지 */
+  margin-right: 10px; /* 텍스트와의 간격 */
 }
 .login button {
   margin-left: 10px;

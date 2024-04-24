@@ -83,6 +83,11 @@ const authModule = {
       state.userName = userName;
       console.log('로그인 사용자 이름 : ',state.userName)
       localStorage.setItem('userName', userName); // 로컬 스토리지에 사용자 이름 저장
+    },
+    SET_USER_IMAGE(state, images){
+      state.images = images;
+      console.log('로그인 사용자 이미지 : ',state.images)
+      localStorage.setItem('images', images); // 로컬 스토리지에 사용자 이름 저장
     }
   },
   actions: {
