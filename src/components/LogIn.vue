@@ -51,52 +51,184 @@
         </p>
       </form>
 
+
+
+
+
       <!-- 회원가입 폼 -->
       <form v-else @submit.prevent="register" class="signup-form">
-        <div class="form-group">
-          <label for="profileImage">프로필 이미지</label>
-          <input type="file" id="profileImage" ref="profileImage" @change="handleFileChange">
+
+
+              <!-- 약관 동의 창 (단계 0) -->
+      <div v-if="currentStep === 0" class="terms-conditions">
+          <div class="terms-header">
+            <img src="@/assets/images/haru.png" style="height: 100px; width: 70px;" alt="Icon">
+            <h5 style="font-weight: bold; padding-top: 20px;">제주랑에 오신 것을 환영합니다.</h5>
+            <p style="color: #C8C8C8; padding-top: 15px;">제주랑 서비스를 이용하시려면 개인정보 이용약관 및 <br/>서비스 이용약관 동의가 필요합니다.</p>
+          </div>
+          <div class="terms-content">
+            <ul class="terms-list">
+
+              <li class="terms-list-item">
+                <div class="terms-label-container">
+                <label class="terms-item">
+                  <input type="checkbox" v-model="terms.PersonalInformation" :checked="terms.PersonalInformation"> (필수) 개인정보 수집 및 이용 안내
+                </label>
+              </div>
+                  <button type="button" class="more-button" @click="showTerms">
+                    <font-awesome-icon icon="chevron-right" />
+                  </button>
+              </li>
+              <terms-of-service v-if="isTermsVisible" @close="isTermsVisible = false"></terms-of-service>
+
+
+              <li class="terms-list-item">
+                <div class="terms-label-container">
+                  <label for="service-terms" class="terms-item">
+                    <input type="checkbox" id="service-terms" v-model="terms.service" :checked="terms.service"> (필수) 서비스 이용 약관
+                  </label>
+                </div>
+                <button type="button" class="more-button" @click="showPersonalInformation">
+                  <font-awesome-icon icon="chevron-right" />
+                </button>
+              </li>
+              <personal-information v-if="isPersonalInformationVisible" @close="isPersonalInformationVisible = false" />
+
+
+              <li>
+                <label class="terms-item">
+                  <input type="checkbox" v-model="terms.privacy" :checked="terms.privacy"> (필수) 모욕 및 명예훼손 발언금지
+                </label>
+              </li>
+
+            </ul>
+
+            <label class="terms-item">
+                  <input type="checkbox" v-model="terms.all" :checked="terms.all" @change="selectAll"> 전체동의
+                </label>
+          </div>
+            <button
+              :class="{ 'next-button': true, 'disabled-button': !terms.PersonalInformation || !terms.service || !terms.privacy }"
+              :disabled="!terms.PersonalInformation || !terms.service  || !terms.privacy"
+              @click="nextStep">
+              동의하고 다음으로
+            </button>
         </div>
-        <div class="form-group">
-          <label for="name">이름</label>
-          <input type="text" id="name" v-model="name" required />
+
+        
+        <!-- 프로필 이미지와 이름 입력 구역 (단계 1) -->
+        <div v-if="currentStep === 1" class="signup-group">
+          <div style="padding-top: 30px;"><h5 style="padding-bottom: 30px;">이름과 프로필사진을 등록해주세요</h5></div>
+          <div class="file-upload-container">
+            <!-- 프로필 이미지 업로드 구역 -->
+          <div class="file-upload-wrapper">
+            <div class="image-upload-preview" v-if="profileImageSrc">
+              <img :src="profileImageSrc" class="profile-image" />
+              <button type="button" class="image-edit-button" @click="triggerFileInput">&#9998;</button> <!-- 이모티콘은 적절한 아이콘으로 교체 가능 -->
+            </div>
+            <div v-else class="image-upload-placeholder">
+              <button @click="triggerFileInput" class="file-upload-button"></button>
+            </div>
+            <input type="file" id="profileImage" ref="profileImage" @change="handleFileChange" style="display: none;">
+          </div>
+          </div>
+          <div class="signup-group-name" style="margin-top: 40px;">
+            <img src="@/assets/images/name.png" class="input-icon" alt="Icon"> <!-- 이미지 아이콘 -->
+            <input type="text" id="name" v-model="name" required placeholder="이름" class="input-field"/>
+            <select id="gender" v-model="gender" required>
+              <option value="M">남성</option>
+              <option value="F">여성</option>
+            </select>
+          </div>
+          <div class="signup-name">
+            <p>반드시 실명을 입력해주세요.</p>
+          </div>
+          <button @click="nextStep" class="next-button">다음</button>
         </div>
-        <div class="form-group">
-          <label for="email">이메일</label>
-          <input type="email" id="email" v-model="email" required />
+
+        
+
+
+        <div v-else-if="currentStep === 2" style="margin-top: 20px;">
+          <div class="signup-group-name">
+            <img src="@/assets/images/email.png" class="input-icon" alt="Icon"> <!-- 이미지 아이콘 -->
+            <input type="email" id="email" v-model="email" required placeholder="이메일" class="input-field" />
+          </div>
+          <div class="input-group" style="padding-bottom: 13px">
+            <img src="@/assets/images/password.png" class="input-icon" alt="Icon"> <!-- 비밀번호 이미지 아이콘 -->
+            <input type="password" id="password" v-model="password" required placeholder="비밀번호" class="input-field" />
+          </div>
+          <div class="input-group" style="padding-bottom: 13px">
+            <img src="@/assets/images/passwordCheck.png" class="input-icon" alt="Icon"> <!-- 비밀번호 확인 이미지 아이콘 -->
+            <input type="password" id="password-confirm" v-model="passwordConfirm" required placeholder="비밀번호 확인" class="input-field" :class="{ 'is-valid': passwordMatch, 'is-invalid': !passwordMatch }" />
+            <span v-if="passwordMatch" class="icon is-small is-right">
+              <font-awesome-icon icon="fa-solid fa-check" style="color: #65B7F3;"/>
+            </span>
+            <span v-else class="icon is-small is-right">
+              <font-awesome-icon icon="fa-solid fa-xmark" style="color: #F7C347;"/>
+            </span>
+          </div>
+          <div class="signup-group-name">
+            <img src="@/assets/images/age.png" class="input-icon" alt="Icon"> <!-- 나이 이미지 아이콘 -->
+            <input type="number" id="age" v-model="age" required placeholder="   나이" class="input-field" />
+          </div>
+          
+
+          <div>
+            <div class="signup-group-name">
+            <img src="@/assets/images/location.png" class="input-icon" alt="Icon">
+            <input type="text" placeholder="    우편번호" class="input-field" v-model="zonecode" readonly />
+              <button id="postcode" type="button" @click="openPostcode" class="icon-button">
+                <font-awesome-icon icon="search" style="color: #65B7F3;"/>
+              </button>
+            </div>
+
+            <div class="signup-group-name" style="padding-left: 40px;">
+            <input type="text" v-model="roadAddress" placeholder="주소" class="input-field" readonly />
+            </div>
+
+            <div class="signup-group-name" style="padding-left: 40px;">
+            <input type="text" v-model="detailAddress" placeholder="상세주소" class="input-field" @blur="saveAddress" ref="detailAddress"/>
+            </div>
+
+          </div>
+          <button type="submit" class="signup-button">회원가입</button>
         </div>
-        <div class="form-group">
-          <label for="password">비밀번호</label>
-          <input type="password" id="password" v-model="password" required />
-        </div>
-        <div class="form-group">
-          <label for="age">나이</label>
-          <input type="number" id="age" v-model="age" required />
-        </div>
-        <div class="form-group">
-          <label for="gender">성별</label>
-          <select id="gender" v-model="gender" required>
-            <option value="M">남성</option>
-            <option value="F">여성</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="address">주소</label>
-          <input type="text" id="address" v-model="address" required />
-        </div>
-        <button type="submit" class="submit-button">회원가입</button>
+
+          <!-- 회원가입 완료 메시지 (단계 3) -->
+          <div v-if="currentStep === 3" class="signup-complete">
+            <h2>제주랑에 오신걸 환영합니다!</h2>
+            <p>제주랑이 준비한<br/>맞춤여행소개 서비스를 이용해보세요</p>
+            <button @click="gotoLogin">나만의 여행스타일 바로가기</button>
+            <button @click="$emit('close')">화면 닫기</button>
+          </div>
+
+
       </form>
+
+          
+
     </div>
   </div>
 </template>
 
 
 <script>
+
+import TermsOfService from '@/components/Agreement/TermsOfService.vue';
+import PersonalInformation from '@/components/Agreement/PersonalInformation.vue';
+
+
 export default {
+  components: {
+    TermsOfService,
+    PersonalInformation
+  },
   data() {
     return {
       username: "",
       password: "",
+      passwordConfirm: '', // 비밀번호 확인을 위한 새로운 데이터 속성
       showModal: false,
       currentView: "login", // 현재 보여줄 뷰
       passwordFieldType: "password",
@@ -107,7 +239,25 @@ export default {
       gender: "",
       address: "",
       profileImageFile: null,  // 선택된 파일 저장
+      currentStep: 0, // 현재 단계를 추적하는 속성
+      profileImageSrc: null, // 선택된 이미지의 데이터 URL을 저장
+      zonecode:"",
+      roadAddress: "",
+      detailAddress: "",
+      isTermsVisible: false,
+      isPersonalInformationVisible: false,
+      terms: {
+        PersonalInformation:false,
+        all: false,
+        service: false,
+        privacy: false,
+      },
     };
+  },
+  computed: {
+    passwordMatch: function() {
+      return this.password === this.passwordConfirm;
+    }
   },
   methods: {
     login() {
@@ -134,7 +284,12 @@ export default {
           alert("로그인 실패: " + error.message);
         });
     },
-
+    nextStep() {
+      // 현재 단계를 증가시키는 로직
+      if (this.currentStep < 2) {
+        this.currentStep++;
+      }
+    },
     togglePasswordVisibility() {
       this.passwordFieldType =
         this.passwordFieldType === "password" ? "text" : "password";
@@ -143,26 +298,55 @@ export default {
       this.showModal = false; // 로그인 모달 닫기
       this.showSignupModal = true; // 회원가입 모달 열기
     },
+    triggerFileInput() {
+    this.$refs.profileImage.click();
+    },
     handleFileChange() {
-      this.profileImageFile = this.$refs.profileImage.files[0];
+      const file = this.$refs.profileImage.files[0];
+      if (file) {
+        // 데이터 URL을 읽어 이미지 미리보기를 설정합니다.
+        const reader = new FileReader();
+        reader.onload = e => {
+          this.profileImageSrc = e.target.result; // 미리보기 이미지를 데이터 URL로 설정
+        };
+        reader.readAsDataURL(file);
+
+        // 파일 객체를 저장합니다.
+        this.profileImageFile = file;
+      }
+    },
+    validatePassword() {
+      if (this.password !== this.passwordConfirm) {
+        alert('비밀번호가 일치하지 않습니다.');
+        return false;
+      }
+      return true;
     },
     register() {
+      if (!this.validatePassword()) {
+        return; // 비밀번호가 일치하지 않으면 등록 절차 중단
+      }
+      // 비밀번호가 일치하면 회원가입 로직을 계속 진행
       const formData = new FormData();
-      // 'member' 객체 전체를 JSON 문자열로 변환하여 추가
-      formData.append('member', JSON.stringify({
+      // 멤버 정보를 객체로 생성
+      const member = {
         memberName: this.name,
         memberEmail: this.email,
         memberPassword: this.password,
         memberAge: this.age,
         memberGender: this.gender,
         memberAddress: this.address
-      }));
-
+      };
+      
+      // 'member' 객체를 JSON 문자열로 변환하여 추가
+      formData.append('member', new Blob([JSON.stringify(member)], { type: 'application/json' }));
+      
       // 프로필 이미지 파일 추가
       if (this.profileImageFile) {
         formData.append('files', this.profileImageFile);
       }
-
+      
+      // 서버에 POST 요청
       this.$axios.post('http://localhost:8080/api/v1/join', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -171,8 +355,7 @@ export default {
       .then(response => {
         console.log('Registration successful:', response);
         alert('회원가입이 성공적으로 완료되었습니다.');
-        this.closeModal();
-        this.$router.push('/login');
+        this.currentStep++;  // 회원가입 성공 후 다음 단계로
       })
       .catch(error => {
         console.error('Registration failed:', error);
@@ -187,152 +370,45 @@ export default {
       this.showModal = false;
       this.currentView = "login"; // 모달을 닫을 때 로그인 뷰로 리셋
     },
+    openPostcode() {
+      new window.daum.Postcode({
+        oncomplete: (data) => {
+          // 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분
+          this.zonecode = data.zonecode; // 우편번호
+          this.roadAddress = data.roadAddress; // 도로명 주소
+          this.detailAddress = ''; // 상세 주소는 초기화
+
+          // 이제 세 부분의 주소를 합쳐서 `address`에 저장
+          this.address = `${data.roadAddress}`; // 도로명 주소로 초기 설정
+          this.$refs.detailAddress.focus(); // 상세 주소 필드에 포커스를 줍니다.
+        },
+      }).open();
+    },
+    saveAddress() {
+      // 우편번호, 도로명 주소, 상세 주소를 합쳐 `address`에 저장
+      this.address = `${this.zonecode} ${this.roadAddress} ${this.detailAddress}`.trim();
+    },
+    selectAll(event) {
+      const checked = event.target.checked;
+      this.terms.PersonalInformation = checked;
+      this.terms.all = checked;
+      this.terms.service = checked;
+      this.terms.privacy = checked;
+    },
+    showTerms() {
+      this.isTermsVisible = !this.isTermsVisible;
+    },
+    showPersonalInformation() {
+      this.isPersonalInformationVisible = !this.isPersonalInformationVisible;
+    },
+    gotoLogin() {
+      // 로그인 페이지로 이동
+      this.$router.push('/login');
+    },
   },
 };
 </script>
 
-<style>
-.login-container {
-  max-width: 400px;
-  margin: 40px auto;
-  padding: 20px;
-}
-
-.login-trigger,
-.logout-button,
-.google-signin {
-  width: 100%;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  margin-top: 10px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.login-trigger {
-  background-color: #68c7ff; /* Blue */
-  color: white;
-}
-
-.logout-button {
-  background-color: #f44336; /* Red */
-  color: white;
-}
-
-.google-signin {
-  background-color: #f9e000; /* Google Red */
-  color: white;
-  width: 70%;
-  margin-bottom: 10px;
-  padding: 15px 20px;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.login-modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 5px;
-  position: relative;
-}
-
-.close {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  cursor: pointer;
-  font-size: 24px;
-}
-
-.modal-title {
-  font-size: 24px;
-  margin-bottom: 20px;
-  margin-top: 70px;
-}
-
-.login-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* 모든 자식 요소를 중앙 정렬 */
-  width: 400px;
-  height: 500px;
-}
-
-.signup-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* 모든 자식 요소를 중앙 정렬 */
-  width: 400px;
-  height: 550px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* 요소들을 컨테이너의 왼쪽 가장자리에 정렬합니다. */
-  margin-bottom: 10px;
-  width: 80%;
-}
-
-.form-group label {
-  margin-bottom: 5px; /* 라벨과 입력 필드 사이에 약간의 간격을 추가 */
-  width: 100px;
-  text-align: start;
-}
-
-.form-group input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  width: calc(100% - 22px); /* Adjust for padding */
-  margin-bottom: 10px;
-}
-
-.password-container {
-  display: flex;
-  align-items: center;
-  position: relative;
-  width: 100%;
-}
-
-.password-toggle-icon {
-  cursor: pointer;
-  position: absolute; /* 컨테이너 내에서 절대 위치를 사용 */
-  right: 30px; /* 오른쪽 끝에서 10px의 간격을 둠 */
-  bottom: 20px;
-}
-
-.submit-button {
-  background-color: #68c7ff;
-  color: white;
-  padding: 15px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  width: 70%;
-  margin-bottom: 10px;
-  margin-top: 20px;
-}
-
-.signup-prompt {
-  text-align: center;
-  margin-top: 40px;
-  width: 80%;
-}
-
-.signup-prompt a {
-  color: #008cba;
-  cursor: pointer;
-}
+<style scoped>
+@import "@/assets/css/login_style.css";
 </style>

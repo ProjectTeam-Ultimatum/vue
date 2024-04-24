@@ -171,7 +171,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 @import "@/assets/css/review_modal_update.css";
 </style>
   
