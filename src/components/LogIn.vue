@@ -124,7 +124,7 @@
           <div class="file-upload-wrapper">
             <div class="image-upload-preview" v-if="profileImageSrc">
               <img :src="profileImageSrc" class="profile-image" />
-              <button class="image-edit-button" @click="triggerFileInput">&#9998;</button> <!-- 이모티콘은 적절한 아이콘으로 교체 가능 -->
+              <button type="button" class="image-edit-button" @click="triggerFileInput">&#9998;</button> <!-- 이모티콘은 적절한 아이콘으로 교체 가능 -->
             </div>
             <div v-else class="image-upload-placeholder">
               <button @click="triggerFileInput" class="file-upload-button"></button>
@@ -193,10 +193,20 @@
 
           </div>
           <button type="submit" class="signup-button">회원가입</button>
-      </div>
+        </div>
+
+          <!-- 회원가입 완료 메시지 (단계 3) -->
+          <div v-if="currentStep === 3" class="signup-complete">
+            <h2>제주랑에 오신걸 환영합니다!</h2>
+            <p>제주랑이 준비한<br/>맞춤여행소개 서비스를 이용해보세요</p>
+            <button @click="gotoLogin">나만의 여행스타일 바로가기</button>
+            <button @click="$emit('close')">화면 닫기</button>
+          </div>
+
 
       </form>
 
+          
 
     </div>
   </div>
@@ -345,8 +355,7 @@ export default {
       .then(response => {
         console.log('Registration successful:', response);
         alert('회원가입이 성공적으로 완료되었습니다.');
-        this.closeModal();
-        this.$router.push('/login');
+        this.currentStep++;  // 회원가입 성공 후 다음 단계로
       })
       .catch(error => {
         console.error('Registration failed:', error);
@@ -391,6 +400,10 @@ export default {
     },
     showPersonalInformation() {
       this.isPersonalInformationVisible = !this.isPersonalInformationVisible;
+    },
+    gotoLogin() {
+      // 로그인 페이지로 이동
+      this.$router.push('/login');
     },
   },
 };
