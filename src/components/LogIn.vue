@@ -4,7 +4,7 @@
     <div class="login-modal-content">
       <span class="close" @click.self="$emit('close')">&times;</span>
       <h1 class="modal-title">
-        {{ currentView === "login" ? "로그인" : "회원가입" }}
+        {{ title }}
       </h1>
 
       <!-- 로그인 폼 -->
@@ -38,10 +38,26 @@
               >&#128065;</span
             >
           </div>
-          <div>
-            <p style="font-size: 12px">비밀번호를 잊으셨나요?</p>
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              width: 100%;
+              font-size: 12px;
+            "
+          >
+            <div>비밀번호를 잊으셨나요?</div>
+            <div
+              @click="switchView('reset')"
+              @close="closePasswordModal"
+              style="cursor: pointer; color: #68c7ff"
+            >
+              비밀번호 찾기
+            </div>
           </div>
         </div>
+
         <button type="submit" class="submit-button">로그인</button>
         <p>OR</p>
         <button class="google-signin">카카오 계정으로 로그인하기</button>
@@ -50,6 +66,58 @@
           <a @click="switchView('signup')">회원가입 하기</a>
         </p>
       </form>
+
+      <!-- 비밀번호 찾기 모달-->
+      <div v-else-if="currentView === 'reset'">
+        <form @submit.prevent="resetPassword" class="reset-password-form">
+          <div class="reset-password-name">
+            <img
+              src="@/assets/images/person1.png"
+              class="input-icon"
+              alt="Icon"
+            />
+            <input
+              type="text"
+              id="name"
+              v-model="resetName"
+              required
+              placeholder="이름"
+              class="input-field"
+            />
+          </div>
+          <div class="reset-password-name">
+            <img
+              src="@/assets/images/email.png"
+              class="input-icon"
+              alt="Icon"
+            />
+            <!-- 이미지 아이콘 -->
+            <input
+              type="email"
+              id="email"
+              v-model="resetEmail"
+              required
+              placeholder="이메일"
+              class="input-field"
+            />
+          </div>
+          <div class="reset-password-question">
+            <div>
+              <span style="font-weight: bold; color: #68c7ff; font-size: 20px"
+                >Q.
+              </span>
+              당신의 가장 좋아하는 여행지는 어디인가요?
+            </div>
+            <input
+              type="text"
+              v-model="resetAnswer"
+              placeholder="질문에 대한 답을 적어주세요"
+              class="input-field"
+            />
+          </div>
+          <button type="submit" class="submit-button">임시비밀번호 받기</button>
+        </form>
+      </div>
 
       <!-- 회원가입 폼 -->
       <form v-else @submit.prevent="register" class="signup-form">
@@ -333,10 +401,11 @@
                 ref="detailAddress"
               />
             </div>
-            <div style="padding-left: 40px">
-              당신의 가장 좋아하는 여행지는 어디인가요?
+            <div style="padding-left: 10px; font-weight: bold">
+              <span style="font-weight: bold; color: #68c7ff">Q. </span> 당신의
+              가장 좋아하는 여행지는 어디인가요?
             </div>
-            <div class="signup-group-name" style="padding-left: 40px">
+            <div style="padding-left: 40px">
               <input
                 type="text"
                 v-model="answer"
@@ -377,6 +446,7 @@ export default {
       password: "",
       passwordConfirm: "", // 비밀번호 확인을 위한 새로운 데이터 속성
       showModal: false,
+      showFindPasswordModal: false,
       currentView: "login", // 현재 보여줄 뷰
       passwordFieldType: "password",
       showSignupModal: false, // 회원가입 모달을 관리할 새로운 데이터 속성
@@ -400,11 +470,26 @@ export default {
         service: false,
         privacy: false,
       },
+      resetName: "",
+      resetEmail: "",
+      resetAnswer: "",
     };
   },
   computed: {
     passwordMatch: function () {
       return this.password === this.passwordConfirm;
+    },
+    title() {
+      switch (this.currentView) {
+        case "login":
+          return "로그인";
+        case "reset":
+          return "비밀번호 재설정";
+        case "signup":
+          return "회원가입";
+        default:
+          return "로그인";
+      }
     },
   },
   methods: {
@@ -443,10 +528,10 @@ export default {
       this.passwordFieldType =
         this.passwordFieldType === "password" ? "text" : "password";
     },
-    switchToSignup() {
-      this.showModal = false; // 로그인 모달 닫기
-      this.showSignupModal = true; // 회원가입 모달 열기
-    },
+    // switchToSignup() {
+    //   this.showModal = false; // 로그인 모달 닫기
+    //   this.showSignupModal = true; // 회원가입 모달 열기
+    // },
     triggerFileInput() {
       this.$refs.profileImage.click();
     },
@@ -524,8 +609,9 @@ export default {
       this.currentView = view; // 현재 뷰 전환
     },
     closeModal() {
-      this.showModal = false;
+      // this.showModal = false;
       this.currentView = "login"; // 모달을 닫을 때 로그인 뷰로 리셋
+      this.$emit("close");
     },
     openPostcode() {
       new window.daum.Postcode({
@@ -562,6 +648,29 @@ export default {
     gotoLogin() {
       // 로그인 페이지로 이동
       this.$router.push("/login");
+    },
+    resetPassword() {
+      // 멤버 정보를 객체로 생성
+      const data = {
+        memberName: this.resetName,
+        memberEmail: this.resetEmail,
+        memberFindPasswordAnswer: this.resetAnswer,
+      };
+
+      // 서버에 POST 요청
+      this.$axios
+        .post("/api/v1/user/findpassword", data)
+        .then((response) => {
+          console.log("Registration successful:", response);
+          alert("임시 비밀번호가 전송되었습니다.");
+        })
+        .catch((error) => {
+          console.error("Registration failed:", error);
+          alert(
+            "비밀번호 찾기 실패: " +
+              (error.response.data.message || "오류가 발생했습니다.")
+          );
+        });
     },
   },
 };

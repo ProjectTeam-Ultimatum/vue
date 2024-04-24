@@ -59,7 +59,9 @@ export default {
     },
   },
   created() {
-    this.fetchUserName();
+    if (this.isAuthenticated) {
+      this.fetchUserName(); // 로그인 되어 있을 때만 사용자 정보를 가져옵니다.
+    }
   },
   methods: {
     async fetchUserName() {
