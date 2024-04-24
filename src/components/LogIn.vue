@@ -333,6 +333,18 @@
                 ref="detailAddress"
               />
             </div>
+            <div style="padding-left: 40px">
+              당신의 가장 좋아하는 여행지는 어디인가요?
+            </div>
+            <div class="signup-group-name" style="padding-left: 40px">
+              <input
+                type="text"
+                v-model="answer"
+                placeholder="질문에 대한 답을 적어주세요"
+                class="input-field"
+                ref="answer"
+              />
+            </div>
           </div>
           <button type="submit" class="signup-button">회원가입</button>
         </div>
@@ -373,6 +385,7 @@ export default {
       age: null,
       gender: "",
       address: "",
+      answer: "",
       profileImageFile: null, // 선택된 파일 저장
       currentStep: 0, // 현재 단계를 추적하는 속성
       profileImageSrc: null, // 선택된 이미지의 데이터 URL을 저장
@@ -472,6 +485,7 @@ export default {
         memberAge: this.age,
         memberGender: this.gender,
         memberAddress: this.address,
+        memberFindPasswordAnswer: this.answer,
       };
 
       // 'member' 객체를 JSON 문자열로 변환하여 추가
@@ -487,7 +501,7 @@ export default {
 
       // 서버에 POST 요청
       this.$axios
-        .post("http://localhost:8080/api/v1/join", formData, {
+        .post("/api/v1/join", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
