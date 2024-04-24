@@ -62,10 +62,14 @@ const authModule = {
   namespaced: true,
   state: {
     token: localStorage.getItem('token') || null,
+    userName: localStorage.getItem('userName') || null,
+    images: localStorage.getItem('images') || null,
+
   },
   getters: {
     isAuthenticated: state => !!state.token,
     token: state => state.token,
+    userName: state => state.userName
   },
   mutations: {
     SET_TOKEN(state, token) {
@@ -76,11 +80,25 @@ const authModule = {
       state.email = email;
       console.log('로그인 사용자 : ',state.email)
       localStorage.setItem('email', email);
+    },
+    SET_USER_NAME(state, userName){
+      state.userName = userName;
+      console.log('로그인 사용자 이름 : ',state.userName)
+      localStorage.setItem('userName', userName); // 로컬 스토리지에 사용자 이름 저장
+    },
+    SET_USER_IMAGE(state, images){
+      state.images = images;
+      console.log('로그인 사용자 이미지 : ',state.images)
+      localStorage.setItem('images', images); // 로컬 스토리지에 사용자 이름 저장
     }
   },
   actions: {
     saveToken({ commit }, token) {
       commit('SET_TOKEN', token);
+    },
+    setUserName({commit}, userName){
+      commit('SET_USER_NAME', userName);
+
     },
     logout({ commit }) {
       commit('SET_TOKEN', null);
