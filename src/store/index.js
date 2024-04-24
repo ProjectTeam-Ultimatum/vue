@@ -84,6 +84,7 @@ const authModule = {
     },
     logout({ commit }) {
       commit('SET_TOKEN', null);
+     
     },
   },
 };

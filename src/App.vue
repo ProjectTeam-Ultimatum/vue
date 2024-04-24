@@ -51,8 +51,12 @@ export default {
       this.showModal = true;
     },
     logout() {
+      // Vuex 상태 초기화
+      this.$store.commit("auth/SET_TOKEN", null);
+      this.$store.commit("auth/SET_USER_EMAIL", null);
       // 로컬 스토리지에서 토큰 제거
       localStorage.removeItem("Authorization");
+      localStorage.removeItem("email");
       this.isAuthenticated = false;
       // 로그아웃 성공 메시지 표시 후 페이지 새로 고침
       alert("로그아웃 되었습니다.");

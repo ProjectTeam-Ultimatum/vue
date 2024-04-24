@@ -220,13 +220,7 @@ export default {
         console.log("API response:", response); // API 응답 로깅
         this.$store.commit("auth/SET_USER_EMAIL", response.data.email);
       } catch (error) {
-        if (error.response && error.response.data) {
-          //백엔드에서 보낸 에러메시지 표시
-          alert(`${error.response.data.message}`);
-          console.error(error.response.data.message);
-        } else {
-          console.error("인증된 사용자가 아닙니다. : ", error);
-        }
+        console.error("인증된 사용자가 아닙니다. : ", error);
       }
     },
     //댓글작성 메소드
