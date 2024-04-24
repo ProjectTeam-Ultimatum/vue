@@ -15,12 +15,11 @@
       </div>
       <div v-else class="user-info">
         <img
+          v-if="userImage"
           :src="userImage || 'default-image-url'"
-          alt="User Image"
           class="user-image"
         />
-        {{ userName }}님 환영합니다.
-
+        {{ userName }} 님 환영합니다.
         <button @click="logout">로그아웃</button>
       </div>
     </div>
@@ -84,12 +83,13 @@ export default {
       this.$store.commit("auth/SET_TOKEN", null);
       this.$store.commit("auth/SET_USER_EMAIL", null);
       this.$store.commit("auth/SET_USER_NAME", null);
-      this.$store.commit("auth/SET_USER_IMAGES", null);
+      this.$store.commit("auth/SET_USER_IMAGE", null);
 
       // 로컬 스토리지에서 토큰 제거
       localStorage.removeItem("Authorization");
       localStorage.removeItem("email");
       localStorage.removeItem("userName");
+      localStorage.removeItem("images");
 
       this.isAuthenticated = false;
       // 로그아웃 성공 메시지 표시 후 페이지 새로 고침

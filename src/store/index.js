@@ -63,6 +63,8 @@ const authModule = {
   state: {
     token: localStorage.getItem('token') || null,
     userName: localStorage.getItem('userName') || null,
+    images: localStorage.getItem('images') || null,
+
   },
   getters: {
     isAuthenticated: state => !!state.token,
