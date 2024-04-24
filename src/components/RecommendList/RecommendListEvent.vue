@@ -139,7 +139,7 @@ export default {
     console.log('Requesting data with params:', params); 
 
     // Axios 요청에 params 적용
-    this.$axios.get("http://localhost:8080/api/recommend/listevent", { params })
+    this.$axios.get("/api/recommend/listevent", { params })
     .then((response) => {
         if (response.data.content.length === 0) {
           console.error('No data returned for the page:', this.currentPage);

@@ -60,17 +60,30 @@
                           <img alt="map" src="@/assets/map.png" style="width:160px">
                       </div>
                   </div>
+                  <!-- recommendListplaceRegion 표시 -->
                   <div class="recommend-list">
-                      <h6>{{ place.recommendPlaceRegion }} 추전 맛집</h6>
+                      <h6 style="text-align: left;">
+                        <span>{{ place.recommendPlaceRegion }}</span>
+                        주변
+                        <span>{{ place.recommendPlaceCategory }}</span>
+                      </h6>
                       <div>
                       <ul>
-                          <li></li>
-                          <li></li>
-                          <li></li>
-                          <li></li>
+                        <li v-for="(place, index) in recommendListPlaceRegion" :key="index" class="recommend-item">
+                          <div class="recommend-info">
+                            <div class="recommend-name-region">
+                              <span class="recommend-name">{{ place.recommendPlaceTitle }}</span>
+                              <span class="recommend-region"><span></span>{{ place.recommendPlaceRegion }}</span>
+                            </div>
+                            <div class="recommend-details">
+                              <span class="recommend-tag">{{ place.recommendPlaceTag }}</span>
+                              <img class="recommend-photo" :src="place.recommendPlaceImgPath || 'default-image-url'" alt="관광지 사진">
+                            </div>
+                          </div>
+                        </li>
                       </ul>
                       </div>
-                  </div>
+                  </div> <!-- recommend-list -->
               </div>
             </div>
           </div>
@@ -90,7 +103,8 @@ data() {
     replyModalCreate: false,
     activePlaceId: null,  // 활성화된 음식 ID 저장, 모달 전달
     currentType: 'place',
-    //isLoading: true,  // 로딩 상태 추가
+    placeRegion: '', //주변 지역 정보
+    recommendListPlaceRegion: []
   };
 },
 components: {
@@ -104,26 +118,56 @@ props: {
 },
 methods: {
   async fetchPlaceDetails() {
-    //this.isLoading = true;  // 데이터 로딩 시작
       if (!this.recommendPlaceId) {
-          console.error("recommendPlaceId is undefined!");
-          //this.isLoading = false;
+          console.error("recommendPlaceId가 정의되지 않았습니다!");
           return;
       }
       try {
           let response = await this.$axios.get(`/api/recommend/listplace/${this.recommendPlaceId}`);
           if (response.data) {
               const data = response.data;
+              // 데이터 가공
               data.recommendPlaceTag = data.recommendPlaceTag ? data.recommendPlaceTag.split(',').slice(0, 8).join(', ') : '';
               data.recommendPlaceAllTag = data.recommendPlaceAllTag ? data.recommendPlaceAllTag.split(',').slice(0, 16).join(', ') : '';
               this.recommendListDetailPlace = [data];
+              this.placeRegion = data.recommendPlaceRegion;
               this.replyModalCreate = false;
+              // fetchRegionData 호출
+              this.fetchRegionData();
           }
+          console.log("로딩 된 지역 정보:", this.placeRegion);
           console.log("로딩 된 상세페이지 정보:", this.recommendListDetailPlace);
       } catch (error) {
-          console.error('Error fetching Place details:', error);
+          console.error('관광지 세부 정보를 가져오는 중 에러 발생:', error);
       }
   }, //fetchPlaceDetails
+  async fetchRegionData() {
+  try {
+    const params = {
+      page: 0,
+      size: 3, // 최대 3개의 항목만 가져옴
+      sort: "recommendPlaceRegion,desc",
+      region: this.placeRegion
+    };
+    const response = await this.$axios.get("/api/recommend/listplace", { params });
+    if (response.data.content.length === 0) {
+      console.error('No data returned for the page:', this.currentPage);
+      this.recommendListPlaceRegion = [];
+      this.totalPages = 0;
+    } else {
+      // 최대 3개의 항목만 추출하여 저장
+      this.recommendListPlaceRegion = response.data.content.slice(0, 3).map(item => {
+        // recommendPlaceTag를 최대 3개까지만 추출
+        const tags = item.recommendPlaceTag ? item.recommendPlaceTag.split(',').slice(0, 2).join(', ') : '';
+        return { ...item, recommendPlaceTag: tags };
+      });
+      console.log("로딩된 지역 정보:", this.recommendListPlaceRegion);
+    }
+  } catch (error) {
+    console.error("에러 발생:", error);
+  }
+}, //fetchRegionData
+
   isOperating(closeTime) {  //영업중, 영업마감
     if (!closeTime) return '휴무일'; // 휴무일 처리
     
@@ -167,6 +211,9 @@ methods: {
   },
   mounted() {
     this.fetchPlaceDetails();
+  },
+  compute: { //기존 데이터를 바탕으로 새로운 데이터 값을 생성할 때
+    //this.placeRegion 로딩 된 지역정보에 맞춰서 api요청
   }
 }
 </script>

@@ -60,17 +60,30 @@
                             <img alt="map" src="@/assets/map.png" style="width:160px">
                         </div>
                     </div>
-                    <div class="recommend-list">
-                        <h6>{{ food.recommendFoodRegion }} 추전 맛집</h6>
-                        <div>
-                        <ul>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                        </ul>
-                        </div>
-                    </div>
+                  <!-- recommendListfoodRegion 표시 -->
+                  <div class="recommend-list">
+                      <h6 style="text-align: left;">
+                        <span>{{ food.recommendFoodRegion }}</span>
+                        주변
+                        <span>{{ food.recommendFoodCategory }}</span>
+                      </h6>
+                      <div>
+                      <ul>
+                        <li v-for="(food, index) in recommendListFoodRegion" :key="index" class="recommend-item">
+                          <div class="recommend-info">
+                            <div class="recommend-name-region">
+                              <span class="recommend-name">{{ food.recommendFoodTitle }}</span>
+                              <span class="recommend-region"><span></span>{{ food.recommendFoodRegion }}</span>
+                            </div>
+                            <div class="recommend-details">
+                              <span class="recommend-tag">{{ food.recommendFoodTag }}</span>
+                              <img class="recommend-photo" :src="food.recommendFoodImgPath || 'default-image-url'" alt="식당 사진">
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                      </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -90,6 +103,8 @@ export default {
       replyModalCreate: false,
       activeFoodId: null,  // 활성화된 음식 ID 저장, 모달 전달
       currentType: 'food',
+      foodRegion: '', //주변 지역 정보
+      recommendListFoodRegion: []
     };
   },
   components: {
@@ -104,24 +119,55 @@ export default {
   methods: {
     async fetchFoodDetails() {
         if (!this.recommendFoodId) {
-            console.error("recommendFoodId is undefined!");
+            console.error("recommendFoodId가 정의되지 않았습니다!");
             return;
         }
         try {
             let response = await this.$axios.get(`/api/recommend/listfood/${this.recommendFoodId}`);
             if (response.data) {
                 const data = response.data;
+                // 데이터 가공
                 data.recommendFoodTag = data.recommendFoodTag.split(',').slice(0, 8).join(', ');
                 data.recommendFoodAllTag = data.recommendFoodAllTag.split(',').slice(0, 16).join(', ');
                 this.recommendListDetailFood = [data];
+                this.foodRegion = data.recommendFoodRegion;
                 this.replyModalCreate = false;
-            }
 
-            console.log("Loaded food details:", this.recommendListDetailFood);
+                // fetchRegionData 호출
+                this.fetchRegionData();
+            }
+            console.log("로딩 된 지역 정보:", this.foodRegion);
+            console.log("로딩 된 상세페이지 정보:", this.recommendListDetailFood);
         } catch (error) {
-            console.error('Error fetching food details:', error);
+            console.error('음식점 세부 정보를 가져오는 중 에러 발생:', error);
         }
     }, //fetchFoodDetails
+    async fetchRegionData() {
+    try {
+      const params = {
+        page: 0,
+        size: 3, // 최대 3개의 항목만 가져옴
+        sort: "recommendFoodRegion,desc",
+        region: this.foodRegion
+      };
+      const response = await this.$axios.get("/api/recommend/listfood", { params });
+      if (response.data.content.length === 0) {
+        console.error('No data returned for the page:', this.currentPage);
+        this.recommendListFoodRegion = [];
+        this.totalPages = 0;
+      } else {
+        // 최대 3개의 항목만 추출하여 저장
+        this.recommendListFoodRegion = response.data.content.slice(0, 3).map(item => {
+          // recommendfoodTag를 최대 3개까지만 추출
+          const tags = item.recommendFoodTag ? item.recommendFoodTag.split(',').slice(0, 2).join(', ') : '';
+          return { ...item, recommendFoodTag: tags };
+        });
+        console.log("로딩된 지역 정보:", this.recommendListFoodRegion);
+      }
+    } catch (error) {
+      console.error("에러 발생:", error);
+    }
+  }, //fetchRegionData
     isOperating(closeTime) {  //영업중, 영업마감
       if (!closeTime) return '휴무일'; // 휴무일 처리
       

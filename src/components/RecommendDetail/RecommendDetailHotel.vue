@@ -60,17 +60,30 @@
                             <img alt="map" src="@/assets/map.png" style="width:160px">
                         </div>
                     </div>
-                    <div class="recommend-list">
-                        <h6>{{ hotel.recommendHotelRegion }} 추전 맛집</h6>
-                        <div>
-                        <ul>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                        </ul>
-                        </div>
-                    </div>
+                  <!-- recommendListHotelRegion 표시 -->
+                  <div class="recommend-list">
+                      <h6 style="text-align: left;">
+                        <span>{{ hotel.recommendHotelRegion }}</span>
+                        주변
+                        <span>{{ hotel.recommendHotelCategory }}</span>
+                      </h6>
+                      <div>
+                      <ul>
+                        <li v-for="(hotel, index) in recommendListHotelRegion" :key="index" class="recommend-item">
+                          <div class="recommend-info">
+                            <div class="recommend-name-region">
+                              <span class="recommend-name">{{ hotel.recommendHotelTitle }}</span>
+                              <span class="recommend-region"><span></span>{{ hotel.recommendHotelRegion }}</span>
+                            </div>
+                            <div class="recommend-details">
+                              <span class="recommend-tag">{{ hotel.recommendHotelTag }}</span>
+                              <img class="recommend-photo" :src="hotel.recommendHotelImgPath || 'default-image-url'" alt="관광지 사진">
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                      </div>
+                  </div> <!-- recommend-list -->
                 </div>
               </div>
             </div>
@@ -90,7 +103,8 @@
       replyModalCreate: false,
       activeHotelId: null,  // 활성화된 음식 ID 저장, 모달 전달
       currentType: 'hotel',
-      //isLoading: true,  // 로딩 상태 추가
+      hotelRegion: '', //주변 지역 정보
+      recommendListHotelRegion: []
     };
   },
   components: {
@@ -118,12 +132,42 @@
                 data.recommendHotelAllTag = data.recommendHotelAllTag ? data.recommendHotelAllTag.split(',').slice(0, 16).join(', ') : '';
                 this.recommendListDetailHotel = [data];
                 this.replyModalCreate = false;
+                // fetchRegionData 호출
+                this.fetchRegionData();
             }
+            console.log("로딩 된 지역 정보:", this.hotelRegion);
             console.log("로딩 된 상세페이지 정보:", this.recommendListDetailHotel);
         } catch (error) {
             console.error('Error fetching Hotel details:', error);
         }
     }, //fetchHotelDetails
+    async fetchRegionData() {
+  try {
+    const params = {
+      page: 0,
+      size: 3, // 최대 3개의 항목만 가져옴
+      sort: "recommendHotelRegion,desc",
+      region: this.hotelRegion
+    };
+    const response = await this.$axios.get("/api/recommend/listhotel", { params });
+    if (response.data.content.length === 0) {
+      console.error('No data returned for the page:', this.currentPage);
+      this.recommendListHotelRegion = [];
+      this.totalPages = 0;
+    } else {
+      // 최대 3개의 항목만 추출하여 저장
+      this.recommendListHotelRegion = response.data.content.slice(0, 3).map(item => {
+        // recommendHotelTag를 최대 3개까지만 추출
+        const tags = item.recommendHotelTag ? item.recommendHotelTag.split(',').slice(0, 2).join(', ') : '';
+        return { ...item, recommendHotelTag: tags };
+      });
+      console.log("로딩된 지역 정보:", this.recommendListHotelRegion);
+    }
+  } catch (error) {
+    console.error("에러 발생:", error);
+  }
+}, //fetchRegionData
+
     isOperating(closeTime) {  //영업중, 영업마감
       if (!closeTime) return '휴무일'; // 휴무일 처리
       

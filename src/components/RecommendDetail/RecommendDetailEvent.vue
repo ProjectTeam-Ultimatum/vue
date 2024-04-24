@@ -60,17 +60,30 @@
                             <img alt="map" src="@/assets/map.png" style="width:160px">
                         </div>
                     </div>
-                    <div class="recommend-list">
-                        <h6>{{ event.recommendEventRegion }} 추전 맛집</h6>
-                        <div>
-                        <ul>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                        </ul>
-                        </div>
-                    </div>
+                  <!-- recommendListEventRegion 표시 -->
+                  <div class="recommend-list">
+                      <h6 style="text-align: left;">
+                        <span>{{ event.recommendEventRegion }}</span>
+                        주변
+                        <span>{{ event.recommendEventCategory }}</span>
+                      </h6>
+                      <div>
+                      <ul>
+                        <li v-for="(event, index) in recommendListEventRegion" :key="index" class="recommend-item">
+                          <div class="recommend-info">
+                            <div class="recommend-name-region">
+                              <span class="recommend-name">{{ event.recommendEventTitle }}</span>
+                              <span class="recommend-region"><span></span>{{ event.recommendEventRegion }}</span>
+                            </div>
+                            <div class="recommend-details">
+                              <span class="recommend-tag">{{ event.recommendEventTag }}</span>
+                              <img class="recommend-photo" :src="event.recommendEventImgPath || 'default-image-url'" alt="관광지 사진">
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                      </div>
+                  </div> <!-- recommend-list -->
                 </div>
               </div>
             </div>
@@ -90,7 +103,9 @@
       replyModalCreate: false,
       activeEventId: null,  // 활성화된 음식 ID 저장, 모달 전달
       currentType: 'event',
-      //isLoading: true,  // 로딩 상태 추가
+      eventRegion: '', //주변 지역 정보
+      recommendListEventRegion: []
+
     };
   },
   components: {
@@ -118,12 +133,41 @@
                 data.recommendEventAllTag = data.recommendEventAllTag ? data.recommendEventAllTag.split(',').slice(0, 16).join(', ') : '';
                 this.recommendListDetailEvent = [data];
                 this.replyModalCreate = false;
+                // fetchRegionData 호출
+                this.fetchRegionData();
             }
+            console.log("로딩 된 지역 정보:", this.eventeRegion);
             console.log("로딩 된 상세페이지 정보:", this.recommendListDetailEvent);
         } catch (error) {
-            console.error('Error fetching Event details:', error);
+            console.error('축제행사 세부 정보를 가져오는 중 에러 발생:', error);
         }
     }, //fetchEventDetails
+    async fetchRegionData() {
+    try {
+      const params = {
+        page: 0,
+        size: 3, // 최대 3개의 항목만 가져옴
+        sort: "recommendEventRegion,desc",
+        region: this.EventRegion
+      };
+      const response = await this.$axios.get("/api/recommend/listevent", { params });
+      if (response.data.content.length === 0) {
+        console.error('No data returned for the page:', this.currentPage);
+        this.recommendListEventRegion = [];
+        this.totalPages = 0;
+      } else {
+        // 최대 3개의 항목만 추출하여 저장
+        this.recommendListEventRegion = response.data.content.slice(0, 3).map(item => {
+          // recommendEventTag를 최대 3개까지만 추출
+          const tags = item.recommendEventTag ? item.recommendEventTag.split(',').slice(0, 2).join(', ') : '';
+          return { ...item, recommendEventTag: tags };
+        });
+        console.log("로딩된 지역 정보:", this.recommendListEventRegion);
+      }
+    } catch (error) {
+      console.error("에러 발생:", error);
+    }
+  }, //fetchRegionData
     isOperating(closeTime) {  //영업중, 영업마감
       if (!closeTime) return '휴무일'; // 휴무일 처리
       

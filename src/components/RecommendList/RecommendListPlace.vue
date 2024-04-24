@@ -133,7 +133,7 @@ export default {
     console.log('Requesting data with params:', params); 
 
     // Axios 요청에 params 적용
-    this.$axios.get("http://localhost:8080/api/recommend/listplace", { params })
+    this.$axios.get("/api/recommend/listplace", { params })
     .then((response) => {
         if (response.data.content.length === 0) {
           console.error('No data returned for the page:', this.currentPage);
@@ -171,7 +171,7 @@ export default {
       console.error("에러났어요 : " + error);
       this.loading = false; // 에러 발생 시 로딩 상태 비활성화
   });
-  },
+  }, //fetchData
   selectTag(tag) { //태그 필터링
       this.selectedTag = tag; // 선택된 태그 업데이트
       this.currentPage = 1;
