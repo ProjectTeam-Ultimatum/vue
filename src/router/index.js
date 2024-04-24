@@ -17,6 +17,9 @@ import RecommendDetailFood from '../components/RecommendDetail/RecommendDetailFo
 //import RecommendList from '../views/RecommendListPlace.vue' 
 import MainMap from '@/components/Course/MainMap.vue'
 import CourseView from '../views/Course/CourseView.vue'
+import TravelStyle from '@/views/TravelStyle/TravelStyle.vue';
+import TravelStyleTest from '@/components/TravelStyle/TravelStyleTest.vue'
+import StyleResult from '@/components/TravelStyle/StyleResult.vue'
 
 
 
@@ -25,6 +28,22 @@ const routes = [
     path: '/',
     name: 'MainPage',
     component: MainPage
+  },
+  {
+    path: '/result',
+    name: 'StyleResult',
+    component: StyleResult,
+    props: true // 이렇게 설정하면 모든 params가 props로 전달됩니다.
+  },
+  {
+    path: '/travel',
+    name: 'TravelStyle',
+    component: TravelStyle
+  },
+  {
+    path: '/traveltest',
+    name: 'TravelStyleTest',
+    component: TravelStyleTest
   },
   {
     path: '/reviews',

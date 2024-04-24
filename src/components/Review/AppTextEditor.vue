@@ -193,7 +193,7 @@ export default {
 };
 </script>
   
-  <style lang="less" scoped>
+<style lang="less" scoped>
 #text-editor {
   border: 1px solid #e1e1e1;
   border-radius: 5px;

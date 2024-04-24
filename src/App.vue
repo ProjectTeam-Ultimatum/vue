@@ -1,11 +1,13 @@
 <template>
-  <nav :class="{ 'main-page': isMainPage, scrolled: isScrolled }">
+  <nav :class="{ 'main-page': isMainPage,isTravel, scrolled: isScrolled }">
     <router-link class="main-logo" to="/">제주랑</router-link>
     <div class="nav-links">
       <router-link to="/chatting"> 메이트 찾기</router-link>
       <router-link to="/reviews"> 여행후기 </router-link>
       <router-link to="/list">리스트</router-link>
       <router-link to="/course">코스</router-link>
+      <router-link to="/travel">여행스타일</router-link>
+      <router-link to="/result">결과</router-link>
     </div>
     <div class="login">
       <div v-if="!isAuthenticated">
@@ -42,6 +44,9 @@ export default {
   computed: {
     isMainPage() {
       return this.$route.path === "/";
+    },
+    isTravel() {
+      return this.$route.path === "/travel";
     },
   },
   methods: {
