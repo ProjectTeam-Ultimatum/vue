@@ -13,45 +13,45 @@
                   <button type="button" class="btn btn-outline-primary"
           :class="{ 'active': selectedTag === '친구' }"
           @click="selectTag('친구')">친구</button>
-      <button type="button" class="btn btn-outline-primary"
-          :class="{ 'active': selectedTag === '혼자' }"
-          @click="selectTag('혼자')">혼자</button>
-      <button type="button" class="btn btn-outline-primary"
-          :class="{ 'active': selectedTag === '커플' }"
-          @click="selectTag('커플')">커플</button>
           <button type="button" class="btn btn-outline-primary"
-          :class="{ 'active': selectedTag === '가족' }"
-          @click="selectTag('가족')">가족</button>
-      <button type="button" class="btn btn-outline-primary"
-          :class="{ 'active': selectedTag === '아이' }"
-          @click="selectTag('아이')">아이</button>
-      <button type="button" class="btn btn-outline-primary"
-          :class="{ 'active': selectedTag === '호텔' }"
-          @click="selectTag('호텔')">호텔</button>
-      <button type="button" class="btn btn-outline-primary"
-      :class="{ 'active': selectedTag === '펜션' }"
-      @click="selectTag('펜션')">펜션</button>
-      <button type="button" class="btn btn-outline-primary"
-          :class="{ 'active': selectedTag === '독채' }"
-          @click="selectTag('액티비티')">액티비티</button>
-      <button type="button" class="btn btn-outline-primary"
-      :class="{ 'active': selectedTag === '캠핑장' }"
-      @click="selectTag('캠핑장')">캠핑장</button>
-      <button type="button" class="btn btn-outline-primary"
-      :class="{ 'active': selectedTag === '오션뷰' }"
-      @click="selectTag('오션뷰')">오션뷰</button>
-      <button type="button" class="btn btn-outline-primary"
-      :class="{ 'active': selectedTag === '수영장' }"
-      @click="selectTag('수영장')">수영장</button>
-      <button type="button" class="btn btn-outline-primary"
-      :class="{ 'active': selectedTag === '반려동물동반입장' }"
-      @click="selectTag('반려동물동반입장')">반려동물동반입장</button>
+              :class="{ 'active': selectedTag === '혼자' }"
+              @click="selectTag('혼자')">혼자</button>
+          <button type="button" class="btn btn-outline-primary"
+              :class="{ 'active': selectedTag === '커플' }"
+              @click="selectTag('커플')">커플</button>
+              <button type="button" class="btn btn-outline-primary"
+              :class="{ 'active': selectedTag === '가족' }"
+              @click="selectTag('가족')">가족</button>
+          <button type="button" class="btn btn-outline-primary"
+              :class="{ 'active': selectedTag === '아이' }"
+              @click="selectTag('아이')">아이</button>
+          <button type="button" class="btn btn-outline-primary"
+              :class="{ 'active': selectedTag === '호텔' }"
+              @click="selectTag('호텔')">호텔</button>
+          <button type="button" class="btn btn-outline-primary"
+          :class="{ 'active': selectedTag === '펜션' }"
+          @click="selectTag('펜션')">펜션</button>
+          <button type="button" class="btn btn-outline-primary"
+              :class="{ 'active': selectedTag === '독채' }"
+              @click="selectTag('액티비티')">액티비티</button>
+          <button type="button" class="btn btn-outline-primary"
+          :class="{ 'active': selectedTag === '캠핑장' }"
+          @click="selectTag('캠핑장')">캠핑장</button>
+          <button type="button" class="btn btn-outline-primary"
+          :class="{ 'active': selectedTag === '오션뷰' }"
+          @click="selectTag('오션뷰')">오션뷰</button>
+          <button type="button" class="btn btn-outline-primary"
+          :class="{ 'active': selectedTag === '수영장' }"
+          @click="selectTag('수영장')">수영장</button>
+          <button type="button" class="btn btn-outline-primary"
+          :class="{ 'active': selectedTag === '반려동물동반입장' }"
+          @click="selectTag('반려동물동반입장')">반려동물동반입장</button>
           </div>
         </div>
         <div>
           <img alt="map" src="@/assets/map.png" style="width:160px">
         </div>
-    </div>
+    </div> <!-- recomemnd_info -->
     <div class="content_list">
         <div style="width: 820px; margin: 16px auto; text-align:left;">
             <span class="headline2" >제주도 쉬어갈 곳</span>
@@ -60,7 +60,7 @@
         <div class="card-wrap">
         <!-- <div v-for="list in recommendList" :key="list.id"> -->
           <div :key="i" v-for="(hotel, i) in filteredHotels">
-            <div class="card">
+            <div div @click="goToDetail(hotel.recommendHotelId)" class="card">
               <div class="card-image">
                 <img :src="hotel.recommendHotelImgPath || 'default-image-url'" alt="Review Image">
                 <!-- <div class="score">{{ hotel.recommendHotelStar }}</div> -->
@@ -79,10 +79,10 @@
                 <div class="card-subtitle">{{ hotel.recommendHotelIntroduction }}</div>
                 <div class="card-option">{{ hotel.recommendHotelTag }}</div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
+            </div><!-- goToDetail -->
+          </div> <!-- v-for -->
+        </div> <!-- card-wrap -->
+      </div> <!-- content_list -->
       <PaginationComponent
           :total-pages="totalPages"
           :current-page="currentPage"
@@ -210,7 +210,15 @@ export default {
   },
   getStatusMessage(closeTime) {
     return this.isOperating(closeTime);
+  },
+  goToDetail(recommendHotelId) {
+  if (!recommendHotelId) {
+    console.error("Error: recommendHotelId 찾을 수 없음");
+    return;
   }
+  console.log("이동 할 recommendHotelId:", recommendHotelId);
+  this.$router.push({ name: 'detailhotel', params: { recommendHotelId } });
+  } //goToDetail
 },
 computed: {
   filteredHotels() {

@@ -7,11 +7,11 @@
         <div class="reply-modal-body">
           <div class="reply-info">
             <div>
-                <img class="reply-image" :src="recommendPlaceImgPath || 'default-image-url'" alt="Review Image">
+                <img class="reply-image" :src="recommendEventImgPath || 'default-image-url'" alt="Review Image">
             </div>
             <div class="reply-info-text">
-                <h5>{{ recommendPlaceTitle }} 방문하셨나요? :)</h5>
-                <span>{{ recommendPlaceIntroduction }}</span>
+                <h5>{{ recommendEventTitle }} 방문하셨나요? :)</h5>
+                <span>{{ recommendEventIntroduction }}</span>
             </div>
           </div>
         </div>
@@ -53,25 +53,25 @@
 
 export default {
   props: {
-    recommendPlaceId: Number,  // 푸드 ID
+    recommendEventId: Number,  // 푸드 ID
     replyModalCreate: Boolean,
     type: {
       type: String,
-      default: 'Place',  // 기본적으로 제공되는 유형
+      default: 'food',  // 기본적으로 제공되는 유형
       validator: function (value) {
         // type이 지정된 값 중 하나인지 검증
-        return ['Place', 'hotel', 'event', 'place'].includes(value);
+        return ['food', 'hotel', 'event', 'place'].includes(value);
       }
     }
   },
   data() {
     return {
       rating: 0,
-      recommendPlaceImgPath: '',
-      recommendPlaceTitle: '',
-      recommendPlaceIntroduction: '',
+      recommendEventImgPath: '',
+      recommendEventTitle: '',
+      recommendEventIntroduction: '',
       reply: {
-        recommendPlaceId: null,
+        recommendEventId: null,
         recommendReplyStar: '',
         recommendReplyTagValue: []
       }
@@ -81,7 +81,7 @@ export default {
     feedbackOptions() {
       // 항목 유형에 따른 피드백 옵션 제공
       const options = {
-        Place: ['음식이 맛있어요', '재료가 신선해요', '양이 많아요', '가성비가 좋아요', '또 가고 싶어요'],
+        Event: ['음식이 맛있어요', '재료가 신선해요', '양이 많아요', '가성비가 좋아요', '또 가고 싶어요'],
         hotel: ['객실이 깨끗해요', '위치가 좋아요', '서비스가 만족스러워요', '조식이 맛있어요', '경치가 좋아요'],
         event: ['내용이 흥미로워요', '접근성이 좋아요', '시설이 만족스러워요', '분위기가 좋아요', '다시 참여하고 싶어요'],
         place: ['경치가 멋져요', '접근성이 좋아요', '편의시설이 잘 갖춰져 있어요', '안전해요', '사진 찍기 좋아요']
@@ -90,41 +90,41 @@ export default {
     }
   },
   methods: {
-    async fetchPlaceDetails() {
-      if (!this.recommendPlaceId) {
-          console.error("recommendPlaceId is not provided!");
+    async fetchEventDetails() {
+      if (!this.recommendEventId) {
+          console.error("recommendEventId is not provided!");
           return;
       }
-      console.log("전달 받은 PlaceID:", this.recommendPlaceId);  // 현재 ID 로깅
+      console.log("전달 받은 EventID:", this.recommendEventId);  // 현재 ID 로깅
       try {
-          const response = await this.$axios.get(`/api/recommend/listplace/${this.recommendPlaceId}`);
+          const response = await this.$axios.get(`/api/recommend/listevent/${this.recommendEventId}`);
           if (response.data) {
-          this.recommendPlaceImgPath = response.data.recommendPlaceImgPath;
-          this.recommendPlaceTitle = response.data.recommendPlaceTitle;
-          this.recommendPlaceIntroduction = response.data.recommendPlaceIntroduction;
+          this.recommendEventImgPath = response.data.recommendEventImgPath;
+          this.recommendEventTitle = response.data.recommendEventTitle;
+          this.recommendEventIntroduction = response.data.recommendEventIntroduction;
           }
       } catch (error) {
-          console.error('Error fetching Place details:', error);
+          console.error('Error fetching Event details:', error);
       }
-    },//fetchPlaceDetails
+    },//fetchEventDetails
     submitReplyModal(){
       //this.createModal();
     },
     async createModal(){
       const formData = new FormData();
-      formData.append("recommendPlaceId", this.reply.recommendPlaceId);
+      formData.append("recommendEventId", this.reply.recommendEventId);
       formData.append("recommendReplyStar", this.reply.recommendReplyStar);
       formData.append("recommendReplyTagValue", this.reply.recommendReplyTagValue);
       // formData.append("recommendReplyTagValue", JSON.stringify(this.reply.recommendReplyTagValue));
       
-      console.log("POST요청 푸드ID:", this.reply.recommendPlaceId);
+      console.log("POST요청 푸드ID:", this.reply.recommendEventId);
       console.log("POST요청 data:", {
       recommendReplyStar: this.reply.recommendReplyStar,
       recommendReplyTagValue: this.reply.recommendReplyTagValue
   });
 
   try {
-    const response = await this.$axios.post(`/api/recommendreply/savePlaceReply`, formData, {
+    const response = await this.$axios.post(`/api/recommendreply/saveEventReply`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
     },
@@ -169,20 +169,20 @@ export default {
     }, //submitFeedback
   },
     watch: {
-        recommendPlaceId(newVal) {
+        recommendEventId(newVal) {
             if (newVal) {
-                console.log("recommendPlaceId has changed to:", newVal);  // ID 변경 감지 로그
-                this.fetchPlaceDetails();
+                console.log("recommendEventId has changed to:", newVal);  // ID 변경 감지 로그
+                this.fetchEventDetails();
         }
     }
   },
   mounted() {
     // props 값을 data에 할당
-    // props에서 받은 recommendPlaceId를 data reply: { recommendPlaceId: null}에 넣기
-    this.reply.recommendPlaceId = this.recommendPlaceId;
-    if (this.recommendPlaceId) {
-      console.log("Mounted with recommendPlaceId:", this.recommendPlaceId);  // 마운트 시 ID 로깅
-      this.fetchPlaceDetails();
+    // props에서 받은 recommendEventId를 data reply: { recommendEventId: null}에 넣기
+    this.reply.recommendEventId = this.recommendEventId;
+    if (this.recommendEventId) {
+      console.log("Mounted with recommendEventId:", this.recommendEventId);  // 마운트 시 ID 로깅
+      this.fetchEventDetails();
     }
   },
   

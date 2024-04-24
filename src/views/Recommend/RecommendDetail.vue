@@ -1,16 +1,22 @@
 <template>
     <RecommendDetailFood />
     <RecommendDetailPlace />
+    <RecommendDetailHotel />
+    <RecommendDetailEvent />
 </template>
 
 <script>
 import RecommendDetailFood from '../../components/RecommendDetail/RecommendDetailFood.vue';
 import RecommendDetailPlace from '../../components/RecommendDetail/RecommendDetailPlace.vue';
+import RecommendDetailHotel from '../../components/RecommendDetail/RecommendDetailHotel.vue';
+import RecommendDetailEvent from '../../components/RecommendDetail/RecommendDetailEvent.vue';
 
 export default {
   components: {
     RecommendDetailFood,
-    RecommendDetailPlace
+    RecommendDetailPlace,
+    RecommendDetailHotel,
+    RecommendDetailEvent
   },
   data() {
     return {

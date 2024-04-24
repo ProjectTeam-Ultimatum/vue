@@ -61,7 +61,7 @@
                       </div>
                   </div>
                   <div class="recommend-list">
-                      <h6>{{ Place.recommendPlaceRegion }} 추전 맛집</h6>
+                      <h6>{{ place.recommendPlaceRegion }} 추전 맛집</h6>
                       <div>
                       <ul>
                           <li></li>
@@ -90,6 +90,7 @@ data() {
     replyModalCreate: false,
     activePlaceId: null,  // 활성화된 음식 ID 저장, 모달 전달
     currentType: 'place',
+    //isLoading: true,  // 로딩 상태 추가
   };
 },
 components: {
@@ -103,20 +104,22 @@ props: {
 },
 methods: {
   async fetchPlaceDetails() {
+    //this.isLoading = true;  // 데이터 로딩 시작
       if (!this.recommendPlaceId) {
           console.error("recommendPlaceId is undefined!");
+          //this.isLoading = false;
           return;
       }
       try {
           let response = await this.$axios.get(`/api/recommend/listplace/${this.recommendPlaceId}`);
           if (response.data) {
               const data = response.data;
-              data.recommendPlaceTag = data.recommendPlaceTag.split(',').slice(0, 8).join(', ');
-              data.recommendPlaceAllTag = data.recommendPlaceAllTag.split(',').slice(0, 16).join(', ');
+              data.recommendPlaceTag = data.recommendPlaceTag ? data.recommendPlaceTag.split(',').slice(0, 8).join(', ') : '';
+              data.recommendPlaceAllTag = data.recommendPlaceAllTag ? data.recommendPlaceAllTag.split(',').slice(0, 16).join(', ') : '';
               this.recommendListDetailPlace = [data];
               this.replyModalCreate = false;
           }
-          console.log("Loaded Place details:", this.recommendListDetailPlace);
+          console.log("로딩 된 상세페이지 정보:", this.recommendListDetailPlace);
       } catch (error) {
           console.error('Error fetching Place details:', error);
       }
@@ -137,13 +140,13 @@ methods: {
   }, //isOperating
   createModal(recommendPlaceId) {
     // 모달을 생성하는 로직
-    console.log("createModal 생성");
+    console.log("createModalPlace 생성");
     //console.log("모달 생성, ID:", recommendPlaceId); // 로그 추가하여 ID 확인
     // activePlaceId 설정으로 모달에 ID 전달
     this.activePlaceId = recommendPlaceId; // 모달 생성 ID
     console.log("모달에 전달될 ID:", this.activePlaceId);  // 모달에 전달될 ID가 올바르게 설정되었는지 확인
     this.replyModalCreate = true;
-    console.log("createModal 생성:", this.replyModalCreate);
+    console.log("createModalPlace 생성:", this.replyModalCreate);
   }, //createModal
   closeModal() {
     // 모달을 닫는 로직
@@ -161,10 +164,10 @@ methods: {
   getStatusMessage(closeTime) {
     return this.isOperating(closeTime);
   }, //getStatusMessage
-},
-mounted() {
-  this.fetchPlaceDetails();
-}
+  },
+  mounted() {
+    this.fetchPlaceDetails();
+  }
 }
 </script>
 

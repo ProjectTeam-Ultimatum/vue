@@ -52,7 +52,6 @@
         <div class="card-wrap">
           <div :key="i" v-for="(place, i) in filteredPlaces">
             <div @click="goToDetail(place.recommendPlaceId)" class="card">
-            <!-- <div class="card"> -->
               <div class="card-image">
                 <img :src="place.recommendPlaceImgPath || 'default-image-url'" alt="Review Image">
                 <!-- <div class="score">{{ place.recommendPlaceStar }}</div> -->
@@ -71,7 +70,6 @@
                 <div class="card-subtitle">{{ place.recommendPlaceIntroduction }}</div>
                 <div class="card-option">{{ place.recommendPlaceTag }}</div>
               </div> <!-- card-content -->
-              <!-- </div> card -->
            </div>  <!-- goToDetail -->
           </div> <!-- v-for -->
         </div> <!-- card-wrap -->
@@ -205,13 +203,13 @@ export default {
     return this.isOperating(closeTime);
   }, //getStatusMessage
   goToDetail(recommendPlaceId) {
-  if (!recommendPlaceId) {
-    console.error("Error: recommendPlaceId 찾을 수 없음");
-    return;
-  }
-  console.log("이동 할 recommendPlaceId:", recommendPlaceId);
-  this.$router.push({ name: 'detailplace', params: { recommendPlaceId } });
-} //goToDetail
+    if (!recommendPlaceId) {
+      console.error("Error: recommendPlaceId 찾을 수 없음");
+      return;
+    }
+    console.log("이동 할 recommendPlaceId:", recommendPlaceId);
+    this.$router.push({ name: 'detailplace', params: { recommendPlaceId } });
+  } //goToDetail
 },
 computed: {
   filteredPlaces() {

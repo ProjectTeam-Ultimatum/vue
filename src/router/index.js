@@ -10,11 +10,10 @@ import RecommendListHotel from '../components/RecommendList/RecommendListHotel.v
 import RecommendListPlace from '../components/RecommendList/RecommendListPlace.vue' 
 import RecommendListEvent from '../components/RecommendList/RecommendListEvent.vue' 
 import RecommendDetail from '../views/Recommend/RecommendDetail.vue'
-//import RecommendDetailFood from '../components/RecommendDetail/RecommendDetailFood.vue'
 import RecommendDetailFood from '../components/RecommendDetail/RecommendDetailFood.vue'
 import RecommendDetailPlace from '../components/RecommendDetail/RecommendDetailPlace.vue'
-//import RecommendList from '../views/RecommendListPlace.vue' 
-
+import RecommendDetailHotel from '../components/RecommendDetail/RecommendDetailHotel.vue'
+import RecommendDetailEvent from '../components/RecommendDetail/RecommendDetailEvent.vue'
 
 const routes = [
   {
@@ -67,6 +66,18 @@ const routes = [
     path: '/detailplace/:recommendPlaceId',
     name: 'detailplace',
     component: RecommendDetailPlace,
+    props: true
+  },
+  {
+    path: '/detailhotel/:recommendHotelId',
+    name: 'detailhotel',
+    component: RecommendDetailHotel,
+    props: true
+  },
+  {
+    path: '/detailevent/:recommendEventId',
+    name: 'detailevent',
+    component: RecommendDetailEvent,
     props: true
   },
   {

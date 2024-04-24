@@ -210,7 +210,7 @@ export default {
     },
       goToDetail(recommendFoodId) {
       if (!recommendFoodId) {
-        console.error("Error: recommendFoodId is undefined. Cannot navigate to details.");
+        console.error("Error: recommendFoodId 찾을 수 없음");
         return; // recommendFoodId가 정의되지 않았다면, 유효한 ID 없이 네비게이션을 시도하지 않도록 조기 반환합니다.
       }
       console.log("이동 할 recommendFoodId:", recommendFoodId);
