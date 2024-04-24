@@ -13,7 +13,8 @@
                                   <div class="detail-title-wrap">
                                       <h4>{{ place.recommendPlaceTitle }}</h4>
                                       <div class="detail-subtitle">{{ place.recommendPlaceIntroduction }}</div>
-                                      <div>평점</div>
+                                      <!-- 평균 평점 -->
+                                      <div style="font-size: 20px;">평점 {{ replyPlaceStar }}</div> 
                                       <!-- 영업상태 -->
                                       <div>
                                           <span class="status" :class="getStatusClass(place.recommendPlaceClosetime)">
@@ -104,7 +105,9 @@ data() {
     activePlaceId: null,  // 활성화된 음식 ID 저장, 모달 전달
     currentType: 'place',
     placeRegion: '', //주변 지역 정보
-    recommendListPlaceRegion: []
+    recommendListPlaceRegion: [],
+    replyPlaceStar: '', //관광지 평점 정보
+    recommendReplyStar: []
   };
 },
 components: {
@@ -132,8 +135,8 @@ methods: {
               this.recommendListDetailPlace = [data];
               this.placeRegion = data.recommendPlaceRegion;
               this.replyModalCreate = false;
-              // fetchRegionData 호출
-              this.fetchRegionData();
+              this.fetchRegionData(); // fetchRegionData 호출
+              this.fetchReplyData(); //fetchReplyData 호출 
           }
           console.log("로딩 된 지역 정보:", this.placeRegion);
           console.log("로딩 된 상세페이지 정보:", this.recommendListDetailPlace);
@@ -167,6 +170,33 @@ methods: {
     console.error("에러 발생:", error);
   }
 }, //fetchRegionData
+async fetchReplyData() {
+  console.log("fetchReplyData() 메서드가 호출되었습니다."); // 추가
+  try {
+    const params = {
+      sort: "recommendPlaceId,desc",
+      star: this.replyPlaceStar
+    };
+    const response = await this.$axios.get(`/api/recommendreply/placeRead/${this.recommendPlaceId}`, { params });
+    if (response.data.content.length === 0) {
+      console.error('No data returned for the page:', this.currentPage);
+      this.recommendReplyStar = [];
+      this.replyPlaceStar = '평점 정보 없음';
+    } else {
+      this.recommendReplyStar = response.data.content;
+      // 평균 평점 계산
+      const totalStars = this.recommendReplyStar.reduce((acc, review) => acc + review.starRating, 0);
+      const averageStar = (totalStars / this.recommendReplyStar.length).toFixed(1);
+      this.replyPlaceStar = averageStar;  // 평균 평점 저장
+      console.log("Loaded review data and calculated average star:", this.replyPlaceStar);
+      
+      // 가져온 평점 배열 로그로 보여주기
+      console.log("Fetched reply data:", this.recommendReplyStar);
+    }
+  } catch (error) {
+    console.error("Error occurred while fetching review data:", error);
+  }
+},
 
   isOperating(closeTime) {  //영업중, 영업마감
     if (!closeTime) return '휴무일'; // 휴무일 처리
