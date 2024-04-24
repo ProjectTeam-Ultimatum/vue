@@ -32,7 +32,7 @@
           description5: "내 나름대로 열심히 찾은 장소를 얘기했을 때 반응 없으면 나 홀로 토라져 있어요.",
           description6: "낯선 여행지에 가서도 말이 통하지 않는 현지 분들과 친하게 지내며 모두의 텐션을 업 시켜줍니다.",
           description7: "좋아하는 게 너무 많고 감수성이 풍부하며 다니는 곳마다 감동하고 분위기에 취합니다.",
-          imageUrl: require("@/assets/images/ENFJ.jpg"), // 예시 경로
+          imageUrl: require("@/assets/images/ENFJ.png"), // 예시 경로
           style: "프로여행러",
           soulMate: "로맨틱여행파(INFP)",
           hateMate: "프로혼행러(ISTP)"
@@ -45,7 +45,7 @@
           description5: "감정 기복이 커 액티비티와 같은 신나는 여행을 즐기다가 급 다운 되어 휴식 시간이 필요할 때가 있어요.",
           description6: "가는 곳마다 SNS용 사진 스팟을 잘 찾으며 여행지에서 처음 보는 사람들과도 금방 친해져요.",
           description7: "남들이 가는 곳이 아닌 새로운 장소나 새로운 코스에 도전하는 스타일입니다.",
-          imageUrl: require("@/assets/images/ENFP.jpg"), // 예시 경로
+          imageUrl: require("@/assets/images/ENFP.png"), // 예시 경로
           style: "여행무계획러",
           soulMate: "감성여행자(INFJ)",
           hateMate: "프로엑셀러(ISTJ)"
@@ -57,7 +57,7 @@
           description4: "여행계획 시간 별로 계획표를 만들고 여행 정산할 때도 깔끔하고 모두가 보기 쉽게 정리해서 보내요.",
           description5: "늘 여행을 갈 때 나도 모르게 총무 역할을 하거나 리더가 되어있습니다.",
           description6: "에너지 넘치는 모험가 스타일로 험하고 힘든 여행을 해도 어려운 여행을 완수했다는 성취감을 느낍니다.",
-          imageUrl: require("@/assets/images/ENTJ.jpg"), // 예시 경로
+          imageUrl: require("@/assets/images/ENTJ.png"), // 예시 경로
           style: "효율로보트",
           soulMate: "한적스팟러(INTP)",
           hateMate: "힐링여행러(ISFP)"
@@ -70,7 +70,7 @@
           description5: "감성적인 여행을 좋아하고 숙소는 깔끔하 게 좋아요.",
           description6: "내가 그곳에 꼭 가야 하는 이유가 있어요.",
           description7: "친구들과 여행 계획을 할 때 정말 아니라고 생각하는 곳은 어떻게든 가지 않으려고 해요.",
-          imageUrl: require("@/assets/images/ENTP.jpg"), // 예시 경로
+          imageUrl: require("@/assets/images/ENTP.png"), // 예시 경로
           style: "위기탈출넘버원",
           soulMate: "효율계획러(INTJ)",
           hateMate: "여행한정인싸(ISFJ)"
@@ -83,7 +83,7 @@
           description5: "같이 가는 친구들을 세심하게 챙겨주고 배려해주며 여행을 즐겨요.",
           description6: "여행 내내 웃음이 사라지지 않고 친구들에게 적극적인 리액션과 호응해 분위기 메이커를 담당해요.",
           description7: "친구들이 다 가고 싶은 여행지로 여행을 계획하기 때문에 단톡방에 투표를 자주 올려요",
-          imageUrl: require("@/assets/images/ESFJ.jpg"), // 예시 경로
+          imageUrl: require("@/assets/images/ESFJ.png"), // 예시 경로
           style: "프로핫스팟러",
           soulMate: "힐링여행러(ISFP)",
           hateMate: "한적스팟러(INTP)"
@@ -96,7 +96,7 @@
           description5: "친한 친구들과 펜션을 잡고 놀러 가거나 요즘 핫한 핫플레이스를 방문하는 것도 좋아해요.",
           description6: "평소 가고 싶었던 여행지의 할인 이벤트를 보고 굉장히 신나해요",
           description7: "같이 놀러 간 친구가 힘들어 보이면 응원을 해주며 마지막으로 한 번만 가자고 어떻게든 설득해요.",
-          imageUrl: require("@/assets/images/ESFP.jpg"), // 예시 경로
+          imageUrl: require("@/assets/images/ESFP.png"), // 예시 경로
           style: "여행즉흥론자",
           soulMate: "여행한정인싸(ISFJ)",
           hateMate: "효율계획러(INTJ)"
@@ -108,7 +108,7 @@
           description4: "여행 계획을 분 단위로 나눠서 각 이동 수단 별/장소별/ 세부 예산까지 엑셀에 정리해두며 뿌듯해합니다.",
           description5: "예기치 못한 상황이 발생할 것을 대비하여 플랜B도 미리 계획해 둡니다.",
           description6: "이렇게까지 계획을 세우는 이유는 시간 낭비를 줄이고 돈 낭비를 줄이기 위해서입니다.",
-          imageUrl: require("@/assets/images/ESTJ.jpg"), // 예시 경로
+          imageUrl: require("@/assets/images/ESTJ.png"), // 예시 경로
           style: "엑셀마스터",
           soulMate: "프로혼행러(ISTP)",
           hateMate: "로맨틱여행파(INFP)"
@@ -120,7 +120,7 @@
           description4: "여행 계획이 틀어져도 했다 치고 다른 계획으로 과감하게 넘어가려고 해요.",
           description5: "어느 여행지에 가서도 특유의 친화력으로 여행지 사람과 맞팔하거나 친하게 지내요.",
           description6: "그 여행지의 맛집에 방문하거나 신박한 아이템이 있으면 이걸로 장사하면 잘될 것 같은데 왜 안하지? 라고 생각하며 즐겨요.",
-          imageUrl: require("@/assets/images/ESTP.jpg"), // 예시 경로
+          imageUrl: require("@/assets/images/ESTP.png"), // 예시 경로
           style: "프로플렉서",
           soulMate: "프로엑셀러(ISTJ)",
           hateMate: "감성여행자(INFJ)"
@@ -133,7 +133,7 @@
           description5: "여행지에 있는 특유의 감성이 가득한 소품 가게나 카페에 가는 것을 좋아해요.",
           description6: "혼자 여행을 가면 충동적으로 하거나 계획과 다르게 변경 되기도 하지만, 친구들과 같이 가는 여행에서는 친구들의 일정에 맞추고 다같이 만족할 만한 계획을 짜요.",
           description7: "빠르고 활기찬 여행보다 그곳 특유의 감성을 느끼며 천천히 여행하며 힐링 하는 것을 좋아해요.",
-          imageUrl: require("@/assets/images/INFJ.jpg"), // 예시 경로
+          imageUrl: require("@/assets/images/INFJ.png"), // 예시 경로
           style: "감성여행자",
           soulMate: "여행무계획러(ENTP)",
           hateMate: "프로플렉서(ESTP)"
@@ -145,7 +145,7 @@
           description4: "여유로운 분위기 가득한 호캉스에서 완벽하게 만들어줄 이쁘고 맛있는 음식을 찾아다니며 책과 음악이 함께 하는 여행을 즐기곤 해요.",
           description5: "다 같이 하는 여행도 좋지만 혼자 있길 좋아하고 혼자만의 시간이 필요해 혼자 떠나는 여행도 좋아해요.",
           description6: "여행 계획을 짤 때 완벽한 계획이길 원하지만, 너무 빈틈없는 꼼꼼한 여행보다 융통성이 있는 계획을 선호해요.",
-          imageUrl: require("@/assets/images/INFP.jpg"), // 예시 경로
+          imageUrl: require("@/assets/images/INFP.png"), // 예시 경로
           style: "로맨틱여행파",
           soulMate: "프로여행러(ENFJ)",
           hateMate: "프로핫스팟러(ESFJ)"
@@ -157,7 +157,7 @@
           description4: "친구들과 함께하는 여행에서 다른 사람의 감정을 빨리 캐치하기 때문에 나도 상대방도 모두 만족할 만한 효율적인 여행 계획을 하려고 노력해요.",
           description5: "계획이 디테일 할수록 본인이 가장 뿌듯해하며 같이 가는 사람들에게 정리한 파일을 공유하는 것도 좋아합니다.",
           description6: "다 같이 여행을 갈 때도 모두가 꼭 방문하고 싶은 메인 관광지를 선정해 장소를 취합하고 그 관광지의 주변 맛집과 쇼핑할 것 구경할 만한 곳을 찾아봐요.",
-          imageUrl: require("@/assets/images/INTJ.jpg"), // 예시 경로
+          imageUrl: require("@/assets/images/INTJ.png"), // 예시 경로
           style: "효율계획러",
           soulMate: "위기탈출넘버원(ENTP)",
           hateMate: "여행즉흥론자(ESFP)"
@@ -169,7 +169,7 @@
           description4: "여행에서도 어떻게 해야 가장 효율적으로 놀 것인지 고민하고 가장 나은 해결책을 제시해줘요.",
           description5: "누군가 계획을 잡거나 스케줄을 알려주면 세부적인 것들을 정리해요. (맛집/카페/놀 것 찾기)",
           description6: "사람이 많이 없는 카페 같은 곳에서 그곳의 한적함을 느끼며, 나만의 감성 사진을 찍을 수 있는 곳으로 떠나고 싶어요.",
-          imageUrl: require("@/assets/images/INTP.jpg"), // 예시 경로
+          imageUrl: require("@/assets/images/INTP.png"), // 예시 경로
           style: "한적스팟러",
           soulMate: "효율로보트(ENTJ)",
           hateMate: "프로핫스팟러(ESFJ)"
@@ -181,7 +181,7 @@
           description4: "함께 가는 친구들의 의견을 모아 다수가 만족할 수 있게 정리하며 여행을 계획해요.",
           description5: "리적으로 편하다고 생각하는 친구들과 여행 가길 좋아 하며 그 친구들과 함께 할 땐 뜬금없이 친구들을 웃게 해요.",
           description6: "여행 짐을 챙길 때도 부족함 없이 '누군가는 쓰겠지' 라며 넉넉하게 짐을 챙겨요.",
-          imageUrl: require("@/assets/images/ISFJ.jpg"), // 예시 경로
+          imageUrl: require("@/assets/images/ISFJ.png"), // 예시 경로
           style: "여행한정인싸",
           soulMate: "여행즉흥론자(ESFP)",
           hateMate: "위기탈출넘버원(ENTP)"
@@ -194,7 +194,7 @@
           description5: "친구들과 여행하는 것도 좋지만 가끔 혼자만의 여유로운 여행 시간도 좋아해요.",
           description6: "여행을 하며 돌아다니는 것도 좋지만 나를 위한 힐링의 시간이기 때문에 너무 타이트한 여행은 힘들어요.",
           description7: "여행을 통해 여태껏 받아왔던 나의 스트레스를 풀어요.",
-          imageUrl: require("@/assets/images/ISFP.jpg"), // 예시 경로
+          imageUrl: require("@/assets/images/ISFP.png"), // 예시 경로
           style: "힐링여행러",
           soulMate: "프로핫스팟러(ESFJ)",
           hateMate: "효율로보트(ENTJ)"
@@ -206,7 +206,7 @@
           description4: "사람이 많이 없고 조용한 힐링 여행지를 좋아하며 혼자 떠나는 여행을 좋아해요.",
           description5: "숙소나 그 여행지의 할인 방법을 정리하며 최고의 가성비 여행을 준비해요.",
           description6: "친구들과 여행에 갈 때도 계획을 세우며 블로그, 카페 등 후기와 정보들을 다 찾아봐요.",
-          imageUrl: require("@/assets/images/ISTJ.jpg"), // 예시 경로
+          imageUrl: require("@/assets/images/ISTJ.png"), // 예시 경로
           style: "프로엑셀러",
           soulMate: "프로플렉서(ESTP)",
           hateMate: "프로여행러(ENFJ)"
@@ -219,7 +219,7 @@
           description5: "취미 생활과 힐링 나만을 위한 여행을 준비하며 꽂힌 것에는 돈이 아깝지 않아 가끔 여행지에서 플렉스 해버려요.",
           description6: "남들이 다하는 여행에 만족감을 느끼기보다 나만의 여행 속 즐거움이 따로 있어요.",
           description7: "여행을 좋아하긴 하지만 집에서 조용히 혼자만의 시간을 보내는 것을 더 좋아해요.",
-          imageUrl: require("@/assets/images/ISTP.jpg"), // 예시 경로
+          imageUrl: require("@/assets/images/ISTP.png"), // 예시 경로
           style: "프로혼행러",
           soulMate: "효율로보트(ENTJ)",
           hateMate: "프로여행러(ENFJ)"
@@ -253,7 +253,7 @@
    @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap');
  
  .survey-container {
-    background-image: url('@/assets/images/travel2.jpg'); /* 여기에 이미지 파일의 경로를 넣으세요 */
+    /*background-image: url('@/assets/images/travel2.jpg'); /* 여기에 이미지 파일의 경로를 넣으세요 */
     background-size: contain; /* 이미지가 컨테이너를 꽉 채우도록 설정 */
     background-position: center; /* 이미지가 컨테이너의 중앙에 위치하도록 설정 */
     background-repeat: no-repeat; /* 이미지가 반복되지 않도록 설정 */
