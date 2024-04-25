@@ -15,15 +15,18 @@
     <!-- 왼쪽 패널 -->
     <aside class="left-panel">
       <h2>채팅방 목록</h2>
-        <ul>
-          <li v-for="room in connectedChatRooms" :key="room.chatRoomId">
-              Room Name: {{ room.chatRoomName }}
-              <br>
-              Created by: {{ room.creatorName }} ({{ room.creatorAge }} years old)
-              <br>
-              Location: {{ room.reviewLocation }}
-          </li>
-        </ul>
+      <div class="chatroom-list">
+        <div v-for="room in connectedChatRooms" :key="room.chatRoomId" class="chatroom-card">
+          <!-- 방장 이미지 출력 -->
+          <img :src="room.creatorImage || '/path/to/default-image.jpg'" alt="방장 이미지" class="creator-image">
+          <!-- 채팅방 정보 세부사항 -->
+          <div class="chatroom-details">
+            <h3>{{ room.chatRoomName }}</h3>
+            <p class="chatroom-info">방장: <span class="chatroom-meta">{{ room.creatorName }}</span> ({{ room.creatorAge }} 살)</p>
+            <p class="chatroom-info"><span class="chatroom-meta">{{ room.chatRoomContent }}</span></p>
+          </div>
+        </div>
+      </div>
     </aside>
 
     
@@ -39,6 +42,7 @@
             <img :src="message.message" alt="Image" style="max-width: 200px; max-height: 200px;">
           </span>
           <span v-else class="message-content">{{ message.message }}</span>
+          <button @click="reportUser(message.senderId, message.message)">신고</button>
         </li>
       </ul>
     </section>
@@ -46,11 +50,15 @@
     <!-- 오른쪽 패널 -->
     <aside class="right-panel">
     <!-- 오른쪽 내용 -->
-    <img src="@/assets/images/profile.png" alt="User Avatar" class="user-avatar" />
+    <div class="profile-picture">
+        <div v-if="userImages.length > 0">
+          <img v-for="(image, index) in userImages" :src="image" :key="index" :alt="`${userName}'s profile image ${index + 1}`" />
+        </div>
+      </div>
         <p class="user-name">{{ userName }}</p>
         <p class="user-detail">신뢰도</p>
         <p class="user-detail">나이:  {{ userAge }}</p>
-        <p class="user-detail">여행 스타일</p>
+        <p class="user-detail">여행 스타일:  {{ getMbtiNickname() }} </p>
     </aside>
     </div>
 
@@ -66,6 +74,25 @@
         <button type="submit" class="send-button">보내기</button>
       </form>
     </footer>
+
+    <div v-if="showModal" class="modal">
+      <div class="modal-content">
+        <h4>경고 <font-awesome-icon icon="fa-solid fa-circle-exclamation" style=color:#FFD43B /></h4>
+        <p style=margin-top:15px;>{{ warningMessage }}</p>
+        <button @click="closeModal" class="closeModalButton">확인</button>
+      </div>
+    </div>
+
+        <!-- 신고 모달 창 -->
+    <div v-if="showReportModal" class="modal">
+      <div class="modal-content">
+        <h4>신고하기</h4>
+        <textarea v-model="report.reportReason" placeholder="신고 사유를 입력하세요."></textarea>
+        <button @click="submitReport">제출</button>
+        <button @click="showReportModal = false">취소</button>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -84,8 +111,48 @@ export default {
       messages: [], // 채팅방의 메시지 목록
       socket: null,
       connectedChatRooms: [],  // 사용자가 연결된 채팅방 ID 목록
+      badWordsPattern: /나쁜말|나\s*쁜\s*말|나쁜[\d\s\W]*말|바보|바\s*보|바[\d\s\W]*보|멍청이|멍\s*청\s*이|멍[\d\s\W]*청이|멍청[\d\s\W]*이/,  // 정규 표현식 패턴을 사용하여 욕설 필터링
+      warningCount: 0,   //비속어 5회이상 채팅제한
+      isChatBanned: false,  //비속어 5회이상 채팅제한
+      banTimer: null, //비속어 5회이상 채팅제한
+      warningMessage: '',
+      showModal: false,
+      mbtiNicknames: { // MBTI 별명 매핑
+        "ISFJ": "여행한정 인싸",
+        "INFJ": "감성 여행자",
+        "INTJ": "효율 계획러",
+        "ISTJ": "프로 엑셀러",
+        "ISFP": "힐링 여행러",
+        "INFP": "로맨틱 여행파",
+        "INTP": "한적 스팟러",
+        "ISTP": "프로 혼행러",
+        "ESFJ": "프로 핫스팟러",
+        "ENFJ": "프로 여행러",
+        "ENTJ": "효율 로보트",
+        "ESTJ": "엑셀 마스터",
+        "ESFP": "여행 즉흥론자",
+        "ENFP": "여행 무계획러",
+        "ENTP": "위기탈출 넘버원",
+        "ESTP": "프로 플렉서"
+      },
+      userImages:[],
+      report: {
+      reportedUserId: null,
+      reportedMessage: '',
+      reportReason: '',
+      },
+      showReportModal: false,
     };
   },
+
+  computed: {
+    isValidStyle() {
+      // MBTI 스타일 문자열의 유효성 검사를 안전하게 수행
+      return Object.prototype.hasOwnProperty.call(this.mbtiNicknames, this.memberStyle);
+    }
+  },
+
+
   mounted() {
     this.connectWebSocket(); // WebSocket 연결을 설정합니다.
     this.chatRoomId = this.$route.params.roomId; // URL에서 roomId를 추출
@@ -222,10 +289,15 @@ export default {
           this.userGender = response.data.gender;  // "gender" 키에 접근
           this.userAge = response.data.age;        // "age" 키에 접근
           this.userAddress = response.data.address;// "address" 키에 접근
+          this.userStyle = response.data.memberStyle; // "memberStyle" 키에 접근
+          this.userImages = response.data.images;  // 이미지 URL 리스트 저장
         })
         .catch(error => {
           console.error("사용자 정보를 불러오는 중 오류가 발생했습니다:", error);
         });
+    },
+    getMbtiNickname() {
+      return this.mbtiNicknames[this.userStyle] || '알 수 없는 스타일';
     },
     fetchMessages() {
       // 채팅방 메시지 내역을 불러오는 API 호출
@@ -239,6 +311,24 @@ export default {
     },
     // 웹소켓 메세지 전송 메소드 
     sendMessage(imageUrl = '') {
+
+      //비속어 5회 이상시 채팅 일시정지
+      if (this.isChatBanned) {
+        this.displayMessage(`채팅이 일시적으로 금지되었습니다. 잠시 후 다시 시도해 주세요.`);
+        return;
+      }
+
+      // 메시지 필터링
+      if (this.filterMessage(this.newMessage)) {
+        this.warningCount++;
+        this.displayMessage(`부적절한 내용이 포함되어 있어 메시지를 전송할 수 없습니다. 5회 이상 욕설 시 5분간 채팅이 제한됩니다. (${this.warningCount}/5)`);
+        this.newMessage = '';  // 입력 필드 초기화
+        if (this.warningCount >= 5) {
+          this.banChat();
+        }
+        return; // 메시지 전송 차단
+      }
+
       const messageData = {
         messageType: "TALK",
         chatRoomId: this.chatRoomId,
@@ -251,6 +341,25 @@ export default {
       } else {
         console.error("WebSocket 연결이 되어있지 않습니다.");
       }
+    },
+    // 욕설 5회 이상 채팅 금지
+    banChat() {
+      this.isChatBanned = true;
+      setTimeout(() => {
+        this.isChatBanned = false;
+        this.warningCount = 0;  // 경고 횟수 초기화
+      }, 300000); // 5분 동안 채팅 금지
+    },
+    // 욕설 필터링 함수
+    filterMessage(message) {
+      return this.badWordsPattern.test(message);
+    },
+    displayMessage(msg) {
+      this.warningMessage = msg;
+      this.showModal = true;
+    },
+    closeModal() {
+      this.showModal = false;
     },
     // 이미지 url 이 실제 사진으로 보이게 하는 메소드
     isImageUrl(message) {
@@ -294,10 +403,44 @@ export default {
         container.scrollTop = container.scrollHeight;
       });
     },
-  },
-  updated() {
+    updated() {
     this.scrollToBottom();
-  }
+  },
+  reportUser(senderId, message) {
+    // 신고된 사용자 ID와 메시지를 상태에 저장
+    this.report.reportedUserId = senderId;
+    this.report.reportedMessage = message;
+    // 신고 사유 입력을 위해 모달을 표시
+    this.showReportModal = true;
+  },
+  submitReport() {
+    // ReportDto 구조에 맞게 데이터를 조합
+    const reportData = {
+      reportedUserId: this.report.reportedUserId,
+      reportedMessage: this.report.reportedMessage,
+      reportReason: this.report.reportReason,
+    };
+
+    // 신고 데이터를 서버에 전송
+    this.$axios.post('/api/v1/report', reportData)
+      .then(() => {
+        // 신고 접수에 성공했을 때의 처리
+        alert('신고가 접수되었습니다.');
+        this.closeReportModal();
+      })
+      .catch(error => {
+        // 신고 접수에 실패했을 때의 처리
+        console.error('신고 접수 중 문제가 발생했습니다.', error);
+      });
+  },
+  closeReportModal() {
+    this.showReportModal = false;
+    // 신고 상태 초기화
+    this.report.reportedUserId = null;
+    this.report.reportedMessage = '';
+    this.report.reportReason = '';
+  },
+  },
 };
 </script>
 <style scoped>
@@ -311,6 +454,44 @@ html, body {
 
 .divider {
   padding: 50px;
+}
+
+/* 경고 모달창 */
+.modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+  width: 450px;
+  height: 200px;
+  box-shadow: 
+    0px 4px 6px rgba(0, 0, 0, 0.1),    /* 부드러운 그림자 */
+    0px 1px 3px rgba(0, 0, 0, 0.08),   /* 작은 세부 그림자 */
+    0px 10px 20px rgba(0, 0, 0, 0.06); /* 큰 퍼진 그림자 */
+}
+
+.closeModalButton {
+    color: #F3F3F3;
+    background-color: #65B7F3;
+    border: none;
+    border-radius: 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    width: 400px;
+    height: 40px;
 }
 
 /* 전체 채팅방 컨테이너 */
@@ -335,6 +516,8 @@ html, body {
   border-radius: 4px;
   cursor: pointer;
   margin-right: 10px;
+  width: 125px;
+  height: 50px;
 }
 /* 이미지 업로드 버튼 */
 .custom-file-upload:hover {
@@ -388,8 +571,58 @@ html, body {
 
 /* 왼쪽 세션 */
 .left-panel {
-  flex: 0.5;
+  flex: 0.6;
   border-right: 1px solid #ddd; /* 오른쪽에 경계선 추가 */
+}
+
+.chatroom-list {
+  list-style: none;
+  padding: 0;
+}
+
+.chatroom-card {
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: box-shadow 0.3s ease;
+  display: flex; /* 추가: 카드를 플렉스 컨테이너로 설정 */
+  align-items: center; /* 추가: 항목들을 세로 중앙에 위치 */
+}
+
+.creator-image {
+  width: 100px; /* 이미지 크기 */
+  height: 100px; /* 이미지 크기 */
+  border-radius: 50%; /* 원형 이미지 */
+  object-fit: cover; /* 비율 유지 */
+  margin-bottom: 8px; /* 이미지와 텍스트 사이의 여백 */
+  margin-right: 20px; /* 추가: 이미지와 텍스트 사이의 여백 */
+}
+
+.chatroom-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 호버 시 그림자 효과 */
+}
+
+.chatroom-card h3 {
+  color: #333; /* 제목 색상 */
+  margin: 0 0 10px 0; /* 제목과 정보 사이 간격 */
+}
+
+.chatroom-info {
+  color: #666; /* 정보 텍스트 색상 */
+  font-size: 14px; /* 정보 텍스트 크기 */
+  line-height: 1.5; /* 줄간격 */
+}
+
+.chatroom-meta {
+  color: #007bff; /* 메타 데이터 색상 */
+  font-weight: bold; /* 메타 데이터 굵기 */
+}
+
+.chatroom-details {
+  display: flex; /* 플렉스로 설정 */
+  flex-direction: column; /* 항목들을 세로로 정렬 */
 }
 
 /* 가운데 세션 */
@@ -402,7 +635,10 @@ html, body {
 
 /* 오른쪽 세션 */
 .right-panel {
-  flex: 0.8;
+  flex: 0.6;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 수평 방향 중앙 정렬 */
 }
 
 /* 채팅방 이름 스타일 */
@@ -505,8 +741,8 @@ html, body {
   background-color: #f5f5f5;
   border-top: 1px solid #ddd;
   border-left: 1px solid #dddd;
-  width: 85%;
-  margin-left:14.8%;
+  width: 81.8%;
+  margin-left:18.15%;
 }
 
 /* 메시지 이미지 전송 폼 스타일 */
@@ -521,6 +757,7 @@ html, body {
   margin-right: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  height: 50px;
 }
 
 /* 메시지 전송 버튼 스타일 */
@@ -531,6 +768,8 @@ html, body {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  height: 50px;
+  width: 100px;
 }
 
 .back-button {
@@ -575,5 +814,13 @@ html, body {
 .button-container {
   display: flex; /* 버튼들을 가로로 나란히 배치 */
   gap: 8px; /* 버튼 사이의 간격 */
+}
+
+/* 채팅방 목록 카드 프로필이미지 스타일 */
+.profile-picture img {
+  width: 130px; /* 프로필 이미지 크기 */
+  height: 130px; /* 프로필 이미지 크기 */
+  border-radius: 50%; /* 원형으로 만들기 */
+  margin-right: 20px; /* 텍스트 컨텐츠와의 간격 */
 }
 </style>

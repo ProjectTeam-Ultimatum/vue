@@ -69,8 +69,8 @@ export default {
 
   computed: {
     isValidStyle() {
-      // MBTI 스타일 문자열의 유효성 검사
-      return this.mbtiNicknames.hasOwnProperty(this.memberStyle);
+      // MBTI 스타일 문자열의 유효성 검사를 안전하게 수행
+      return Object.prototype.hasOwnProperty.call(this.mbtiNicknames, this.memberStyle);
     }
   },
 
