@@ -13,8 +13,12 @@
                                   <div class="detail-title-wrap">
                                       <h4>{{ place.recommendPlaceTitle }}</h4>
                                       <div class="detail-subtitle">{{ place.recommendPlaceIntroduction }}</div>
-                                      <!-- 평균 평점 -->
-                                      <div style="font-size: 20px;">평점 {{ replyPlaceStar }}</div> 
+                                      <!-- 평균 평점 (숫자와 별로 표시) -->
+                                      <div style="font-size: 20px;">
+                                        평점 {{ replyPlaceStar }}
+                                        <span v-for="star in 5" :key="star" class="star"
+                                            :class="{ filled: star <= Math.round(replyPlaceStar) }">★</span>
+                                      </div>
                                       <!-- 영업상태 -->
                                       <div>
                                           <span class="status" :class="getStatusClass(place.recommendPlaceClosetime)">
@@ -71,7 +75,7 @@
                       <div>
                       <ul>
                         <li v-for="(place, index) in recommendListPlaceRegion" :key="index" class="recommend-item">
-                          <div class="recommend-info">
+                          <div @click="goToDetail(place.recommendPlaceId)" class="recommend-info">
                             <div class="recommend-name-region">
                               <span class="recommend-name">{{ place.recommendPlaceTitle }}</span>
                               <span class="recommend-region"><span></span>{{ place.recommendPlaceRegion }}</span>
@@ -80,8 +84,8 @@
                               <span class="recommend-tag">{{ place.recommendPlaceTag }}</span>
                               <img class="recommend-photo" :src="place.recommendPlaceImgPath || 'default-image-url'" alt="관광지 사진">
                             </div>
-                          </div>
-                        </li>
+                          </div> <!-- goToDetail recommend-info -->
+                        </li> <!-- v-for -->
                       </ul>
                       </div>
                   </div> <!-- recommend-list -->
@@ -107,7 +111,7 @@ data() {
     placeRegion: '', //주변 지역 정보
     recommendListPlaceRegion: [],
     replyPlaceStar: '', //관광지 평점 정보
-    recommendReplyStar: []
+    recommendReplyStar: ''
   };
 },
 components: {
@@ -136,7 +140,7 @@ methods: {
               this.placeRegion = data.recommendPlaceRegion;
               this.replyModalCreate = false;
               this.fetchRegionData(); // fetchRegionData 호출
-              this.fetchReplyData(); //fetchReplyData 호출 
+              this.fetchRatingData(); //fetchRatingData 호출 
           }
           console.log("로딩 된 지역 정보:", this.placeRegion);
           console.log("로딩 된 상세페이지 정보:", this.recommendListDetailPlace);
@@ -170,33 +174,23 @@ methods: {
     console.error("에러 발생:", error);
   }
 }, //fetchRegionData
-async fetchReplyData() {
-  console.log("fetchReplyData() 메서드가 호출되었습니다."); // 추가
-  try {
-    const params = {
-      sort: "recommendPlaceId,desc",
-      star: this.replyPlaceStar
-    };
-    const response = await this.$axios.get(`/api/recommendreply/placeRead/${this.recommendPlaceId}`, { params });
-    if (response.data.content.length === 0) {
-      console.error('No data returned for the page:', this.currentPage);
-      this.recommendReplyStar = [];
-      this.replyPlaceStar = '평점 정보 없음';
-    } else {
-      this.recommendReplyStar = response.data.content;
-      // 평균 평점 계산
-      const totalStars = this.recommendReplyStar.reduce((acc, review) => acc + review.starRating, 0);
-      const averageStar = (totalStars / this.recommendReplyStar.length).toFixed(1);
-      this.replyPlaceStar = averageStar;  // 평균 평점 저장
-      console.log("Loaded review data and calculated average star:", this.replyPlaceStar);
-      
-      // 가져온 평점 배열 로그로 보여주기
-      console.log("Fetched reply data:", this.recommendReplyStar);
-    }
-  } catch (error) {
-    console.error("Error occurred while fetching review data:", error);
-  }
-},
+  async fetchRatingData() {
+      console.log("fetchRatingData() 메서드가 호출되었습니다.");
+      try {
+        // API URL 수정: 동적 ID를 경로에 포함
+        const response = await this.$axios.get(`/api/recommendreply/place/average/star/${this.recommendPlaceId}`);
+        if (!response.data || response.data === "평점을 기다리고 있어요") {
+          this.replyPlaceStar = response.data; // API 응답이 평점 문자열 또는 평균 평점 없음 메시지
+        } else {
+          // 소수점을 제거하고 반올림
+          this.replyPlaceStar = Math.round(response.data);
+        }
+        console.log("평균 평점:", this.replyPlaceStar);
+      } catch (error) {
+        console.error("평균 평점 데이터를 가져오는 중 오류가 발생했습니다:", error);
+        this.replyPlaceStar = "평점 정보 없음";
+      }
+  }, //fetchRatingData
 
   isOperating(closeTime) {  //영업중, 영업마감
     if (!closeTime) return '휴무일'; // 휴무일 처리
@@ -238,6 +232,14 @@ async fetchReplyData() {
   getStatusMessage(closeTime) {
     return this.isOperating(closeTime);
   }, //getStatusMessage
+  goToDetail(recommendPlaceId) {
+    if (!recommendPlaceId) {
+      console.error("Error: recommendPlaceId 찾을 수 없음");
+      return;
+    }
+    console.log("이동 할 recommendPlaceId:", recommendPlaceId);
+    this.$router.push({ name: 'detailplace', params: { recommendPlaceId } });  //recommendPlaceId 페이지 이동
+  } //goToDetail
   },
   mounted() {
     this.fetchPlaceDetails();

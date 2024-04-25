@@ -124,7 +124,7 @@ export default {
   });
 
   try {
-    const response = await this.$axios.post(`/api/recommendreply/saveEventReply`, formData, {
+    const response = await this.$axios.post(`/api/recommendreply/event/save`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
     },

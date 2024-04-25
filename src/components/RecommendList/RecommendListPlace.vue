@@ -208,7 +208,7 @@ export default {
       return;
     }
     console.log("이동 할 recommendPlaceId:", recommendPlaceId);
-    this.$router.push({ name: 'detailplace', params: { recommendPlaceId } });
+    this.$router.push({ name: 'detailplace', params: { recommendPlaceId } });  //recommendPlaceId 페이지 이동
   } //goToDetail
 },
 computed: {

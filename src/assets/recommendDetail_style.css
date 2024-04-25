@@ -86,3 +86,13 @@
 .cont-time ul{
     list-style-type: none; /* Remove default list styling */
 }
+
+
+.star {
+  cursor: pointer;
+  color: rgb(212, 212, 212); /* 기본 색상 */
+}
+
+.filled {
+  color: #1275D6; /* 선택된 별의 색상 */
+}

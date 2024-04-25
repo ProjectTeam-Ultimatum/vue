@@ -54,16 +54,7 @@
     justify-content: center;
     margin: 20px 0;
   }
-  
-  /* .star {
-    cursor: pointer;
-  }
-  
-  .star.filled {
-    color: rgb(243, 212, 34);
-  }
-   */
-   
+
 .star {
   cursor: pointer;
   color: grey; /* 기본 색상 */
