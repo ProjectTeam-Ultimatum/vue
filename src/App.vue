@@ -1,5 +1,4 @@
 <template>
-
   <nav :class="{ 'main-page': isMainPage, scrolled: isScrolled }">
     <router-link class="main-logo" to="/"
       ><img src="./assets/images/logoImage.png" style="width: 40px" />제주랑
@@ -70,7 +69,6 @@ export default {
     if (this.isAuthenticated) {
       this.fetchUserName(); // 로그인 되어 있을 때만 사용자 정보를 가져옵니다.
     }
-
   },
   methods: {
     async fetchUserName() {
@@ -87,16 +85,20 @@ export default {
 
         console.log("API response:", response.data); // API 응답 로깅
       } catch (error) {
-        console.error("인증된 사용자가 아닙니다. : ", error);
+        console.error("로그인해주세요 : ", error);
         this.isAuthenticated = false; // 에러 발생 시 인증 상태 업데이트
       }
     },
     promptSurvey() {
-    // 간단한 confirm 창을 사용하여 설문 조사 유도
-    if (confirm("나만의 여행스타일을 알아보세요! 검사 페이지로 이동하시겠습니까?")) {
-      this.$router.push('/travel');  // 설문 조사 페이지로 리디렉션
-    }
-  },
+      // 간단한 confirm 창을 사용하여 설문 조사 유도
+      if (
+        confirm(
+          "나만의 여행스타일을 알아보세요! 검사 페이지로 이동하시겠습니까?"
+        )
+      ) {
+        this.$router.push("/travel"); // 설문 조사 페이지로 리디렉션
+      }
+    },
     showLoginModal() {
       this.showModal = true;
     },

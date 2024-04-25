@@ -17,13 +17,10 @@ import RecommendDetailFood from '../components/RecommendDetail/RecommendDetailFo
 //import RecommendList from '../views/RecommendListPlace.vue' 
 import MainMap from '@/components/Course/MainMap.vue'
 import CourseView from '../views/Course/CourseView.vue'
-<<<<<<< Updated upstream
 import TravelStyle from '@/views/TravelStyle/TravelStyle.vue';
 import TravelStyleTest from '@/components/TravelStyle/TravelStyleTest.vue'
 import StyleResult from '@/components/TravelStyle/StyleResult.vue'
-=======
-import SocialSignUp from'../components/SocialSignUp.vue'
->>>>>>> Stashed changes
+import SocialSignUp from'@/views/SocialSignUp.vue'
 
 
 
@@ -112,7 +109,7 @@ const routes = [
     props: true // 컴포넌트에 URL 파라미터를 props로 전달
   },
   {
-    path: '/social-signup',
+    path: '/social',
     name: 'SocialSignUp',
     component: SocialSignUp
   }
