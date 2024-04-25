@@ -13,7 +13,12 @@
                                     <div class="detail-title-wrap">
                                         <h4>{{ hotel.recommendHotelTitle }}</h4>
                                         <div class="detail-subtitle">{{ hotel.recommendHotelIntroduction }}</div>
-                                        <div>평점</div>
+                                        <!-- 평균 평점 (숫자와 별로 표시) -->
+                                        <div style="font-size: 20px;">
+                                          평점 {{ replyHotelStar }}
+                                          <span v-for="star in 5" :key="star" class="star"
+                                              :class="{ filled: star <= Math.round(replyHotelStar) }">★</span>
+                                        </div>
                                         <!-- 영업상태 -->
                                         <div>
                                             <span class="status" :class="getStatusClass(hotel.recommendHotelClosetime)">
@@ -104,7 +109,9 @@
       activeHotelId: null,  // 활성화된 음식 ID 저장, 모달 전달
       currentType: 'hotel',
       hotelRegion: '', //주변 지역 정보
-      recommendListHotelRegion: []
+      recommendListHotelRegion: [],
+      replyPlaceHotel: '', //관광지 평점 정보
+      recommendReplyStar: ''
     };
   },
   components: {
@@ -134,6 +141,7 @@
                 this.replyModalCreate = false;
                 // fetchRegionData 호출
                 this.fetchRegionData();
+                this.fetchRatingData(); //fetchRatingData 호출 
             }
             console.log("로딩 된 지역 정보:", this.hotelRegion);
             console.log("로딩 된 상세페이지 정보:", this.recommendListDetailHotel);
@@ -167,6 +175,23 @@
     console.error("에러 발생:", error);
   }
 }, //fetchRegionData
+async fetchRatingData() {
+      console.log("fetchRatingData() 메서드가 호출되었습니다.");
+      try {
+        // API URL 수정: 동적 ID를 경로에 포함
+        const response = await this.$axios.get(`/api/recommendreply/hotel/average/star/${this.recommendHotelId}`);
+        if (!response.data || response.data === "평점을 기다리고 있어요") {
+          this.replyPlaceStar = response.data; // API 응답이 평점 문자열 또는 평균 평점 없음 메시지
+        } else {
+          // 소수점을 제거하고 반올림
+          this.replyHotelStar = Math.round(response.data);
+        }
+        console.log("평균 평점:", this.replyHotelStar);
+      } catch (error) {
+        console.error("평균 평점 데이터를 가져오는 중 오류가 발생했습니다:", error);
+        this.replyHotelStar = "평점 정보 없음";
+      }
+  }, //fetchRatingData
 
     isOperating(closeTime) {  //영업중, 영업마감
       if (!closeTime) return '휴무일'; // 휴무일 처리

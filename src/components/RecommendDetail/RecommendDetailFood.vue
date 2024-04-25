@@ -13,7 +13,12 @@
                                     <div class="detail-title-wrap">
                                         <h4>{{ food.recommendFoodTitle }}</h4>
                                         <div class="detail-subtitle">{{ food.recommendFoodIntroduction }}</div>
-                                        <div>평점</div>
+                                      <!-- 평균 평점 (숫자와 별로 표시) -->
+                                      <div style="font-size: 20px;">
+                                        평점 {{ replyFoodStar }}
+                                        <span v-for="star in 5" :key="star" class="star"
+                                            :class="{ filled: star <= Math.round(replyFoodStar) }">★</span>
+                                      </div>
                                         <!-- 영업상태 -->
                                         <div>
                                             <span class="status" :class="getStatusClass(food.recommendFoodClosetime)">
@@ -104,7 +109,9 @@ export default {
       activeFoodId: null,  // 활성화된 음식 ID 저장, 모달 전달
       currentType: 'food',
       foodRegion: '', //주변 지역 정보
-      recommendListFoodRegion: []
+      recommendListFoodRegion: [],
+      replyFoodStar: '', //관광지 평점 정보
+      recommendReplyStar: ''
     };
   },
   components: {
@@ -132,9 +139,8 @@ export default {
                 this.recommendListDetailFood = [data];
                 this.foodRegion = data.recommendFoodRegion;
                 this.replyModalCreate = false;
-
-                // fetchRegionData 호출
-                this.fetchRegionData();
+                this.fetchRegionData(); // fetchRegionData 호출
+                this.fetchRatingData(); //fetchRatingData 호출 
             }
             console.log("로딩 된 지역 정보:", this.foodRegion);
             console.log("로딩 된 상세페이지 정보:", this.recommendListDetailFood);
@@ -168,6 +174,23 @@ export default {
       console.error("에러 발생:", error);
     }
   }, //fetchRegionData
+  async fetchRatingData() {
+    console.log("fetchRatingData() 메서드가 호출되었습니다.");
+    try {
+        const response = await this.$axios.get(`/api/recommendreply/food/average/star/${this.recommendFoodId}`);
+        console.log("API 응답:", response.data);  // API 응답을 확인하기 위한 로그
+
+        if (!response.data || response.data === "평점을 기다리고 있어요") {
+            this.replyFoodStar = response.data; // 평점 문자열 또는 "평점을 기다리고 있어요" 메시지를 처리
+        } else {
+            this.replyFoodStar = Math.round(response.data); // 소수점 제거하고 반올림
+            console.log("반올림 처리된 평균 평점:", this.replyFoodStar);
+        }
+    } catch (error) {
+        console.error("평균 평점 데이터를 가져오는 중 오류가 발생했습니다:", error);
+        this.replyFoodStar = "평점 정보 없음";
+    }
+  }, //fetchRatingData
     isOperating(closeTime) {  //영업중, 영업마감
       if (!closeTime) return '휴무일'; // 휴무일 처리
       
