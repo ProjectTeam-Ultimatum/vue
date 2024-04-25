@@ -159,19 +159,34 @@
         }
       },
       finishSurvey() {
-        // 결과 데이터 객체 생성
-        const surveyResults = {
-            EI: this.results.E > this.results.I ? 'E' : 'I',
-            SN: this.results.S > this.results.N ? 'S' : 'N',
-            FT: this.results.F > this.results.T ? 'F' : 'T',
-            PJ: this.results.P > this.results.J ? 'P' : 'J',
-        };
-        console.log(surveyResults);
-        // 결과 페이지로 라우팅하면서 결과 데이터 전달
-        this.$router.push({
-          name: 'StyleResult',
-          query: { surveyResults: JSON.stringify(surveyResults) } // 결과 객체를 문자열로 변환
-        });
+          // 결과 데이터 객체 생성
+          const surveyResults = {
+              EI: this.results.E > this.results.I ? 'E' : 'I',
+              SN: this.results.S > this.results.N ? 'S' : 'N',
+              FT: this.results.F > this.results.T ? 'F' : 'T',
+              PJ: this.results.P > this.results.J ? 'P' : 'J',
+          };
+
+          // 결과 문자열 생성
+          const styleCode = `${surveyResults.EI}${surveyResults.SN}${surveyResults.FT}${surveyResults.PJ}`;
+          console.log('Survey Code:', styleCode);
+
+          // 서버에 결과 전송
+          this.updateMemberStyle(styleCode);
+
+          // 결과 페이지로 라우팅
+          this.$router.push({
+              name: 'StyleResult',
+              query: { surveyResults: JSON.stringify(surveyResults) }
+          });
+      },
+      async updateMemberStyle(styleCode) {
+          try {
+              const response = await this.$axios.post('/api/v1/user/updateStyle', { memberStyle: styleCode });
+              console.log('Update Response:', response.data);
+          } catch (error) {
+              console.error('Failed to update style:', error);
+          }
       },
     }
   };
