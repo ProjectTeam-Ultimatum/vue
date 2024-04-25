@@ -261,4 +261,3 @@ Calendar.prototype.nextMonth = function() {
   
   return Calendar.fromYm(year, month);
 }
-

@@ -67,7 +67,6 @@
                 </div>
               </section>
             </div>
-            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
             <!-- 다음 달 -->
             <div class="month-container">
               <nav>
@@ -135,11 +134,11 @@
               <div class="time-range">
                 <div class="time-setting">
                   <label :for="'startTime' + index">시작</label>
-                  <input type="time" :id="'startTime' + index" v-model="daytime.startTime" @change="updateTotalScheduledHours">
+                  <input type="time" :id="'startTime' + index" v-model="daytime.startTime" @change="updateDaystime">
                 </div>
                 <div class="time-setting">
-                  <label :for="'endTime' + index">종료</label>
-                  <input type="time" :id="'endTime' + index" v-model="daytime.endTime" @change="updateTotalScheduledHours">
+                  <label :for="'finishTime' + index">종료</label>
+                  <input type="time" :id="'finishTime' + index" v-model="daytime.finishTime" @change="updateDaystime">
                 </div>
               </div>
             </div>
@@ -277,7 +276,7 @@
             </div>
           </div>
         </div>
-        <button @click="submitDates">일정 저장</button>
+        <button @click="submitPlan">일정 저장</button>
       </div>
     </div>
   </div>
@@ -307,6 +306,8 @@ export default {
       hotelSearchQuery: '',
       hotels: [],
       selectedHotels:[],
+      planDays: [],
+      planId: null,
     };
   },
   created() {
@@ -344,13 +345,13 @@ export default {
         const dates = [];
 
         while (currentDate <= endDate) {
-          const formattedDate = this.formatDate(currentDate);
+          const formattedDate = this.formatDate(currentDate); // YYYY-MM-DD 형식으로 반환되는지 확인
           const weekDay = currentDate.toLocaleDateString('ko-KR', { weekday: 'short' }).replace('.', '');
           dates.push({
             dayNumber: dayCounter,
-            dateFormatted: `${formattedDate.substring(5).replace('-', '.')}/${weekDay}`,
+            dateFormatted: `${formattedDate}/${weekDay}`, // '/' 대신 '-'를 사용하던 부분을 수정
             startTime: '10:00',
-            endTime: '22:00',
+            finishTime: '22:00',
           });
           currentDate.setDate(currentDate.getDate() + 1);
           dayCounter++;
@@ -361,15 +362,20 @@ export default {
       return [];
     },
     totalScheduledHours() {
-      return this.daystime.reduce((total, { startTime, endTime }) => {
-        const start = new Date(startTime);
-        const end = new Date(endTime);
+      if (!this.daystime.length) return 0;
+      return this.daystime.reduce((total, { startTime, finishTime }) => {
+        const start = this.parseTime(startTime);
+        const end = this.parseTime(finishTime);
+        if (!start || !end) return total; // parseTime에서 null이 반환된 경우 무시
         const duration = (end - start) / (3600 * 1000);
         return total + duration;
       }, 0);
     },
     formattedTotalScheduledHours() {
       const totalHours = this.totalScheduledHours;
+      if (isNaN(totalHours) || totalHours === 0) {
+        return "0시간 0분"; // NaN이나 0시간 처리
+      }
       const hours = Math.floor(totalHours);
       const minutes = Math.round((totalHours - hours) * 60);
       return `${hours}시간 ${minutes}분`;
@@ -429,18 +435,23 @@ export default {
       if (!this.isTodayOrFuture(date)) return;
 
       const formattedDate = this.formatDate(date.value);
+
       if (this.selectedDates.length === 0 || this.selectedDates.length === 2) {
         this.selectedDates = [formattedDate];
       } else if (this.selectedDates.length === 1) {
         const firstSelectedDate = new Date(this.selectedDates[0]);
         const newDate = new Date(formattedDate);
-        if (newDate >= firstSelectedDate) {
+
+        const maxDate = new Date(this.selectedDates[0]);
+        maxDate.setDate(maxDate.getDate() + 4); // 시작 날짜에서 4일을 더함 (총 5일)
+
+        if (newDate >= firstSelectedDate && newDate <= maxDate) {
           this.selectedDates.push(formattedDate);
         } else {
-          this.selectedDates.unshift(formattedDate);
+          alert('최대 5일까지만 선택할 수 있습니다.');
         }
       }
-      this.updateDaystime();  // 여기서 updateDaystime을 명시적으로 호출합니다.
+      this.updateDaystime();
       console.log("선택된 날짜 업데이트 후:", this.selectedDates);
     },
     onMouseover(date) {
@@ -474,39 +485,147 @@ export default {
       return {
         '음식점': 'food',
         '관광지': 'place',
-        '축제/행사': 'event'
+        '축제/행사': 'event',
+        '숙박': 'hotel'
       }[categoryName] || categoryName;
+    },
+    formatToLocalTime(time) {
+      const [hours, minutes] = time.split(':').map(Number);
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+    },
+    formatDateToISO(dateString) {
+      const date = new Date(dateString);
+      return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    },
+    saveHotel(planDayId, hotel) {
+      const hotelData = {
+        planDayId: planDayId, // 저장된 planId 사용
+        recommendHotelId: hotel.recommendHotelId,
+      };
+
+      axios.post('http://localhost:8080/api/plans/hotel/add', hotelData)
+        .then(response => {
+          console.log("호텔 저장 성공:", response.data);
+        })
+        .catch(error => {
+          console.error("호텔 저장 실패", error);
+          alert('호텔 저장에 실패했습니다: ' + error.message);
+        });
+    },
+    formatDateToISOTime(time) {
+      // Ensure the time is in HH:mm format, then convert it to HH:mm:ss for backend compatibility
+      const [hours, minutes] = time.split(':').map(Number);
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
     },
     submitDates() {
       if (this.daystime.length === 0) {
         alert("시간 설정이 완료되지 않았습니다.");
         return;
       }
+
+      const planDaysFormatted = this.daystime.map(day => ({
+        date: day.date,
+        startTime: this.formatToLocalTime(day.startTime),
+        finishTime: this.formatToLocalTime(day.finishTime)
+      }));
+
+      // 여기에 selectedItems와 selectedHotels 정보를 추가합니다.
       const planRequest = {
         memberId: '회원ID',
-        planStartDay: this.selectedDates[0],
-        planEndDay: this.selectedDates[this.selectedDates.length - 1],
+        planStartDay: this.formatDateOnly(this.selectedDates[0]),
+        planEndDay: this.formatDateOnly(this.selectedDates[this.selectedDates.length - 1]),
         planTitle: '여행 일정',
-        planDays: this.daystime
+        planDays: planDaysFormatted,
+        items: this.selectedItems,
+        hotels: this.selectedHotels
       };
+
       axios.post('http://localhost:8080/api/plans/create', planRequest)
-        .then(response => {
+      .then(response => {
+        if (response.data && response.data.planId) {
           const planId = response.data.planId;
-          this.selectedItems.forEach(item => this.saveItem(planId, item));
-        })
-        .catch(error => {
-          console.error("일정 저장 실패", error);
-          alert('일정 저장에 실패했습니다: ' + error.message);
-        });
+          this.planId = planId;
+          console.log("Plan created successfully with ID:", planId);
+        } else {
+          console.error("Plan ID not found in the response");
+          alert("일정 생성 응답에서 ID를 찾을 수 없습니다.");
+        }
+      })
+      .catch(error => {
+        console.error("일정 저장 실패", error);
+        alert('일정 저장에 실패했습니다: ' + error.message);
+      });
     },
-    createPlanRequest() {
-      return {
+    submitPlan() {
+      const planRequest = {
         memberId: '회원ID',
-        planStartDay: this.selectedDates[0],
-        planEndDay: this.selectedDates[this.selectedDates.length - 1],
+        planStartDay: this.formatDateOnly(this.selectedDates[0]),
+        planEndDay: this.formatDateOnly(this.selectedDates[this.selectedDates.length - 1]),
         planTitle: '여행 일정',
-        planDays: this.daystime
+        planDays: this.daystime.map(day => ({
+          date: this.formatDateOnly(day.date),
+          startTime: this.formatToLocalTime(day.startTime),
+          finishTime: this.formatToLocalTime(day.finishTime)
+        })),
+        planFoods: this.selectedItems.filter(item => item.category === 'food').map(item => ({
+          recommendFoodId: item.recommendFoodId,
+          stayTime: this.formatToLocalTime(item.durationHours + ':' + item.durationMinutes)
+        })),
+        planPlaces: this.selectedItems.filter(item => item.category === 'place').map(item => ({
+          recommendPlaceId: item.recommendPlaceId,
+          stayTime: this.formatToLocalTime(item.durationHours + ':' + item.durationMinutes)
+        })),
+        planEvents: this.selectedItems.filter(item => item.category === 'event').map(item => ({
+          recommendEventId: item.recommendEventId,
+          stayTime: this.formatToLocalTime(item.durationHours + ':' + item.durationMinutes)
+        })),
+        planHotels: this.selectedHotels.map(hotel => ({
+          recommendHotelId: hotel.recommendHotelId,
+          planDayId: hotel.planDayId  // 주의: planDayId 는 해당 호텔 예약에 해당하는 날짜에 매핑되어야 함
+        }))
       };
+
+      axios.post('http://localhost:8080/api/plans/create', planRequest)
+      .then(response => {
+        this.planId = response.data.planId;
+        console.log("Plan created successfully with ID:", this.planId);
+      })
+      .catch(error => {
+        console.error("Failed to save the plan", error);
+        alert('Failed to save the plan: ' + error.message);
+      });
+    },
+    updateDaystime() {
+      this.daystime = this.formattedDateRange.map(day => {
+        const date = day.dateFormatted.split('/')[0];
+        return {
+          date: date,
+          startTime: this.formatDateToISOTime(day.startTime),
+          finishTime: this.formatDateToISOTime(day.finishTime)
+        };
+      });
+      console.log("Updated daystime:", this.daystime);
+    },
+    formatToISODateTime(date, time) {
+      if (!time) return null;
+      
+      // 시간이 'HH:MM' 형식인지 검사합니다.
+      const [hours, minutes] = time.split(':').map(Number);
+      if (isNaN(hours) || isNaN(minutes)) {
+        console.error('Invalid time format:', time);
+        return null;
+      }
+
+      // 날짜 객체 생성
+      const dateTime = new Date(date);
+      dateTime.setHours(hours, minutes, 0);
+      
+      // ISO 8601 형식으로 변환
+      return dateTime.toISOString();
+    },
+    formatDateOnly(date) {
+      const d = new Date(date);
+      return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
     },
     formatStayTime(hours, minutes) {
       let hoursFormatted = hours.toString().padStart(2, '0');
@@ -530,20 +649,25 @@ export default {
     saveItem(planId, item) {
       const categoryPath = this.getCategoryPath(item.category);
       const recommendIdKey = this.getIdFieldNameByCategory(item.category);
-      const recommendId = item[recommendIdKey]; 
+      const recommendId = item[recommendIdKey];
+      console.log(`Adding item in category: ${item.category}, Path: ${categoryPath}, ID: ${recommendId}`); // 로그 추가
 
       const planData = {
-        planId: planId,
+        plan: { id: this.planId },
         recommendFoodId: recommendId,
         recommendPlaceId: recommendId,
         recommendEventId: recommendId,
+        recommendHotelId: recommendId,
         stayTime: this.formatStayTime(item.durationHours, item.durationMinutes)
       };
 
       const apiUrl = `http://localhost:8080/api/plans/${categoryPath}/add`;
+      console.log(`Sending data to ${apiUrl}:`, planData); // 데이터 로깅
 
       axios.post(apiUrl, planData)
-        .then(res => console.log(`${item.category} 저장 성공`, res))
+        .then(res => {
+          console.log(`${item.category} 저장 성공`, res);
+        })
         .catch(err => {
           console.error(`${item.category} 저장 오류`, err);
           alert(`저장 오류: ${item.category} - ${err.message}`);
@@ -573,14 +697,7 @@ export default {
 
       return dates.join(', ');
     },
-    updateDaystime() {
-      this.daystime = this.formattedDateRange.map(day => ({
-        date: `${this.currentYear}-${day.dateFormatted.substring(0, 5).replace('.', '-')}`,
-        startTime: this.formatToDateTime(`${this.currentYear}-${day.dateFormatted.substring(0, 5).replace('.', '-')}`, day.startTime),
-        endTime: this.formatToDateTime(`${this.currentYear}-${day.dateFormatted.substring(0, 5).replace('.', '-')}`, day.endTime)
-      }));
-      console.log("daystime updated:", this.daystime);
-    },
+
     trimAddress(address) {
         if (!address) return ""; // address가 null 또는 undefined인 경우 빈 문자열 반환
         return address.length > 16 ? `${address.substring(0, 14)}...` : address;
@@ -604,7 +721,7 @@ export default {
               title: item[`${categoryKey}Title`],
               address: item[`${categoryKey}Address`],
               imgPath: item[`${categoryKey}ImgPath`],
-              category: categoryKey.replace('recommend', '').toLowerCase() // 'recommendFood' -> 'food'
+              category: categoryKey.replace('recommend', '').toLowerCase()
             };
           });
         })
@@ -637,16 +754,18 @@ export default {
     },
     fetchHotels() {
       axios.get('http://localhost:8080/api/recommend/listhotel')
-      .then(response => {
-          this.hotels = response.data.content.map(hotels => ({
-            title: this.trimTitle(hotels.recommendHotelTitle),
-            address: this.trimAddress(hotels.recommendHotelAddress),
-            imgPath: hotels.recommendHotelImgPath
-          }));
-        })
-        .catch(error => {
-          console.error('Error fetching hotels:', error);
-        });
+        .then(response => {
+            this.hotels = response.data.content.map(hotel => ({
+              recommendHotelId: hotel.recommendHotelId,
+              title: this.trimTitle(hotel.recommendHotelTitle),
+              address: this.trimAddress(hotel.recommendHotelAddress),
+              imgPath: hotel.recommendHotelImgPath,
+              category: 'hotel'
+            }));
+          })
+          .catch(error => {
+            console.error('Error fetching hotels:', error);
+          });
     },
     searchDatahotel() {
       let baseUrl = 'http://localhost:8080/api/recommend/search/hotel';
@@ -668,52 +787,68 @@ export default {
       return {
         'food': 'recommendFoodId',
         'place': 'recommendPlaceId',
-        'event': 'recommendEventId'
+        'event': 'recommendEventId',
+        'hotel': 'recommendHotelId'
       }[category];
     },
     addToSelected(item) {
-      if (!this.selectedItems.some(selected => selected.id === item.id)) {
-        this.selectedItems.push({
-          ...item,
-          order: this.selectedItems.length + 1,
-          durationHours: 2,
-          durationMinutes: 0
-        });
-        this.updateTotalItemHours();
+      const recommendIdKey = this.getIdFieldNameByCategory(item.category);
+      if (!this.selectedItems.some(selected => selected[recommendIdKey] === item[recommendIdKey])) {
+        const newItemDuration = (parseFloat(item.durationHours) || 0) + (parseFloat(item.durationMinutes) || 0) / 60;
+        const currentTotalDuration = parseFloat(this.calculateTotalItemDuration());
+        const scheduledHours = parseFloat(this.totalScheduledHours);
+
+        console.log(`New Item Duration: ${newItemDuration}, Current Total: ${currentTotalDuration}, Scheduled: ${scheduledHours}`);
+
+        if (currentTotalDuration + newItemDuration <= scheduledHours) {
+          this.selectedItems.push({
+            ...item,
+            order: this.selectedItems.length + 1,
+            durationHours: 2,
+            durationMinutes: 0,
+          });
+          this.updateTotalItemHours();
+        } else {
+          const currentHours = Math.floor(currentTotalDuration);
+          const currentMinutes = Math.round((currentTotalDuration - currentHours) * 60);
+          const scheduledMinutes = Math.round((scheduledHours - Math.floor(scheduledHours)) * 60);
+          alert(`총 아이템 시간이 예정된 일정 시간을 초과합니다. (현재: ${currentHours}시간 ${currentMinutes}분, 예정: ${Math.floor(scheduledHours)}시간 ${scheduledMinutes}분)`);
+        }
       }
+    },
+    calculateTotalItemDuration() {
+      const total = this.selectedItems.reduce((sum, item) => {
+        return sum + (parseFloat(item.durationHours) || 0) + (parseFloat(item.durationMinutes) || 0) / 60;
+      }, 0);
+      const hours = Math.floor(total);
+      const minutes = Math.round((total - hours) * 60);
+      return `${hours}시간 ${minutes}분`;
     },
     updateTotalItemHours() {
       let totalMinutes = this.selectedItems.reduce((sum, item) => sum + item.durationHours * 60 + item.durationMinutes, 0);
       const hours = Math.floor(totalMinutes / 60);
       const minutes = totalMinutes % 60;
       this.totalItemHours = `${hours}시간 ${minutes.toString().padStart(2, '0')}분`;
-    },
-    calculateTotalScheduledHours() {
-      if (!this.daystime || this.daystime.length === 0) {
-        return 0;
-      }
-
-      let totalHours = 0;
-      this.daystime.forEach(daytime => {
-        const startTime = this.parseTime(daytime.startTime);
-        const endTime = this.parseTime(daytime.endTime);
-        const duration = (endTime - startTime) / (1000 * 60 * 60); // 시간으로 변환
-        totalHours += duration;
-      });
-
-      return totalHours;
+      this.itemCount = this.selectedItems.length;  // 항목 수 업데이트
     },
     parseTime(timeString) {
-      const [hours, minutes] = timeString.split(':');
+      const timePart = timeString.split('T')[1] ? timeString.split('T')[1].substring(0, 5) : timeString;
+      const [hours, minutes] = timePart.split(':').map(Number);
+
+      if (isNaN(hours) || isNaN(minutes)) {
+        console.error('Invalid time format:', timeString);
+        return null;
+      }
+
       const time = new Date();
-      time.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
+      time.setHours(hours, minutes, 0, 0);
       return time;
     },
     formatToDateTime(date, time) {
-      const [hours, minutes] = time.split(':');
-      const formattedDate = new Date(date);
-      formattedDate.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
-      return formattedDate.toISOString().slice(0, 19); // "YYYY-MM-DDTHH:mm:ss" 형식으로 변환
+      const [year, month, day] = date.split('-').map(Number);
+      const [hours, minutes] = time.split(':').map(Number);
+      const dateTime = new Date(year, month - 1, day, hours, minutes);
+      return `${dateTime.getFullYear()}-${(dateTime.getMonth() + 1).toString().padStart(2, '0')}-${dateTime.getDate().toString().padStart(2, '0')}T${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
     },
     removeItem(index) {
       this.selectedItems.splice(index, 1);
@@ -723,14 +858,14 @@ export default {
       this.itemCount = this.selectedItems.length;
       this.updateTotalItemHours();
     },
-    addHoursToItem(item, startTime, endTime) {
-      const duration = this.calculateDuration(startTime, endTime);
+    addHoursToItem(item, startTime, finishTime) {
+      const duration = this.calculateDuration(startTime, finishTime);
       this.totalItemHours += duration;
       item.duration = duration;
     },
-    calculateDuration(startTime, endTime) {
+    calculateDuration(startTime, finishTime) {
       const start = new Date('2024-01-01 ' + startTime);
-      const end = new Date('2024-01-01 ' + endTime);
+      const end = new Date('2024-01-01 ' + finishTime);
       return (end - start) / (1000 * 60 * 60);
     },
     formatStayDate(date) {
@@ -754,6 +889,7 @@ export default {
         this.selectedHotels.push({
           ...hotel,
           order: this.selectedHotels.length + 1,
+          planId: this.planId,
           checkIn: this.formatStayDate(checkInDate),
           checkOut: this.formatStayDate(checkOutDate),
         });
