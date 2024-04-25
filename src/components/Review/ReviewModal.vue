@@ -11,7 +11,7 @@
         >
           <font-awesome-icon :icon="['fas', 'xmark']" size="2xl" />
         </div>
-        <div class="review-update-delete">
+        <div v-if="isOwner" class="review-update-delete">
           <div class="review-update-button" @click="editReview">
             <span style="font-size: 12px"> 수정 </span
             ><font-awesome-icon :icon="['far', 'pen-to-square']" size="xl" />
@@ -49,18 +49,32 @@
             <span class="review-author">{{ review.author }}</span>
           </div>
         </div>
-
+        <!-- 이미지 부분-->
         <div class="review-slider-container">
           <div class="review-click" @click="prevImage">
             <font-awesome-icon :icon="['fas', 'chevron-left']" size="2xl" />
           </div>
-          <img :src="currentImageUrl" alt="Images" @click="openImageModal" />
+          <div
+            class="image-container"
+            @click="openImageModal"
+            @mouseover="hover = true"
+            @mouseleave="hover = false"
+          >
+            <div v-if="isHovering" class="image-hover-text">
+              이미지 전체보기
+            </div>
+            <img :src="currentImageUrl" alt="Images" />
+            <!-- Image count overlay -->
+            <div class="image-count-overlay">
+              {{ currentImageIndex + 1 }} / {{ review.reviewImages.length }}
+            </div>
+          </div>
           <div class="review-click" @click="nextImage">
             <font-awesome-icon :icon="['fas', 'chevron-right']" size="2xl" />
           </div>
         </div>
 
-        <!-- 이미지 모달 -->
+        <!-- 이미지 전체창 모달 -->
         <div
           v-if="isImageModalVisible"
           class="imageModal-overlay"
@@ -188,9 +202,26 @@ export default {
       }
       return "default-image-url"; // 혹은 기본 이미지의 URL
     },
+    isOwner() {
+      const ownerStatus = this.$store.state.auth.email === this.review.author;
+      console.log("로그인한 사용자의 게시글이 맞는가?", ownerStatus);
+      return ownerStatus;
+    },
+  },
+  created() {
+    this.fetchUserProfile();
   },
 
   methods: {
+    async fetchUserProfile() {
+      try {
+        const response = await this.$axios.get("/api/v1/user/info/detail");
+        console.log("API response:", response); // API 응답 로깅
+        this.$store.commit("auth/SET_USER_EMAIL", response.data.email);
+      } catch (error) {
+        console.error("인증된 사용자가 아닙니다. : ", error);
+      }
+    },
     //댓글작성 메소드
     async postReply() {
       if (!this.reviewReplyContent.trim() && !this.reviewReplyer.trim()) {
@@ -234,7 +265,9 @@ export default {
     async deleteReview(reviewId) {
       if (confirm("게시글을 정말 삭제하시겠습니까?")) {
         try {
-          await this.$axios.delete(`http://localhost:8080/api/reviews/${reviewId}`);
+          await this.$axios.delete(
+            `http://localhost:8080/api/reviews/${reviewId}`
+          );
           alert("게시글이 삭제 되었습니다.");
           this.$emit("close");
           this.$emit("deleted");
@@ -272,9 +305,12 @@ export default {
 
     async updateReply(reply) {
       try {
-        await this.$axios.put(`http://localhost:8080/api/reviews/${reply.reviewReplyId}/reply`, {
-          reviewReplyContent: reply.editingContent,
-        });
+        await this.$axios.put(
+          `http://localhost:8080/api/reviews/${reply.reviewReplyId}/reply`,
+          {
+            reviewReplyContent: reply.editingContent,
+          }
+        );
         reply.reviewReplyContent = reply.editingContent;
         reply.isEditing = false;
         alert("댓글이 수정되었습니다.");
@@ -291,7 +327,9 @@ export default {
     async deleteReply(replyId) {
       if (confirm("댓글을 정말 삭제하시겠습니까?")) {
         try {
-          await this.$axios.delete(`http://localhost:8080/api/reviews/${replyId}/reply`);
+          await this.$axios.delete(
+            `http://localhost:8080/api/reviews/${replyId}/reply`
+          );
           alert("댓글이 삭제되었습니다.");
           this.$emit("refresh-modal", this.review);
         } catch (error) {
@@ -357,5 +395,9 @@ export default {
 .imageModal-content img {
   max-width: 100%; /* 이미지의 실제 크기를 유지하되, 컨테이너 너비를 초과하지 않도록 함 */
   max-height: 100%; /* 이미지의 실제 크기를 유지하되, 컨테이너 높이를 초과하지 않도록 함 */
+}
+.image-container {
+  position: relative;
+  cursor: pointer;
 }
 </style>

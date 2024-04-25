@@ -30,20 +30,20 @@
   </div>
   <div class="divider" />
   <div class="travel-course">
-    <h2 class="mb-3">여행 후기 게시판</h2>
-    <div class="recommand-card">
-      <router-link to="/reviews"> 여행 후기 게시판 바로가기 </router-link>
-    </div>
+    <LatestReviews />
   </div>
   <div class="divider" />
 </template>
 
 <script>
+import LatestReviews from "../components/Review/LatestReviews.vue";
 // @ is an alias to /src
-
+/* eslint-disable */
 export default {
   name: "MainPage",
-  components: {},
+  components: { LatestReviews },
+
+  methods: {},
 };
 </script>
 <style scoped>

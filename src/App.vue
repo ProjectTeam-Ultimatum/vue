@@ -1,6 +1,10 @@
 <template>
-  <nav :class="{ 'main-page': isMainPage,isTravel, scrolled: isScrolled }">
-    <router-link class="main-logo" to="/">제주랑</router-link>
+
+  <nav :class="{ 'main-page': isMainPage, scrolled: isScrolled }">
+    <router-link class="main-logo" to="/"
+      ><img src="./assets/images/logoImage.png" style="width: 40px" />제주랑
+    </router-link>
+
     <div class="nav-links">
       <router-link to="/chatting"> 메이트 찾기</router-link>
       <router-link to="/reviews"> 여행후기 </router-link>
@@ -12,8 +16,14 @@
       <div v-if="!isAuthenticated">
         <button @click="showLoginModal">로그인</button>
       </div>
-      <div v-else>
-        {{}}님 환영합니다.<button @click="logout">로그아웃</button>
+      <div v-else class="user-info">
+        <img
+          v-if="userImage"
+          :src="userImage || 'default-image-url'"
+          class="user-image"
+        />
+        {{ userName }} 님 환영합니다.
+        <button @click="logout">로그아웃</button>
       </div>
     </div>
     <login-modal
@@ -44,17 +54,54 @@ export default {
     isMainPage() {
       return this.$route.path === "/";
     },
+
     isTravel() {
       return this.$route.path === "/travel";
     },
+
+    userName() {
+      return this.$store.state.auth.userName; // Vuex 스토어에서 사용자 이름 가져오기
+    },
+    userImage() {
+      return this.$store.state.auth.images;
+    },
+  },
+  created() {
+    if (this.isAuthenticated) {
+      this.fetchUserName(); // 로그인 되어 있을 때만 사용자 정보를 가져옵니다.
+    }
+
   },
   methods: {
+    async fetchUserName() {
+      try {
+        const response = await this.$axios.get("/api/v1/user/info/detail");
+        this.$store.commit("auth/SET_USER_NAME", response.data.userName);
+        this.$store.commit("auth/SET_USER_IMAGE", response.data.images);
+
+        this.isAuthenticated = true;
+        console.log("API response:", response.data); // API 응답 로깅
+      } catch (error) {
+        console.error("인증된 사용자가 아닙니다. : ", error);
+        this.isAuthenticated = false; // 에러 발생 시 인증 상태 업데이트
+      }
+    },
     showLoginModal() {
       this.showModal = true;
     },
     logout() {
+      // Vuex 상태 초기화
+      this.$store.commit("auth/SET_TOKEN", null);
+      this.$store.commit("auth/SET_USER_EMAIL", null);
+      this.$store.commit("auth/SET_USER_NAME", null);
+      this.$store.commit("auth/SET_USER_IMAGE", null);
+
       // 로컬 스토리지에서 토큰 제거
       localStorage.removeItem("Authorization");
+      localStorage.removeItem("email");
+      localStorage.removeItem("userName");
+      localStorage.removeItem("images");
+
       this.isAuthenticated = false;
       // 로그아웃 성공 메시지 표시 후 페이지 새로 고침
       alert("로그아웃 되었습니다.");
@@ -171,6 +218,18 @@ nav a.router-link-exact-active {
   right: 30px;
   font-size: 18px;
   cursor: pointer;
+}
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-image {
+  width: 40px; /* 이미지 크기 설정 */
+  height: 40px; /* 이미지 크기 설정 */
+  border-radius: 50%; /* 원형 이미지 */
+  object-fit: cover; /* 이미지 비율 유지 */
+  margin-right: 10px; /* 텍스트와의 간격 */
 }
 .login button {
   margin-left: 10px;
