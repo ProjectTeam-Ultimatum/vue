@@ -42,7 +42,9 @@
             <img :src="message.message" alt="Image" style="max-width: 200px; max-height: 200px;">
           </span>
           <span v-else class="message-content">{{ message.message }}</span>
-          <button @click="reportUser(message.senderId, message.message)">신고</button>
+          <img v-if="message.senderId !== userName && message.messageType !== 'ENTER' && message.messageType !== 'LEAVE'"
+         :src="require('@/assets/images/siren.png')" alt="Report" class="report-button"
+         @click="reportUser(message.senderId, message.message)">
         </li>
       </ul>
     </section>
@@ -822,5 +824,11 @@ html, body {
   height: 130px; /* 프로필 이미지 크기 */
   border-radius: 50%; /* 원형으로 만들기 */
   margin-right: 20px; /* 텍스트 컨텐츠와의 간격 */
+}
+
+.report-button {
+  cursor: pointer;
+  width: 24px; /* 필요에 따라 조정 */
+  height: 24px; /* 필요에 따라 조정 */
 }
 </style>
