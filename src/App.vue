@@ -1,13 +1,16 @@
 <template>
+
   <nav :class="{ 'main-page': isMainPage, scrolled: isScrolled }">
     <router-link class="main-logo" to="/"
       ><img src="./assets/images/logoImage.png" style="width: 40px" />제주랑
     </router-link>
+
     <div class="nav-links">
       <router-link to="/chatting"> 메이트 찾기</router-link>
       <router-link to="/reviews"> 여행후기 </router-link>
       <router-link to="/list">리스트</router-link>
       <router-link to="/course">코스</router-link>
+      <router-link to="/travel">여행스타일</router-link>
     </div>
     <div class="login">
       <div v-if="!isAuthenticated">
@@ -51,6 +54,11 @@ export default {
     isMainPage() {
       return this.$route.path === "/";
     },
+
+    isTravel() {
+      return this.$route.path === "/travel";
+    },
+
     userName() {
       return this.$store.state.auth.userName; // Vuex 스토어에서 사용자 이름 가져오기
     },
@@ -62,6 +70,7 @@ export default {
     if (this.isAuthenticated) {
       this.fetchUserName(); // 로그인 되어 있을 때만 사용자 정보를 가져옵니다.
     }
+
   },
   methods: {
     async fetchUserName() {
@@ -69,14 +78,25 @@ export default {
         const response = await this.$axios.get("/api/v1/user/info/detail");
         this.$store.commit("auth/SET_USER_NAME", response.data.userName);
         this.$store.commit("auth/SET_USER_IMAGE", response.data.images);
-
         this.isAuthenticated = true;
+
+        // 설문조사 필요 여부 확인 후 조치
+        if (response.data.needSurvey) {
+          this.promptSurvey();
+        }
+
         console.log("API response:", response.data); // API 응답 로깅
       } catch (error) {
         console.error("인증된 사용자가 아닙니다. : ", error);
         this.isAuthenticated = false; // 에러 발생 시 인증 상태 업데이트
       }
     },
+    promptSurvey() {
+    // 간단한 confirm 창을 사용하여 설문 조사 유도
+    if (confirm("나만의 여행스타일을 알아보세요! 검사 페이지로 이동하시겠습니까?")) {
+      this.$router.push('/travel');  // 설문 조사 페이지로 리디렉션
+    }
+  },
     showLoginModal() {
       this.showModal = true;
     },

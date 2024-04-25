@@ -8,7 +8,7 @@ import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { far } from '@fortawesome/free-regular-svg-icons'
 import { EventBus } from '@/EventBus';
-
+import '@/assets/css/font.css';
 
 // Axios 인스턴스 생성 및 설정
 const axiosInstance = axios.create({
