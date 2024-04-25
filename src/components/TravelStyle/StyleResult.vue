@@ -4,7 +4,8 @@
       <div class="borderLine">
       <img :src="mbtiProfile.imageUrl" alt="MBTI Image" class="mbtiImage"/>
       <div class="styleModal">
-      <p class="mbtiType">{{ mbtiType }} <br/> {{ mbtiProfile.style }}</p>
+      <p class="mbtiType">{{ mbtiType }}</p> <br/>
+      <p class="mbtiStyle"> {{ mbtiProfile.style }}</p>
       <div class="mbtiProfile-description">
       <p><font-awesome-icon icon="fa-solid fa-plane" />  {{ mbtiProfile.description }}</p>
       <p><font-awesome-icon icon="fa-solid fa-plane" />  {{ mbtiProfile.description2 }}</p>
@@ -282,13 +283,23 @@
   }
 
   .mbtiType {
-    color: #ffec99; /* 글자 색상 */
+    color: #65B7F3; /* 글자 색상 */
+    font-size: 2rem; /* 글자 크기 */
+    text-shadow: 
+    2px 2px 0px #8EDFFD, /* 글자의 오른쪽과 아래쪽에 황금색 그림자 */
+    -1px -1px 0 #8EDFFD, /* 글자의 왼쪽과 위쪽에 황금색 그림자 */
+    3px 3px 10px rgba(0, 0, 0, 0.1); /* 글자 주변에 부드러운 검은색 그림자로 깊이감 추가 */
+    margin-bottom: 0%;
+  }
+  .mbtiStyle {
+    color: #F7C347; /* 글자 색상 */
     font-size: 3rem; /* 글자 크기 */
     text-shadow: 
-    3px 3px 0px #ffd700, /* 글자의 오른쪽과 아래쪽에 황금색 그림자 */
-    -1px -1px 0 #ffd700, /* 글자의 왼쪽과 위쪽에 황금색 그림자 */
+    2px 2px 0px #F7EC1D, /* 글자의 오른쪽과 아래쪽에 황금색 그림자 */
+    -1px -1px 0 #F7EC1D, /* 글자의 왼쪽과 위쪽에 황금색 그림자 */
     3px 3px 10px rgba(0, 0, 0, 0.1); /* 글자 주변에 부드러운 검은색 그림자로 깊이감 추가 */
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    margin-top: 0%;
   }
   .mbtiImage{
     height: 300px;
