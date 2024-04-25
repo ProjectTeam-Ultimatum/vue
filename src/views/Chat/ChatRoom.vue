@@ -42,6 +42,7 @@
             <img :src="message.message" alt="Image" style="max-width: 200px; max-height: 200px;">
           </span>
           <span v-else class="message-content">{{ message.message }}</span>
+          <button @click="reportUser(message.senderId, message.message)">신고</button>
         </li>
       </ul>
     </section>
@@ -79,6 +80,16 @@
         <h4>경고 <font-awesome-icon icon="fa-solid fa-circle-exclamation" style=color:#FFD43B /></h4>
         <p style=margin-top:15px;>{{ warningMessage }}</p>
         <button @click="closeModal" class="closeModalButton">확인</button>
+      </div>
+    </div>
+
+        <!-- 신고 모달 창 -->
+    <div v-if="showReportModal" class="modal">
+      <div class="modal-content">
+        <h4>신고하기</h4>
+        <textarea v-model="report.reportReason" placeholder="신고 사유를 입력하세요."></textarea>
+        <button @click="submitReport">제출</button>
+        <button @click="showReportModal = false">취소</button>
       </div>
     </div>
 
@@ -125,6 +136,12 @@ export default {
         "ESTP": "프로 플렉서"
       },
       userImages:[],
+      report: {
+      reportedUserId: null,
+      reportedMessage: '',
+      reportReason: '',
+      },
+      showReportModal: false,
     };
   },
 
@@ -386,10 +403,44 @@ export default {
         container.scrollTop = container.scrollHeight;
       });
     },
-  },
-  updated() {
+    updated() {
     this.scrollToBottom();
-  }
+  },
+  reportUser(senderId, message) {
+    // 신고된 사용자 ID와 메시지를 상태에 저장
+    this.report.reportedUserId = senderId;
+    this.report.reportedMessage = message;
+    // 신고 사유 입력을 위해 모달을 표시
+    this.showReportModal = true;
+  },
+  submitReport() {
+    // ReportDto 구조에 맞게 데이터를 조합
+    const reportData = {
+      reportedUserId: this.report.reportedUserId,
+      reportedMessage: this.report.reportedMessage,
+      reportReason: this.report.reportReason,
+    };
+
+    // 신고 데이터를 서버에 전송
+    this.$axios.post('/api/v1/report', reportData)
+      .then(() => {
+        // 신고 접수에 성공했을 때의 처리
+        alert('신고가 접수되었습니다.');
+        this.closeReportModal();
+      })
+      .catch(error => {
+        // 신고 접수에 실패했을 때의 처리
+        console.error('신고 접수 중 문제가 발생했습니다.', error);
+      });
+  },
+  closeReportModal() {
+    this.showReportModal = false;
+    // 신고 상태 초기화
+    this.report.reportedUserId = null;
+    this.report.reportedMessage = '';
+    this.report.reportReason = '';
+  },
+  },
 };
 </script>
 <style scoped>
