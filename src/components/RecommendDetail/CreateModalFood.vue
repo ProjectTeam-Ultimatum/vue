@@ -60,7 +60,7 @@ export default {
       default: 'food',  // 기본적으로 제공되는 유형
       validator: function (value) {
         // type이 지정된 값 중 하나인지 검증
-        return ['food', 'hotel', 'event', 'place'].includes(value);
+        return ['food', 'hotel', 'event', 'Food'].includes(value);
       }
     }
   },
@@ -84,7 +84,7 @@ export default {
         food: ['음식이 맛있어요', '재료가 신선해요', '양이 많아요', '가성비가 좋아요', '또 가고 싶어요'],
         hotel: ['객실이 깨끗해요', '위치가 좋아요', '서비스가 만족스러워요', '조식이 맛있어요', '경치가 좋아요'],
         event: ['내용이 흥미로워요', '접근성이 좋아요', '시설이 만족스러워요', '분위기가 좋아요', '다시 참여하고 싶어요'],
-        place: ['경치가 멋져요', '접근성이 좋아요', '편의시설이 잘 갖춰져 있어요', '안전해요', '사진 찍기 좋아요']
+        Food: ['경치가 멋져요', '접근성이 좋아요', '편의시설이 잘 갖춰져 있어요', '안전해요', '사진 찍기 좋아요']
       };
       return options[this.type] || [];  // type이 유효하지 않은 경우 빈 배열 반환
     }
@@ -165,7 +165,9 @@ export default {
     submitFeedback() {
       // 사용자가 제출 버튼을 누른 후에 실행될 함수
       this.createModal(); // 서버로 데이터를 전송하는 함수 직접 호출
-      //this.closeModal(); // 피드백을 제출한 후 모달을 닫습니다.
+      this.$router.push({ name: 'detailfood', params: { recommendFoodId: this.recommendFoodId } }).catch(err => {
+      console.error(err);
+    });
     }, //submitFeedback
   },
     watch: {

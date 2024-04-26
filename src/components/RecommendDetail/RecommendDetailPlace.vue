@@ -270,8 +270,7 @@ async fetchReplyTags() {
     console.log("이동 할 recommendPlaceId:", recommendPlaceId);
     this.$router.push({ name: 'detailplace', params: { recommendPlaceId } }).catch(err => {
     console.error(err);
-    
-  });  //recommendPlaceId 페이지 이동
+    });  //recommendPlaceId 페이지 이동
   }, //goToDetail
   refreshPage() {
     // 페이지 새로 고침
@@ -282,7 +281,7 @@ async fetchReplyTags() {
     this.fetchPlaceDetails();
     // 페이지 새로 고침 이벤트 리스너 추가
     this.$router.afterEach(() => {
-      this.refreshPage();
+    this.refreshPage();
     });
   },
   compute: { //기존 데이터를 바탕으로 새로운 데이터 값을 생성할 때

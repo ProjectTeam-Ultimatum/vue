@@ -82,7 +82,7 @@
                       <div>
                       <ul>
                         <li v-for="(food, index) in recommendListFoodRegion" :key="index" class="recommend-item">
-                          <div class="recommend-info">
+                          <div @click="goToDetail(food.recommendFoodId)" class="recommend-info">
                             <div class="recommend-name-region">
                               <span class="recommend-name">{{ food.recommendFoodTitle }}</span>
                               <span class="recommend-region"><span></span>{{ food.recommendFoodRegion }}</span>
@@ -91,11 +91,11 @@
                               <span class="recommend-tag">{{ food.recommendFoodTag }}</span>
                               <img class="recommend-photo" :src="food.recommendFoodImgPath || 'default-image-url'" alt="식당 사진">
                             </div>
-                          </div>
-                        </li>
+                          </div> <!-- goToDetail recommend-info -->
+                        </li><!-- v-for -->
                       </ul>
                       </div>
-                  </div>
+                  </div><!-- recommend-list -->
                 </div>
               </div>
             </div>
@@ -261,9 +261,27 @@ export default {
     getStatusMessage(closeTime) {
       return this.isOperating(closeTime);
     }, //getStatusMessage
+    goToDetail(recommendFoodId) {
+    if (!recommendFoodId) {
+      console.error("Error: recommendFoodId 찾을 수 없음");
+      return;
+    }
+    console.log("이동 할 recommendFoodId:", recommendFoodId);
+    this.$router.push({ name: 'detailfood', params: { recommendFoodId } }).catch(err => {
+    console.error(err);
+    });  //recommendFoodId 페이지 이동
+  }, //goToDetail
+  refreshPage() {
+    // 페이지 새로 고침
+    window.location.reload();
+  } //refreshPage
   },
   mounted() {
     this.fetchFoodDetails();
+     // 페이지 새로 고침 이벤트 리스너 추가
+    this.$router.afterEach(() => {
+    this.refreshPage();
+  });
   }
 }
 </script>

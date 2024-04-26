@@ -82,7 +82,7 @@
                       <div>
                       <ul>
                         <li v-for="(hotel, index) in recommendListHotelRegion" :key="index" class="recommend-item">
-                          <div class="recommend-info">
+                          <div @click="goToDetail(hotel.recommendHotelId)" class="recommend-info">
                             <div class="recommend-name-region">
                               <span class="recommend-name">{{ hotel.recommendHotelTitle }}</span>
                               <span class="recommend-region"><span></span>{{ hotel.recommendHotelRegion }}</span>
@@ -91,8 +91,8 @@
                               <span class="recommend-tag">{{ hotel.recommendHotelTag }}</span>
                               <img class="recommend-photo" :src="hotel.recommendHotelImgPath || 'default-image-url'" alt="관광지 사진">
                             </div>
-                          </div>
-                        </li>
+                          </div><!-- goToDetail -->
+                        </li><!-- v-for -->
                       </ul>
                       </div>
                   </div> <!-- recommend-list -->
@@ -262,9 +262,27 @@ async fetchRatingData() {
     getStatusMessage(closeTime) {
       return this.isOperating(closeTime);
     }, //getStatusMessage
+    goToDetail(recommendHotelId) {
+    if (!recommendHotelId) {
+      console.error("Error: recommendHotelId 찾을 수 없음");
+      return;
+    }
+    console.log("이동 할 recommendHotelId:", recommendHotelId);
+    this.$router.push({ name: 'detailhotel', params: { recommendHotelId } }).catch(err => {
+    console.error(err);
+    });  //recommendHotelId 페이지 이동
+    }, //goToDetail
+    refreshPage() {
+    // 페이지 새로 고침
+      window.location.reload();
+    }
     },
     mounted() {
       this.fetchHotelDetails();
+      // 페이지 새로 고침 이벤트 리스너 추가
+      this.$router.afterEach(() => {
+      this.refreshPage();
+      });
     }
   }
   </script>

@@ -82,7 +82,7 @@
                       <div>
                       <ul>
                         <li v-for="(event, index) in recommendListEventRegion" :key="index" class="recommend-item">
-                          <div class="recommend-info">
+                          <div @click="goToDetail(event.recommendEventId)" class="recommend-info">
                             <div class="recommend-name-region">
                               <span class="recommend-name">{{ event.recommendEventTitle }}</span>
                               <span class="recommend-region"><span></span>{{ event.recommendEventRegion }}</span>
@@ -91,8 +91,8 @@
                               <span class="recommend-tag">{{ event.recommendEventTag }}</span>
                               <img class="recommend-photo" :src="event.recommendEventImgPath || 'default-image-url'" alt="관광지 사진">
                             </div>
-                          </div>
-                        </li>
+                          </div> <!-- goToDetail -->
+                        </li><!-- v-for -->
                       </ul>
                       </div>
                   </div> <!-- recommend-list -->
@@ -262,9 +262,27 @@
     getStatusMessage(closeTime) {
       return this.isOperating(closeTime);
     }, //getStatusMessage
+    goToDetail(recommendEventId) {
+    if (!recommendEventId) {
+      console.error("Error: recommendEventId 찾을 수 없음");
+      return;
+    }
+    console.log("이동 할 recommendEventId:", recommendEventId);
+    this.$router.push({ name: 'detailevent', params: { recommendEventId } }).catch(err => {
+    console.error(err);
+    });  //recommendEventId 페이지 이동
+  }, //goToDetail
+    refreshPage() {
+      //// 페이지 새로 고침
+      window.location.reload();
+    } 
     },
     mounted() {
       this.fetchEventDetails();
+        // 페이지 새로 고침 이벤트 리스너 추가
+      this.$router.afterEach(() => {
+      this.refreshPage();
+    });
     }
   }
   </script>

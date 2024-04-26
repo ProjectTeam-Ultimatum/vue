@@ -165,7 +165,9 @@ export default {
     submitFeedback() {
       // 사용자가 제출 버튼을 누른 후에 실행될 함수
       this.createModal(); // 서버로 데이터를 전송하는 함수 직접 호출
-      //this.closeModal(); // 피드백을 제출한 후 모달을 닫습니다.
+      this.$router.push({ name: 'detailevent', params: { recommendEventId: this.recommendEventId } }).catch(err => {
+      console.error(err);
+    });
     }, //submitFeedback
   },
     watch: {
