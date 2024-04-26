@@ -82,7 +82,7 @@
                       <div>
                       <ul>
                         <li v-for="(place, index) in recommendListPlaceRegion" :key="index" class="recommend-item">
-                          <div @click="goToDetail(Number(place.recommendPlaceId))" class="recommend-info">
+                          <div @click="goToDetail(place.recommendPlaceId)" class="recommend-info">
                             <div class="recommend-name-region">
                               <span class="recommend-name">{{ place.recommendPlaceTitle }}</span>
                               <span class="recommend-region"><span></span>{{ place.recommendPlaceRegion }}</span>
@@ -269,12 +269,21 @@ async fetchReplyTags() {
     }
     console.log("이동 할 recommendPlaceId:", recommendPlaceId);
     this.$router.push({ name: 'detailplace', params: { recommendPlaceId } }).catch(err => {
-  console.error(err);
-});  //recommendPlaceId 페이지 이동
-  } //goToDetail
+    console.error(err);
+    
+  });  //recommendPlaceId 페이지 이동
+  }, //goToDetail
+  refreshPage() {
+    // 페이지 새로 고침
+    window.location.reload();
+  }
   },
   mounted() {
     this.fetchPlaceDetails();
+    // 페이지 새로 고침 이벤트 리스너 추가
+    this.$router.afterEach(() => {
+      this.refreshPage();
+    });
   },
   compute: { //기존 데이터를 바탕으로 새로운 데이터 값을 생성할 때
     //this.placeRegion 로딩 된 지역정보에 맞춰서 api요청

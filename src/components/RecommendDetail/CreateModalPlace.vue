@@ -110,34 +110,34 @@ export default {
     submitReplyModal(){
       //this.createModal();
     },
-    async createModal(){
-      const formData = new FormData();
-      formData.append("recommendPlaceId", this.reply.recommendPlaceId);
-      formData.append("recommendReplyStar", this.reply.recommendReplyStar);
-      formData.append("recommendReplyTagValue", this.reply.recommendReplyTagValue);
-      // formData.append("recommendReplyTagValue", JSON.stringify(this.reply.recommendReplyTagValue));
-      
-      console.log("POST요청 푸드ID:", this.reply.recommendPlaceId);
-      console.log("POST요청 data:", {
-      recommendReplyStar: this.reply.recommendReplyStar,
-      recommendReplyTagValue: this.reply.recommendReplyTagValue
-  });
-
-  try {
-    const response = await this.$axios.post(`/api/recommendreply/place/save`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-    },
+  async createModal(){
+    const formData = new FormData();
+    formData.append("recommendPlaceId", this.reply.recommendPlaceId);
+    formData.append("recommendReplyStar", this.reply.recommendReplyStar);
+    formData.append("recommendReplyTagValue", this.reply.recommendReplyTagValue);
+    // formData.append("recommendReplyTagValue", JSON.stringify(this.reply.recommendReplyTagValue));
+    
+    console.log("POST요청 푸드ID:", this.reply.recommendPlaceId);
+    console.log("POST요청 data:", {
+    recommendReplyStar: this.reply.recommendReplyStar,
+        recommendReplyTagValue: this.reply.recommendReplyTagValue
     });
-    console.log('Server Response:', response);
-    this.$emit("close");
-  } catch (error) {
-    console.error("POST request failed:", error);
-    if (error.response) {
-      console.error("Error response data:", error.response.data);
+
+    try {
+      const response = await this.$axios.post(`/api/recommendreply/place/save`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+      },
+      });
+      console.log('Server Response:', response);
+      this.$emit("close");
+    } catch (error) {
+      console.error("POST request failed:", error);
+      if (error.response) {
+        console.error("Error response data:", error.response.data);
+      }
     }
-  }
-    },
+  }, //createModal
     setRating(star) {
       this.reply.recommendReplyStar = star; // 이 부분에서 실제로 `recommendReplyStar`가 업데이트되는지 확인
       console.log("Updated recommendReplyStar:", this.reply.recommendReplyStar); // 업데이트된 recommendReplyStar 값 출력
@@ -165,7 +165,9 @@ export default {
     submitFeedback() {
       // 사용자가 제출 버튼을 누른 후에 실행될 함수
       this.createModal(); // 서버로 데이터를 전송하는 함수 직접 호출
-      //this.closeModal(); // 피드백을 제출한 후 모달을 닫습니다.
+      this.$router.push({ name: 'detailplace', params: { recommendPlaceId: this.recommendPlaceId } }).catch(err => {
+      console.error(err);
+    });
     }, //submitFeedback
   },
     watch: {
