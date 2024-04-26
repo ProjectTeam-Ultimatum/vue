@@ -1,4 +1,5 @@
 <template>
+  <div class="containor">
   <div class="courseButton">
         <button type="button" @click="coursebutton('A')"> A 코스 </button>
         <button type="button" @click="coursebutton('B')"> B 코스 </button>
@@ -14,8 +15,34 @@
           <button type="button" @click="showModal = true">코스마다 예산보기</button>
         </div>
   </div>
+
+  <div class="map-container">
   <div class="main-map" ref="map">
+    <div class="map-text">
+  <div class="line-container">
+  <div class="line"></div>
+  <span class="description">1일차</span>
+</div>
+<div class="line-container">
+  <div class="line2"></div>
+  <span class="description">2일차</span>
+</div>
+<div class="line-container">
+  <div class="line3"></div>
+  <span class="description">3일차</span>
+</div>
+<div class="line-container">
+  <div class="line4"></div>
+  <span class="description">4일차</span>
+</div>
+</div>
   </div>
+</div>
+
+
+<div class="line5"></div>
+
+
   <div>
     <div v-if="showModal" class="budget-modal">
       <div class="budget-modal-content">
@@ -26,6 +53,7 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 <script>
 import OlLayerTile from 'ol/layer/Tile.js';
@@ -163,17 +191,20 @@ methods: {
       }
     });
   },
+  
+
+
 
   getColorForDay(date) {
     switch (date) {
       case '1일차':
-        return '#ff0000'; // 빨간색
+        return '#ff8686'; // 빨간색
       case '2일차':
-        return '#00ff00'; // 초록색
+        return '#a9ffa9'; // 초록색
       case '3일차':
-        return '#0000ff'; // 파란색
+        return '#98c5ff'; // 파란색
       case '4일차':
-        return '#FF00FF';
+        return '#ffa0ff';
       default:
         return '#FFFFFF'; // 기본 색상
     }
@@ -476,13 +507,16 @@ this.olMap.on('click', async (e) => {
 }
 </script>
 <style>
+
+.containor{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
 .main-map {
-  width: 65%;
-  height: 70%;
-  position: absolute; /* 절대 위치 설정 */
-  top: 55%; /* 상단에서 50% 위치 */
-  left: 60%; /* 왼쪽에서 50% 위치 */
-  transform: translate(-50%, -50%); /* 요소의 중심을 정확히 중앙에 맞추기 위해 변형 */
+  width: 1200px;
+  height: 600px;
 }
 .ol-geocoder {
   position: absolute;
@@ -529,15 +563,28 @@ this.olMap.on('click', async (e) => {
     display: flex;
     justify-content: center; /* 내부 요소를 가로축 중앙에 배치 */
     flex-wrap: wrap; /* 요소가 너무 많으면 다음 줄로 넘김 */
-    margin-top: 150px;
-    margin-left: 385px;
+    margin-top: 30px;
 }
+
 .courseButton button {
     margin: 5px; /* 버튼 주변에 약간의 여백 추가 */
+    margin-bottom: 20px;
+    padding: 10px 20px; /* 버튼 내부 패딩으로 크기 조정 */
+    background-color: #00A4CC; /* 밝은 파란색 배경 */
+    color: white; /* 텍스트 색상 */
+    border: none; /* 테두리 제거 */
+    border-radius: 20px; /* 둥근 모서리 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+    cursor: pointer; /* 마우스 오버 시 커서 변경 */
+    transition: background-color 0.3s, box-shadow 0.3s; /* 부드러운 색상 및 그림자 전환 효과 */
+
 }
-.budgetButton {
-  margin-left: 370px;
+
+.courseButton button:hover {
+    background-color: #008ABF; /* 마우스 오버 시 색상 변경 */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* 마우스 오버 시 그림자 강조 */
 }
+
 .budget-modal{
   position: fixed;
   top: 0;
@@ -557,5 +604,64 @@ this.olMap.on('click', async (e) => {
   height: 700px;
   text-align: center;
   background-image: url('@/assets/images/blackpig.jpg');
+}
+
+.line-container {
+  display: flex; /* flexbox를 사용하여 요소를 가로로 정렬 */
+  align-items: center; /* 선과 텍스트를 중앙 정렬 */
+}
+
+.line {
+  width: 100px; /* 선의 너비를 컨테이너의 100%로 설정 */
+  height: 5px; /* 선의 높이 설정 */
+  background-color: #ff8686; /* 선의 색상 설정 (예: 빨간색) */
+  margin-right: 10px; /* 선과 설명 사이의 여백 설정 */
+}
+.line2 {
+  width: 100px; /* 선의 너비를 컨테이너의 100%로 설정 */
+  height: 5px; /* 선의 높이 설정 */
+  background-color: #a9ffa9; /* 선의 색상 설정 (예: 빨간색) */
+  margin-right: 10px; /* 선과 설명 사이의 여백 설정 */
+}
+.line3 {
+  width: 100px; /* 선의 너비를 컨테이너의 100%로 설정 */
+  height: 5px; /* 선의 높이 설정 */
+  background-color: #98c5ff; /* 선의 색상 설정 (예: 빨간색) */
+  margin-right: 10px; /* 선과 설명 사이의 여백 설정 */
+}
+.line4 {
+  width: 100px; /* 선의 너비를 컨테이너의 100%로 설정 */
+  height: 5px; /* 선의 높이 설정 */
+  background-color: #ffa0ff; /* 선의 색상 설정 (예: 빨간색) */
+  margin-right: 10px; /* 선과 설명 사이의 여백 설정 */
+}
+
+.line5 {
+  width: 1200px; /* 선의 너비를 컨테이너의 100%로 설정 */
+  height: 1px; /* 선의 높이 설정 */
+  background-color: #c4c4c4; /* 선의 색상 설정 (예: 빨간색) */
+  margin-top: 30px; /* 선과 설명 사이의 여백 설정 */
+  margin-bottom: 30px; /* 선과 설명 사이의 여백 설정 */
+}
+
+.description {
+  font-size: 16px; /* 설명의 폰트 크기 설정 */
+}
+
+.map-container {
+  position: relative; /* 상대 위치 설정 */
+  width: 1200px;
+  height: 600px;
+}
+.map-text {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: white;
+  font-size: 20px;
+  background-color: rgba(0, 0, 0, 0.2); /* 반투명 배경 */
+  padding: 5px;
+  border-radius: 5px;
+  z-index: 100;
 }
 </style>
