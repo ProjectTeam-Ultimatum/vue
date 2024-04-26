@@ -22,12 +22,9 @@
             <div class="scheduletitle2">*최대 5일까지 설정 가능합니다*</div>
           </div>
           <div class="calendar">
-            <!-- 현재 달 -->
             <div class="month-container">
               <nav>
                 <h3>
-                  <button @click="prevMonth">&lt;</button>
-                  <span class="yearmonth">{{ cal.yearText }}년 {{ cal.monthText }}월</span>
                 </h3>
                 <div class="navs">
                 </div>
@@ -67,12 +64,9 @@
                 </div>
               </section>
             </div>
-            <!-- 다음 달 -->
             <div class="month-container">
               <nav>
                 <h3>
-                  <span class="yearmonth">{{ cal.nextYearText }}년 {{ cal.nextMonthText }}월</span>
-                  <button style="margin-left:85px;" @click="nextMonth">&gt;</button>
                 </h3>
               </nav>
               <section class="dow">
@@ -284,7 +278,7 @@
 
 <script>
 import { Calendar } from './calendar.js';
-import 'material-icons/iconfont/material-icons.css'; //npm install material-icons --save
+import 'material-icons/iconfont/material-icons.css';
 import axios from 'axios';
 
 export default {
@@ -517,45 +511,6 @@ export default {
       const [hours, minutes] = time.split(':').map(Number);
       return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
     },
-    submitDates() {
-      if (this.daystime.length === 0) {
-        alert("시간 설정이 완료되지 않았습니다.");
-        return;
-      }
-
-      const planDaysFormatted = this.daystime.map(day => ({
-        date: day.date,
-        startTime: this.formatToLocalTime(day.startTime),
-        finishTime: this.formatToLocalTime(day.finishTime)
-      }));
-
-      // 여기에 selectedItems와 selectedHotels 정보를 추가합니다.
-      const planRequest = {
-        memberId: '회원ID',
-        planStartDay: this.formatDateOnly(this.selectedDates[0]),
-        planEndDay: this.formatDateOnly(this.selectedDates[this.selectedDates.length - 1]),
-        planTitle: '여행 일정',
-        planDays: planDaysFormatted,
-        items: this.selectedItems,
-        hotels: this.selectedHotels
-      };
-
-      axios.post('http://localhost:8080/api/plans/create', planRequest)
-      .then(response => {
-        if (response.data && response.data.planId) {
-          const planId = response.data.planId;
-          this.planId = planId;
-          console.log("Plan created successfully with ID:", planId);
-        } else {
-          console.error("Plan ID not found in the response");
-          alert("일정 생성 응답에서 ID를 찾을 수 없습니다.");
-        }
-      })
-      .catch(error => {
-        console.error("일정 저장 실패", error);
-        alert('일정 저장에 실패했습니다: ' + error.message);
-      });
-    },
     submitPlan() {
       const planRequest = {
         memberId: '회원ID',
@@ -589,6 +544,7 @@ export default {
       .then(response => {
         this.planId = response.data.planId;
         console.log("Plan created successfully with ID:", this.planId);
+        this.$router.push({ name: 'PlanDetails', params: { planId: this.planId }});
       })
       .catch(error => {
         console.error("Failed to save the plan", error);
@@ -1005,6 +961,7 @@ $border-color: #efefef;
   margin-top: 70px;
   margin-left: -15px;
   max-width: 1024px; // 최대 너비를 제한
+  cursor: pointer;
 }
 .month-container {
   display: flex; // flex item 설정
@@ -1020,7 +977,7 @@ $border-color: #efefef;
       display: flex;
 
       .day {
-        margin-top:30px;
+        margin-top: 30px;
         flex: 1 1 calc(100% / 7);
         width: calc(100% / 7);
         padding: 12px;
@@ -1042,10 +999,41 @@ $border-color: #efefef;
           flex: 1 1 calc(100% / 7);
           width: calc(100% / 7);
           position: relative;
+
           &.today {
             .date {
               background-color: #93b3c9;
-              width:50px;
+              width: 50px;
+              height: 50px;
+              color: #ffffff;
+              border-radius: 10px;
+              margin: 4px 6px;
+            }
+          }
+          &.selected {
+            .date {
+              background-color: #739db9 !important;
+              width: 50px;
+              height: 50px;
+              color: #ffffff;
+              border-radius: 10px;
+              margin: 4px 6px;
+            }
+          }
+          &.hover-selected {
+            .date {
+              background-color: #afcfe4 !important;
+              width: 50px;
+              height: 50px;
+              color: #ffffff;
+              border-radius: 10px;
+              margin: 4px 6px;
+            }
+          }
+          &.in-range {
+            .date {
+              background-color: #afcfe4;
+              width: 50px;
               height: 50px;
               color: #ffffff;
               border-radius: 10px;
@@ -1053,7 +1041,7 @@ $border-color: #efefef;
             }
           }
           .date {
-            margin:15px 16px;
+            margin: 15px 16px;
             font-size: 19px;
             display: flex;
             width: 28px;
@@ -1066,6 +1054,7 @@ $border-color: #efefef;
     }
   }
 }
+
 
 .saturday-cell .date {
   color: #0064bb;
@@ -1083,21 +1072,32 @@ $border-color: #efefef;
   color: #ccc;
 }
 
-.month-body .cell.selected .date {
-  background-color: orange !important; /* 첫 번째 선택된 날짜 */
-}
+// .month-body .cell.selected .date {
+//   background-color: orange !important; /* 첫 번째 선택된 날짜 */
+//   width:50px;
+//   height: 50px;
+//   color: #ffffff;
+//   border-radius: 10px;
+//   margin: 4px 6px;
+// }
 
-.month-body .cell.hover-selected .date {
-  background-color: orange !important; /* 마우스 오버된 날짜 */
-}
+// .month-body .cell.hover-selected .date {
+//   background-color: yellow !important; /* 마우스 오버된 날짜 */
+//   width:50px;
+//   height: 50px;
+//   color: #ffffff;
+//   border-radius: 10px;
+//   margin: 4px 6px;
+// }
 
-.month-body .cell.in-range .date {
-  background-color: yellow; /* 선택된 날짜 범위 */
-}
-
-.month-body .cell.hover-in-range .date {
-  background-color: yellow; /* 마우스 오버된 날짜 범위 */
-}
+// .month-body .cell.in-range .date {
+//   background-color: yellow; /* 선택된 날짜 범위 */
+//   width:50px;
+//   height: 50px;
+//   color: #ffffff;
+//   border-radius: 10px;
+//   margin: 4px 6px;
+// }
 
 .plantime {
   position: absolute;

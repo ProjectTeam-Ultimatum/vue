@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ReviewBoard from '../views/ReviewBoard.vue'
 import MonthCalendar from '../views/schedule/MonthCalendar.vue'
+import PlanCourse from '../views/schedule/PlanCourse.vue'
 
 
 const routes = [
@@ -20,7 +21,11 @@ const routes = [
     name: 'schedule',
     component: MonthCalendar
   },
-
+  {
+    path: '/plans/:planId',
+      name: 'PlanDetails',
+      component: PlanCourse
+  },
   {
     path: '/about',
     name: 'about',

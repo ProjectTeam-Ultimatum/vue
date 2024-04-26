@@ -6,6 +6,9 @@ export default createStore({
     getters: {
     },
     mutations: {
+        savePlanInfo(state, payload) {
+            state.planInfo = payload;
+        }
     },
     actions: {
     },
