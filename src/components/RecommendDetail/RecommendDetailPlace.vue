@@ -48,6 +48,13 @@
                       </div>
                       <div class="cont-reply">
                           <h6>방문자 평가</h6>
+                          <div>
+                            <!-- 태그 Read -->
+                            <span>이런 점이 좋았어요</span>
+                            <ul class="recommend-tags">
+                              <li v-for="tag in replyPlaceTags" :key="tag">{{ tag }}</li>
+                            </ul>
+                          </div>
                            <!-- 버튼 클릭 이벤트에 Place.id 전달 -->
                            <button @click="createModal(recommendPlaceId)" style="font-size: 12px; cursor: pointer">평점쓰기</button>
                            <!-- Place.recommendPlaceId를 activePlaceId로 설정하여 전달 -->
@@ -75,7 +82,7 @@
                       <div>
                       <ul>
                         <li v-for="(place, index) in recommendListPlaceRegion" :key="index" class="recommend-item">
-                          <div @click="goToDetail(place.recommendPlaceId)" class="recommend-info">
+                          <div @click="goToDetail(Number(place.recommendPlaceId))" class="recommend-info">
                             <div class="recommend-name-region">
                               <span class="recommend-name">{{ place.recommendPlaceTitle }}</span>
                               <span class="recommend-region"><span></span>{{ place.recommendPlaceRegion }}</span>
@@ -111,7 +118,8 @@ data() {
     placeRegion: '', //주변 지역 정보
     recommendListPlaceRegion: [],
     replyPlaceStar: '', //관광지 평점 정보
-    recommendReplyStar: ''
+    recommendReplyStar: '',
+    replyPlaceTags: ''
   };
 },
 components: {
@@ -141,6 +149,7 @@ methods: {
               this.replyModalCreate = false;
               this.fetchRegionData(); // fetchRegionData 호출
               this.fetchRatingData(); //fetchRatingData 호출 
+              this.fetchReplyTags();
           }
           console.log("로딩 된 지역 정보:", this.placeRegion);
           console.log("로딩 된 상세페이지 정보:", this.recommendListDetailPlace);
@@ -174,6 +183,27 @@ methods: {
     console.error("에러 발생:", error);
   }
 }, //fetchRegionData
+async fetchReplyTags() {
+      if (!this.recommendPlaceId) {
+      console.error("recommendPlaceId가 정의되지 않았습니다!");
+      return;
+    }
+    try {
+      let response = await this.$axios.get(`/api/recommendreply/place/reads/tag-counting/${this.recommendPlaceId}`);
+      if (response.data) {
+        // 객체 배열을 문자열 배열로 변환합니다.
+        const tags = response.data.map(tagObject => {
+          const key = Object.keys(tagObject)[0]; // 객체에서 키를 가져옵니다.
+          const value = tagObject[key]; // 키에 해당하는 값을 가져옵니다.
+          return `${key}: ${value}`; // "태그명: 개수" 형태의 문자열을 만듭니다.
+        });
+        this.replyPlaceTags = tags; // 변환된 문자열 배열을 저장합니다.
+      }
+      console.log("로딩 된 태그 정보:", this.replyPlaceTags);
+    } catch (error) {
+      console.error('태그 정보를 가져오는 중 에러 발생:', error);
+    }
+  }, //fetchReplyTags
   async fetchRatingData() {
       console.log("fetchRatingData() 메서드가 호출되었습니다.");
       try {
@@ -238,7 +268,9 @@ methods: {
       return;
     }
     console.log("이동 할 recommendPlaceId:", recommendPlaceId);
-    this.$router.push({ name: 'detailplace', params: { recommendPlaceId } });  //recommendPlaceId 페이지 이동
+    this.$router.push({ name: 'detailplace', params: { recommendPlaceId } }).catch(err => {
+  console.error(err);
+});  //recommendPlaceId 페이지 이동
   } //goToDetail
   },
   mounted() {

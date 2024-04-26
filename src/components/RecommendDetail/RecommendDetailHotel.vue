@@ -48,6 +48,13 @@
                         </div>
                         <div class="cont-reply">
                             <h6>방문자 평가</h6>
+                            <div>
+                            <!-- 태그 Read -->
+                            <span>이런 점이 좋았어요</span>
+                            <ul class="recommend-tags">
+                              <li v-for="tag in replyHotelTags" :key="tag">{{ tag }}</li>
+                            </ul>
+                          </div>
                              <!-- 버튼 클릭 이벤트에 Hotel.id 전달 -->
                              <button @click="createModal(recommendHotelId)" style="font-size: 12px; cursor: pointer">평점쓰기</button>
                              <!-- Hotel.recommendHotelId를 activeHotelId로 설정하여 전달 -->
@@ -110,8 +117,9 @@
       currentType: 'hotel',
       hotelRegion: '', //주변 지역 정보
       recommendListHotelRegion: [],
-      replyPlaceHotel: '', //관광지 평점 정보
-      recommendReplyStar: ''
+      replyHotelStar: '', //관광지 평점 정보
+      recommendReplyStar: '',
+      replyHotelTags: ''
     };
   },
   components: {
@@ -139,9 +147,9 @@
                 data.recommendHotelAllTag = data.recommendHotelAllTag ? data.recommendHotelAllTag.split(',').slice(0, 16).join(', ') : '';
                 this.recommendListDetailHotel = [data];
                 this.replyModalCreate = false;
-                // fetchRegionData 호출
-                this.fetchRegionData();
+                this.fetchRegionData(); // fetchRegionData 호출
                 this.fetchRatingData(); //fetchRatingData 호출 
+                this.fetchReplyTags();
             }
             console.log("로딩 된 지역 정보:", this.hotelRegion);
             console.log("로딩 된 상세페이지 정보:", this.recommendListDetailHotel);
@@ -181,7 +189,7 @@ async fetchRatingData() {
         // API URL 수정: 동적 ID를 경로에 포함
         const response = await this.$axios.get(`/api/recommendreply/hotel/average/star/${this.recommendHotelId}`);
         if (!response.data || response.data === "평점을 기다리고 있어요") {
-          this.replyPlaceStar = response.data; // API 응답이 평점 문자열 또는 평균 평점 없음 메시지
+          this.replyHotelStar = response.data; // API 응답이 평점 문자열 또는 평균 평점 없음 메시지
         } else {
           // 소수점을 제거하고 반올림
           this.replyHotelStar = Math.round(response.data);
@@ -192,6 +200,27 @@ async fetchRatingData() {
         this.replyHotelStar = "평점 정보 없음";
       }
   }, //fetchRatingData
+  async fetchReplyTags() {
+      if (!this.recommendHotelId) {
+      console.error("recommendHotelId가 정의되지 않았습니다!");
+      return;
+    }
+    try {
+      let response = await this.$axios.get(`/api/recommendreply/hotel/reads/tag-counting/${this.recommendHotelId}`);
+      if (response.data) {
+        // 객체 배열을 문자열 배열로 변환합니다.
+        const tags = response.data.map(tagObject => {
+          const key = Object.keys(tagObject)[0]; // 객체에서 키를 가져옵니다.
+          const value = tagObject[key]; // 키에 해당하는 값을 가져옵니다.
+          return `${key}: ${value}`; // "태그명: 개수" 형태의 문자열을 만듭니다.
+        });
+        this.replyHotelTags = tags; // 변환된 문자열 배열을 저장합니다.
+      }
+      console.log("로딩 된 태그 정보:", this.replyHotelTags);
+    } catch (error) {
+      console.error('태그 정보를 가져오는 중 에러 발생:', error);
+    }
+  }, //fetchReplyTags
 
     isOperating(closeTime) {  //영업중, 영업마감
       if (!closeTime) return '휴무일'; // 휴무일 처리

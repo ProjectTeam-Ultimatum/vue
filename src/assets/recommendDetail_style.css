@@ -96,3 +96,7 @@
 .filled {
   color: #1275D6; /* 선택된 별의 색상 */
 }
+
+.recommend-tags li{
+    list-style-type: none; 
+}
