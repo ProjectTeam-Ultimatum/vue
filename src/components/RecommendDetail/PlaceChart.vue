@@ -74,11 +74,11 @@ export default {
             }
           }
         },
-        plugins: {
-          legend: {
-            display: false, // 범례(legend)도 숨기고 싶은 경우 사용합니다.
-          }
+            plugins: {
+        legend: {
+          display: false, // 범례(legend)도 숨기고 싶은 경우 사용합니다.
         }
+      }
       }
     }
   },
