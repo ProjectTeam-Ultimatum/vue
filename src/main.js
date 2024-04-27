@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { far } from '@fortawesome/free-regular-svg-icons'
 import { EventBus } from '@/EventBus';
 import '@/assets/css/font.css';
+import VueAxios from 'vue-axios';
 
 // Axios 인스턴스 생성 및 설정
 const axiosInstance = axios.create({
@@ -29,12 +30,14 @@ const app = createApp(App);
 library.add(fas, far)
 
 app.config.globalProperties.$axios = axiosInstance; // 이 부분은 이미 설정되었으므로, 이 줄만 필요
-app.use(store).use(router).mount('#app');
+app.use(store).use(router).use(VueAxios, axios).mount('#app');
 
 app.component('font-awesome-icon', FontAwesomeIcon)
 
 
 app.config.globalProperties.productionTip = false
 app.config.globalProperties.$EventBus = EventBus;
+app.config.globalProperties.$http = axios;
+
 
 
