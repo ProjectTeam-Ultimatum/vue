@@ -53,7 +53,12 @@
                             <span>이런 점이 좋았어요</span>
                             <div class="cont-chart">
                                 <!-- PlaceChart 컴포넌트에 recommendPlaceId를 전달합니다 -->
-                                <PlaceChart :recommendPlaceId="place.recommendPlaceId" />
+                                <div v-if="place.chartLoaded">
+                                  <PlaceChart :recommendPlaceId="place.recommendPlaceId" />
+                                </div>
+                                <div v-else>
+                                  방문자 평가를 기다리고 있어요
+                                </div>
                             </div>
                           </div>
                            <!-- 버튼 클릭 이벤트에 Place.id 전달 -->
@@ -121,7 +126,8 @@ data() {
     recommendListPlaceRegion: [],
     replyPlaceStar: '', //관광지 평점 정보
     recommendReplyStar: '',
-    replyPlaceTags: ''
+    chartDataLoaded: false, // PlaceChart 데이터 로딩 완료 상태
+    // replyPlaceTags: ''
   };
 },
 components: {
@@ -152,7 +158,8 @@ methods: {
               this.replyModalCreate = false;
               this.fetchRegionData(); // fetchRegionData 호출
               this.fetchRatingData(); //fetchRatingData 호출 
-              this.fetchReplyTags();
+              // this.fetchReplyTags();
+              this.chartDataLoaded = true; // 예시로, 데이터 로딩 완료를 가정
           }
           console.log("로딩 된 지역 정보:", this.placeRegion);
           console.log("로딩 된 상세페이지 정보:", this.recommendListDetailPlace);
@@ -186,27 +193,27 @@ methods: {
     console.error("에러 발생:", error);
   }
 }, //fetchRegionData
-async fetchReplyTags() {
-      if (!this.recommendPlaceId) {
-      console.error("recommendPlaceId가 정의되지 않았습니다!");
-      return;
-    }
-    try {
-      let response = await this.$axios.get(`/api/recommendreply/place/reads/tag-counting/${this.recommendPlaceId}`);
-      if (response.data) {
-        // 객체 배열을 문자열 배열로 변환합니다.
-        const tags = response.data.map(tagObject => {
-          const key = Object.keys(tagObject)[0]; // 객체에서 키를 가져옵니다.
-          const value = tagObject[key]; // 키에 해당하는 값을 가져옵니다.
-          return `${key}: ${value}`; // "태그명: 개수" 형태의 문자열을 만듭니다.
-        });
-        this.replyPlaceTags = tags; // 변환된 문자열 배열을 저장합니다.
-      }
-      console.log("로딩 된 태그 정보:", this.replyPlaceTags);
-    } catch (error) {
-      console.error('태그 정보를 가져오는 중 에러 발생:', error);
-    }
-  }, //fetchReplyTags
+// async fetchReplyTags() {
+//       if (!this.recommendPlaceId) {
+//       console.error("recommendPlaceId가 정의되지 않았습니다!");
+//       return;
+//     }
+//     try {
+//       let response = await this.$axios.get(`/api/recommendreply/place/reads/tag-counting/${this.recommendPlaceId}`);
+//       if (response.data) {
+//         // 객체 배열을 문자열 배열로 변환합니다.
+//         const tags = response.data.map(tagObject => {
+//           const key = Object.keys(tagObject)[0]; // 객체에서 키를 가져옵니다.
+//           const value = tagObject[key]; // 키에 해당하는 값을 가져옵니다.
+//           return `${key}: ${value}`; // "태그명: 개수" 형태의 문자열을 만듭니다.
+//         });
+//         this.replyPlaceTags = tags; // 변환된 문자열 배열을 저장합니다.
+//       }
+//       console.log("로딩 된 태그 정보:", this.replyPlaceTags);
+//     } catch (error) {
+//       console.error('태그 정보를 가져오는 중 에러 발생:', error);
+//     }
+//   }, //fetchReplyTags
   async fetchRatingData() {
       console.log("fetchRatingData() 메서드가 호출되었습니다.");
       try {
@@ -278,14 +285,20 @@ async fetchReplyTags() {
   refreshPage() {
     // 페이지 새로 고침
     window.location.reload();
-  }
+  },
+  checkChartDataLoad() {
+      // PlaceChart 데이터 로딩 상태 확인 로직...
+      this.chartDataLoaded = true; // 데이터 로딩 완료 시
+      // 혹은 API 호출 결과에 따라 상태를 설정
+    }
   },
   mounted() {
-    this.fetchPlaceDetails();
+    this.fetchPlaceDetails();  // 초기 데이터 로딩
     // 페이지 새로 고침 이벤트 리스너 추가
     this.$router.afterEach(() => {
-    this.refreshPage();
+    this.refreshPage(); // 라우트 변경 후 페이지 새로 고침
     });
+    this.checkChartDataLoad(); // PlaceChart 데이터 로딩 상태 확인
   },
   compute: { //기존 데이터를 바탕으로 새로운 데이터 값을 생성할 때
     //this.placeRegion 로딩 된 지역정보에 맞춰서 api요청
