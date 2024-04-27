@@ -22,7 +22,7 @@
           <!-- 채팅방 정보 세부사항 -->
           <div class="chatroom-details">
             <h3>{{ room.chatRoomName }}</h3>
-            <p class="chatroom-info">방장: <span class="chatroom-meta">{{ room.creatorName }}</span> ({{ room.creatorAge }} 살)</p>
+            <p class="chatroom-info">방장: <span class="chatroom-meta">{{ room.creatorName }}</span> ({{ room.creatorAge }}살)</p>
             <p class="chatroom-info"><span class="chatroom-meta">{{ room.chatRoomContent }}</span></p>
           </div>
         </div>
@@ -34,15 +34,17 @@
     <section class="center-panel" ref="messageContainer">
       <!-- 채팅 메시지 목록 -->
       <ul>
-        <li v-for="message in messages" :key="message.id"
-            :class="{'my-message': message.senderId === userName, 'other-message': message.senderId !== userName, 'enter-leave-message': message.messageType === 'ENTER' || message.messageType === 'LEAVE'}">
-          <!-- 조건부 렌더링으로 senderId 표시 -->
+        <li v-for="message in messages" :key="message.chatMessageId"
+            :class="{'my-message': message.senderId === userName, 'other-message': message.senderId !== userName, 'enter-leave-message': message.messageType === 'ENTER' || message.messageType === 'LEAVE'}"
+            @click="activateMessage(message)">
           <span v-if="message.messageType !== 'ENTER' && message.messageType !== 'LEAVE'" class="message-sender">{{ message.senderId }}:</span>
           <span v-if="isImageUrl(message.message)" class="message-content">
             <img :src="message.message" alt="Image" style="max-width: 200px; max-height: 200px;">
           </span>
           <span v-else class="message-content">{{ message.message }}</span>
-          <button @click="reportUser(message.senderId, message.message)">신고</button>
+          <img v-if="message.senderId !== userName && message.messageType !== 'ENTER' && message.messageType !== 'LEAVE' && message.chatMessageId === activeChatMessageId"
+            :src="require('@/assets/images/siren.png')" alt="Report" class="report-button"
+            @click.stop="reportUser(message.senderEmail, message.message)">
         </li>
       </ul>
     </section>
@@ -55,10 +57,19 @@
           <img v-for="(image, index) in userImages" :src="image" :key="index" :alt="`${userName}'s profile image ${index + 1}`" />
         </div>
       </div>
-        <p class="user-name">{{ userName }}</p>
-        <p class="user-detail">신뢰도</p>
+        <p class="user-name">{{ userName }}
+          <img v-if="userGender === 'M'" :src="require('@/assets/images/male.png')" alt="Male" style="height: 25px; width: 25px;"/>
+          <img v-else :src="require('@/assets/images/female.png')" alt="Female" style="height: 25px; width: 25px;"/>
+        </p>
         <p class="user-detail">나이:  {{ userAge }}</p>
         <p class="user-detail">여행 스타일:  {{ getMbtiNickname() }} </p>
+        <div class="user-detail-bottom">
+          <p class="info-message">운영정책을 위반한 메시지로 신고 접수 시 <br/>채팅이용에 제한이 있을 수 있습니다.
+          </p>
+          <p class="info-message">세이프봇이 적용되는 채팅방입니다.<br/> 세이프봇은 다른 이용자에게 불쾌감을 주는 <br/>메시지를 AI기술로 자동으로 필터링 합니다.
+            <br/>발송하신 메시지가 전송되지 않을 수 있습니다.
+          </p>
+        </div>
     </aside>
     </div>
 
@@ -85,11 +96,11 @@
 
         <!-- 신고 모달 창 -->
     <div v-if="showReportModal" class="modal">
-      <div class="modal-content">
-        <h4>신고하기</h4>
-        <textarea v-model="report.reportReason" placeholder="신고 사유를 입력하세요."></textarea>
-        <button @click="submitReport">제출</button>
-        <button @click="showReportModal = false">취소</button>
+      <div class="report-modal-content">
+        <h4>신고하기<img :src="require('@/assets/images/siren.png')" alt="Report" style="width: 25px; height: 25px; margin-left: 10px;"></h4>
+        <textarea v-model="report.reportReason" class="textarea-report" placeholder="신고 사유를 입력하세요."></textarea>
+        <button @click="submitReport" class="submitReportButton">제출</button>
+        <button @click="showReportModal = false" class="closeReportButton">취소</button>
       </div>
     </div>
 
@@ -102,6 +113,7 @@ export default {
     return {
       chatRoomId: null,
       chatRoomName: '',
+      creatorGender:'',
       userId: null,
       userName: '',  // 사용자 이름
       userEmail:'',
@@ -142,6 +154,8 @@ export default {
       reportReason: '',
       },
       showReportModal: false,
+      activeMessageId: null,  // 활성화된 메시지 ID 추적
+      activeChatMessageId: null,  // 현재 활성화된 메시지 ID
     };
   },
 
@@ -250,18 +264,38 @@ export default {
       const data = JSON.parse(event.data);
       console.log("Received message:", data);
 
+      // 채팅방에 연결된 채팅 목록 업데이트 메시지 처리
       if (data.type === 'CONNECTED_CHAT_ROOMS_UPDATE') {
         this.connectedChatRooms = data.chatRooms;
       }
+
+      // 시스템 메시지 (사용자 입장 및 퇴장) 처리
       if (data.messageType === 'ENTER' || data.messageType === 'LEAVE') {
         data.isSystemMessage = true;
         this.messages.push(data);
-      } else if (data.senderId && data.message) {
-        if (data.senderId === this.userName) {
-          data.isMine = true;
-        } else {
-          data.isMine = false;
-        }
+      }
+      
+      // 새로운 일반 메시지 처리
+      else if (data.type === 'NEW_MESSAGE') {
+        // 새 메시지 객체 생성
+        const newMessage = {
+          chatMessageId: data.chatMessageId, // 메시지에 고유 ID 할당
+          senderId: data.senderId,
+          message: data.message,
+          messageType: data.messageType,
+          // ...기타 메시지 관련 필드
+        };
+
+        // 메시지가 내가 보낸 메시지인지 타인이 보낸 메시지인지 판단
+        newMessage.isMine = newMessage.senderId === this.userName;
+
+        // 메시지 배열에 새 메시지 추가
+        this.messages.push(newMessage);
+      }
+
+      // 기존 일반 메시지 처리 (기존 로직 유지)
+      else if (data.senderId && data.message) {
+        data.isMine = data.senderId === this.userName;
         this.messages.push(data);
       }
     },
@@ -403,43 +437,52 @@ export default {
         container.scrollTop = container.scrollHeight;
       });
     },
-    updated() {
-    this.scrollToBottom();
-  },
-  reportUser(senderId, message) {
-    // 신고된 사용자 ID와 메시지를 상태에 저장
-    this.report.reportedUserId = senderId;
-    this.report.reportedMessage = message;
-    // 신고 사유 입력을 위해 모달을 표시
-    this.showReportModal = true;
-  },
-  submitReport() {
-    // ReportDto 구조에 맞게 데이터를 조합
-    const reportData = {
-      reportedUserId: this.report.reportedUserId,
-      reportedMessage: this.report.reportedMessage,
-      reportReason: this.report.reportReason,
-    };
+    
+    reportUser(senderEmail, message) {
+      // 신고된 사용자 ID와 메시지를 상태에 저장
+      this.report.reportedUserId = senderEmail;
+      this.report.reportedMessage = message;
+      // 신고 사유 입력을 위해 모달을 표시
+      this.showReportModal = true;
+    },
 
-    // 신고 데이터를 서버에 전송
-    this.$axios.post('/api/v1/report', reportData)
-      .then(() => {
-        // 신고 접수에 성공했을 때의 처리
-        alert('신고가 접수되었습니다.');
-        this.closeReportModal();
-      })
-      .catch(error => {
-        // 신고 접수에 실패했을 때의 처리
-        console.error('신고 접수 중 문제가 발생했습니다.', error);
-      });
+    submitReport() {
+      // ReportDto 구조에 맞게 데이터를 조합
+      const reportData = {
+        reportedUserId: this.report.reportedUserId,
+        reportedMessage: this.report.reportedMessage,
+        reportReason: this.report.reportReason,
+      };
+
+      // 신고 데이터를 서버에 전송
+      this.$axios.post('/api/v1/report', reportData)
+        .then(() => {
+          // 신고 접수에 성공했을 때의 처리
+          alert('신고가 접수되었습니다.');
+          this.closeReportModal();
+        })
+        .catch(error => {
+          // 신고 접수에 실패했을 때의 처리
+          console.error('신고 접수 중 문제가 발생했습니다.', error);
+        });
+    },
+    closeReportModal() {
+      this.showReportModal = false;
+      // 신고 상태 초기화
+      this.report.reportedUserId = null;
+      this.report.reportedMessage = '';
+      this.report.reportReason = '';
+    },
+    activateMessage(message) {
+      if (this.activeChatMessageId === message.chatMessageId) {
+        this.activeChatMessageId = null;
+      } else {
+        this.activeChatMessageId = message.chatMessageId;
+      }
+    },
   },
-  closeReportModal() {
-    this.showReportModal = false;
-    // 신고 상태 초기화
-    this.report.reportedUserId = null;
-    this.report.reportedMessage = '';
-    this.report.reportReason = '';
-  },
+  updated() {
+    this.scrollToBottom();
   },
 };
 </script>
@@ -633,13 +676,8 @@ html, body {
   height: calc(100vh - 240px); /* 뷰포트 높이에서 헤더와 푸터 높이를 빼고 설정 */
 }
 
-/* 오른쪽 세션 */
-.right-panel {
-  flex: 0.6;
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* 수평 방향 중앙 정렬 */
-}
+
+
 
 /* 채팅방 이름 스타일 */
 .chat-room-title {
@@ -821,6 +859,99 @@ html, body {
   width: 130px; /* 프로필 이미지 크기 */
   height: 130px; /* 프로필 이미지 크기 */
   border-radius: 50%; /* 원형으로 만들기 */
-  margin-right: 20px; /* 텍스트 컨텐츠와의 간격 */
+}
+
+.report-button {
+  cursor: pointer;
+  width: 24px; /* 필요에 따라 조정 */
+  height: 24px; /* 필요에 따라 조정 */
+}
+
+.submitReportButton{
+  color: #F3F3F3;
+    background-color: #65B7F3;
+    border: none;
+    border-radius: 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    width: 400px;
+    height: 50px;
+    margin-bottom: 10px;
+}
+
+.closeReportButton {
+  color: #F3F3F3;
+    background-color: #65B7F3;
+    border: none;
+    border-radius: 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    width: 400px;
+    height: 50px;
+}
+.report-modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+  width: 450px;
+  height: 350px;
+  box-shadow: 
+    0px 4px 6px rgba(0, 0, 0, 0.1),    /* 부드러운 그림자 */
+    0px 1px 3px rgba(0, 0, 0, 0.08),   /* 작은 세부 그림자 */
+    0px 10px 20px rgba(0, 0, 0, 0.06); /* 큰 퍼진 그림자 */
+}
+
+/* 기본 스타일 */
+.textarea-report {
+  width: 100%; /* 너비를 조정하여 컨테이너에 맞춤 */
+  height: 150px; /* 적절한 높이 설정 */
+  padding: 10px; /* 내부 여백 */
+  border: 2px solid #ccc; /* 테두리 */
+  border-radius: 8px; /* 모서리 둥글게 */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* 내부 그림자 */
+  font-size: 16px; /* 글꼴 크기 */
+  font-family: Arial, sans-serif; /* 글꼴 종류 */
+  resize: none; /* 크기 조절 비활성화 */
+  margin-bottom: 10px;
+}
+
+/* 포커스 상태일 때 */
+.textarea-report:focus {
+  border-color: #65B7F3; /* 테두리 색 변경 */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2), 0 0 8px rgba(74, 144, 226, 0.5); /* 그림자 강조 */
+  outline: none; /* 기본 윤곽선 제거 */
+}
+
+
+/* 오른쪽 세션 */
+.right-panel {
+  width: 400px;
+  position: relative;
+  flex: 0.6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  /* overflow-y: auto; */
+
+}
+.user-detail-bottom {
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+}
+
+.info-message {
+  margin: 0 10px 10px 10px;
+  background-color: #ffe8e8;
+  border-radius: 10px;
+  padding: 10px 10px;
+  color: #929292;
+  box-sizing: border-box; /* 패딩을 너비 계산에 포함 */
+  width: 95%;
+  font-size: 15px;
 }
 </style>

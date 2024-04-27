@@ -20,7 +20,10 @@
           <img v-for="(image, index) in userImages" :src="image" :key="index" :alt="`${userName}'s profile image ${index + 1}`" />
         </div>
       </div>
-      <p class="name-input">{{userName}}</p>
+      <p class="name-input">{{userName}}
+        <img v-if="userGender === 'M'" :src="require('@/assets/images/male.png')" alt="Male" style="height: 25px; width: 25px;"/>
+          <img v-else :src="require('@/assets/images/female.png')" alt="Female" style="height: 25px; width: 25px;"/>
+        </p>
       <p class="name-input">{{userAge}} 살</p>
     </div>
     
@@ -151,7 +154,10 @@
       <div v-for="room in filteredAndSortedChatRooms" :key="room.chatRoomId" class="card-container">
           <div class="profile-picture">
               <img :src="room.creatorImage || require('@/assets/images/profile.png')" alt="Profile Picture">
-              <p class="profile-name">{{ room.creatorName }}</p> <!-- 작성자 이름 -->
+              <p class="profile-name">{{ room.creatorName }}
+                <img v-if="room.creatorGender === 'M'" :src="require('@/assets/images/male.png')" alt="Male" style="height: 25px; width: 25px;"/>
+                <img v-else :src="require('@/assets/images/female.png')" alt="Female" style="height: 25px; width: 25px;"/>
+              </p> <!-- 작성자 이름 -->
               <p class="profile-detail">{{ room.creatorAge }}살</p> <!-- 작성자 나이 -->
           </div>
           <div class="text-content">
@@ -185,6 +191,7 @@ export default {
       newChatRoomTitle: '',  // 채팅방 제목
       newChatRoomContent: '', // 채팅방 내용
       reviewLocation: '',
+      creatorGender:'',
       searchQuery: '', // 사용자의 검색 쿼리를 저장할 새로운 데이터 속성
       showFilterModal: false, // 필터 모달 창 표시 여부
       ageFilter: 25, // 기본 나이 필터 값을 설정
@@ -219,7 +226,8 @@ export default {
       chatRoomName: this.newChatRoomTitle,
       chatRoomContent: this.newChatRoomContent,
       travelStyleTags: this.travelStyles,
-      reviewLocation: this.reviewLocation
+      reviewLocation: this.reviewLocation,
+      creatorGender: this.creatorGender
     };
     
     console.log('Sending:', chatRoomData);
@@ -232,6 +240,7 @@ export default {
         this.newChatRoomTitle = ''; // 채팅방 이름 입력 필드 초기화
         this.newChatRoomContent = ''; // 채팅방 내용 입력 필드 초기화
         this.reviewLocation = '';
+        this.creatorGender = '';
         this.travelStyles = []; // 채팅방 태그 목록 초기화
         this.showModal = false; // 모달 창 닫기
         this.fetchChatRooms(); // 채팅방 목록 다시 불러오기
@@ -338,11 +347,9 @@ export default {
 
 /* 채팅방 목록 카드 프로필이미지가 차지하는 공간 스타일*/
 .profile-picture {
-  padding: 30px; 
   margin-top: 20px;
   margin-left: 50px;
   margin-right: 50px;
-  height: 200px; /* 고정된 높이를 설정합니다. */
   display: flex; /* Flexbox를 사용하여 내용을 중앙 정렬합니다. */
   flex-direction: column; /* 요소들을 세로로 배치합니다. */
   justify-content: center; /* 세로 방향으로 중앙 정렬합니다. */
@@ -355,7 +362,6 @@ export default {
   width: 130px; /* 프로필 이미지 크기 */
   height: 130px; /* 프로필 이미지 크기 */
   border-radius: 50%; /* 원형으로 만들기 */
-  margin-right: 20px; /* 텍스트 컨텐츠와의 간격 */
 }
 
 /* 채팅방 목록 카드 내용 위치 스타일 */
