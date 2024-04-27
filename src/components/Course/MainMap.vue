@@ -11,9 +11,6 @@
         <button type="button" @click="coursebutton('H')"> H 코스 </button>
         <button type="button" @click="coursebutton('I')"> I 코스 </button>
         <button type="button" @click="coursebutton('J')"> J 코스 </button>
-        <!-- <div class="budgetButton">
-          <button type="button" @click="showModal = true">코스마다 예산보기</button>
-        </div> -->
   </div>
 
 <div class="line5"></div>
@@ -44,7 +41,7 @@
           <img src="@/assets/images/budget.png" alt="People Icon"/>
         </div>
         <div class="icon-text">
-          <p class="tag-category">예산</p>
+          <p class="tag-category">총 예산</p>
           <p class="tag-content">{{ currentBudget }}</p>
         </div>
       </div>
@@ -80,20 +77,6 @@
 </div>
   </div>
 </div>
-
-
-<!-- 예산 모달창 -->
-  <div>
-    <div v-if="showModal" class="budget-modal">
-      <div class="budget-modal-content">
-    <div v-for="(total, day) in budgetSummary" :key="day">
-      <p>{{ day }}코스의 총 예산: {{ total }}원</p>
-    </div>
-        <button @click="showModal = false">닫기</button>
-      </div>
-    </div>
-  </div> 
-
 
 </div>
 </template>
@@ -146,6 +129,7 @@ export default {
       currentTheme:'',
       currentDescription:'코스설명',
       currentBudget:'',
+      budgetTotal: 0,  // 총 예산을 저장할 변수
     }
   },
   mounted() {
@@ -172,106 +156,92 @@ methods: {
   },
 
   calculateTotalBudgets() {
-  const budgetSummary = {};
+    const budgetSummary = {};
 
-  // 코스별로 예산을 저장할 객체 초기화
-  budgetSummary['A'] = {};
-  budgetSummary['B'] = {};
-  budgetSummary['C'] = {};
-  budgetSummary['D'] = {};
-  budgetSummary['E'] = {};
-  budgetSummary['F'] = {};
-  budgetSummary['G'] = {};
-  budgetSummary['H'] = {};
-  budgetSummary['I'] = {};
-  budgetSummary['J'] = {};
-  // 추가적인 코스가 있다면 여기에 더합니다.
+    // 각 코스별 예산 객체 초기화
+    budgetSummary['A'] = 0;
+    budgetSummary['B'] = 0;
+    budgetSummary['C'] = 0;
+    budgetSummary['D'] = 0;
+    budgetSummary['E'] = 0;
+    budgetSummary['F'] = 0;
+    budgetSummary['G'] = 0;
+    budgetSummary['H'] = 0;
+    budgetSummary['I'] = 0;
+    budgetSummary['J'] = 0
 
-  this.dates.forEach((date) => {
-    const course = date.course; // 코스 구분값 (예: 'A', 'B', 'C')
-    const day = date.date; // 날짜 구분값 (예: '1일차')
-    const budget = date.budget; // 예산
+    this.dates.forEach((date) => {
+      const course = date.course; // 코스 구분값
+      const budget = date.budget; // 해당 날짜의 예산
+      budgetSummary[course] += budget; // 코스별 예산 누적
+    });
 
-    // 코스별 예산 집계
-    if (!budgetSummary[course][day]) {
-      budgetSummary[course][day] = 0;
-    }
-    budgetSummary[course][day] += budget;
-  });
-
-  console.log(budgetSummary);
-  // 이제 budgetSummary 객체에는 각 코스별, 각 날짜별 예산 합산이 저장되어 있음
-  this.budgetSummary = budgetSummary; // 리액티브하게 데이터 업데이트
-},
+    this.budgetSummary = budgetSummary; // 리액티브하게 데이터 업데이트
+  },
+  
+  formatCurrency(amount) {
+    return new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(amount);
+  },
 
   coursebutton(course) {
     this.course = course;
-    // 선택된 코스에 따라 설명 변경
+    this.calculateTotalBudgets(); // 선택한 코스에 따른 예산 계산
+    this.currentBudget = this.formatCurrency(this.budgetSummary[course]); // 선택한 코스의 예산을 형식화하여 currentBudget에 저장
+
     switch (course) {
       case 'A':
         this.currentSchedule = '3박 4일';
         this.currentTheme = '제주 투어';
-        this.currentBudget = '1,000,000￦'
         this.currentDescription = '코스설명1';
         break;
       case 'B':
         this.currentSchedule = '2박3일 여행';
         this.currentTheme = '올레길 탐방';
-        this.currentBudget = '1,000,000￦'
         this.currentDescription = '제주 올레길은 골목길들이 크게 하나로 이어지는 제주도 도보 여행 코스이다. 총 26코스 425km으로 이어진 올레길은 겉으로 잘 보이지 않는 제주의 아름다운 속살을 다채롭게 보여준다. 길 따라 걷다 보면 신천 바다목장의 주황색 귤 꽃밭, 제주도 명소인 민물과 바닷물이 만나는 쇠소깍도 만날 수 있다. 제주도가 사시사철 매 순간 다양한 모습을 보여주듯 천천히 걸을수록 더 많은 것을 볼 수 있다.';
         break;
       case 'C':
         this.currentSchedule = '당일여행';
         this.currentTheme = '드라이브 코스';
-        this.currentBudget = '1,000,000￦'
         this.currentDescription = '제주여행의 매력은 뭐니 뭐니 해도 해안 따라 드라이브를 즐기는 것이다. 사면이 바다로 둘러싸여 있기 때문이다. 제주의 해안도로는 비경과 특징이 각기 다르다. 그중 산과 섬, 바다가 한데 어우러지며 빼어난 경관을 간직한 곳이 바로 사계해안도로이다. 사계해안도로는 제주 안덕면 사계리(산방산)~대정읍 상모리(송악산)를 연결하는 도로로 빼어난 해안절경과 섬과 산의 절묘한 어우러짐이 펼쳐진다. 해안을 둘러싸듯 우뚝 솟은 산방산과 송악산이 해안의 양쪽 끝에 버티고 있어 포근함과 안정감을 주는 서귀포시의 대표적인 해안도로이다. 낮은 지대로 달리다보니 해안 조망이 눈높이에 있어 디테일하게 비경을 담을 수 있다. 해안과 산, 도로가 합의일체로 그려내는 빼어난 광경 외에도 바다를 붉게 물드는 환상적인 낙조까지 자연이 만들어낸 모든 것이 아름답고 황홀하다';
         break;
       case 'D':
         this.currentSchedule = '1박2일';
         this.currentTheme = '로컬 여행';
-        this.currentBudget = '1,000,000￦'
         this.currentDescription = '제주의 아름다운 명소는 다 알고 있다면 이제 제주 여행은 제주의 경치가 아니라 제주 사람들의 삶을 느껴보러 떠나 보자. ‘어멍아방잔치마을’이라는 정다운 이름을 가진 신풍리농촌체험휴양마을에 가면 제주 사람들의 생활과 문화를 만나볼 수 있다. 제주의 참모습을 알 수 있는 기회가 된다.';
         break;
       case 'E':
         this.currentSchedule = '당일치기';
         this.currentTheme = '가족 코스';
-        this.currentBudget = '1,000,000￦'
         this.currentDescription = '제주도는 휴양의 도시고 가족이 함께 떠나 즐기기 좋은 체험지이기도 하다. 어린 아이를 데리고도 여행이 가능한 중문단지의 볼기리, 체험거리, 맛볼거리를 두루섭렵해 보자. 여기만 보아도 아쉬울 것이 없다.';
         break;
       case 'F':
         this.currentSchedule = '1박2일';
         this.currentTheme = '캠핑 코스';
-        this.currentBudget = '1,000,000￦'
         this.currentDescription = '한라산 기슭 1100도로 변에 자리한 서귀포자연휴양림은 삼림욕과 생태탐방은 물론 여름철 물놀이와 캠핑을 위한 야영장까지 고루 갖추고 있다. 편백나무 숲 속에 펼친 텐트에 모여 앉아 밤하늘 총총히 뜬 별빛을 바라보며 보내는 하룻밤은 평생 간직할 추억으로 남는다. 휴양림에서 멀지 않은 거리에 한라수목원과 어승생악 탐방로가 있어 반나절 코스로 잡으면 좋다.';
         break;
       case 'G':
         this.currentSchedule = '당일여행';
         this.currentTheme = '익사이팅 여행';
-        this.currentBudget = '1,000,000￦'
         this.currentDescription = '제주도 서귀포시 강정동에는 야구박물관에서 부터 절벽과 조화를 이루는 폭포, 서귀포의 비경을 만나볼 수 있는 강정천과 하루에 두번 바닷길이 열리는 신비의 섬 서건도 까지 아름다움을 만끽할 수 있는 여행지가 있다. 혼자만의 시간, 커플과의 데이트, 가족과 함께하는 시간, 누구와 함께 해도 좋을 것만 같은 제주 서귀포 강정으로 여행을 떠나보는건 어떨까?';
         break;
       case 'H':
         this.currentSchedule = '당일여행';
         this.currentTheme = '카페 투어';
-        this.currentBudget = '1,000,000￦'
         this.currentDescription = '제주에는 다양한 먹거리 볼거리들이 너무 많지만 그 중에서도 특별히 즐길 수 있는 맛있는 찻집을 찾아가 보자. 제주 도민만이 알 수 있는 디저트 카페와 특별한 체험을 즐겨볼 수 있는 이색적인 카페를 소개한다. 특히 동백꽃군락 인근의 와랑와랑의 소담스런 분위기와 따뜻한 커피는 잊혀지지 않는 제주의 추억을 선사할 것이다.';
         break;
       case 'I':
         this.currentSchedule = '1박2일';
         this.currentTheme = '로컬여행';
-        this.currentBudget = '1,000,000￦'
         this.currentDescription = '세계자연유산에 빛나는 거문오름 탐방로와 따라비 오름은 제주 화산탐방로라 할 수 있겠다. 화산이 분출한 자국을 따라 다른 어느 지역에서도 볼 수 없는 용암지구의 특이한 절경을 만끽할 수 있다. 제주도에 왔다면 조랑말을 타볼 수 있는 기회도 놓치지 말자';
         break;
       case 'J':
         this.currentSchedule = '당일여행';
         this.currentTheme = '힐링코스';
-        this.currentBudget = '1,000,000￦'
         this.currentDescription = '회색빛 도시의 일상에 지친 이들에게 제주의 숲과 바다는 천연 치유제가 된다. 천년의 숲 비자림에 들어서면 영혼까지 맑아지는 기분이다. 평화로움 가득한 중산간 도로, 잘 가꿔진 허브동산, 망망대해가 펼쳐진 해안 절벽까지 천천히 쉬어가는 동안 스트레스로 찌들었던 몸과 마음이 한결 가벼워진다. 비워진 공간엔 맑고 따스한 기운이 가득 찬다.';
         break;
       default:
         this.currentSchedule = '당일여행';
         this.currentTheme = '문화탐방';
-        this.currentBudget = '1,000,000￦'
         this.currentDescription = '여행은 제주도의 절묘한 자연경관과 특별한 맛을 느낄 수 있는 여행이다. 세계자연유산으로 등재된 만장굴과 돌과 더불어 살아 사는 제주인의 삶이 오롯이 녹아든 제주돌문화공원을 방문하고, 제주도만의 민속자연을 볼 수 있는 민속자연사박물관을 돌아보자.';
         break;
     }
