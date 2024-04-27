@@ -14,8 +14,8 @@
         <!-- 장소 카드 -->
       <div class="card-container">
         <div class="card-header">
-          <h2><input placeholder="장소 이름" v-model="title"  :readonly="true"/></h2>
-          <p><Input placeholder="주소" :value="addressCopy" @input="updateAddress" :readonly="true" /> <span class="category">카테고리: {{ category }}</span></p>
+          <h2><input style="text-align:center;" placeholder="장소 이름" v-model="title"  :readonly="true"/></h2>
+          <p><Input style="text-align:center;" placeholder="주소 | 카테고리" :value="addressCopy" @input="updateAddress" :readonly="true" /> <span class="category">{{ category }}</span></p>
         </div>
 
         <div class="card-body">
@@ -27,8 +27,8 @@
             </div>
           </div>
           <div class="tags">
-            <span class="tag-label">태그: {{ mapTag }}</span>
-            <span class="budget-label">가격: {{ budget }}</span>
+            <span class="tag-label">{{ mapTag }}</span>
+            <span class="budget-label">예산: {{ budget }}</span>
           </div>
       
           <div class="rate-area">
@@ -38,38 +38,11 @@
 
 
         <div class="card-footer">
-          <span ref="span" class="review-span" placeholder="내용">{{ review }}</span>
+          <span class="review-span" >{{ review }}</span>
         </div>
       </div>
 
     </VueResizable>
-
-    <div class="right-area">
-      <div class="icon-group">
-        <div class="icon-circle">
-          <img src="@/assets/images/location.png" alt="Calendar Icon"/>
-        </div>
-        <div class="icon-text">
-          <p>일정</p>
-          <p>담기예약</p>
-        </div>
-      </div>
-
-      <div class="icon-group">
-        <div class="icon-circle">
-          <img src="@/assets/images/location.png" alt="People Icon"/>
-        </div>
-        <div class="icon-text">
-          <p>일정</p>
-          <p>담기예약</p>
-        </div>
-      </div>
-
-      <div>
-        <p>안녕</p>
-      </div>
-    </div>
-
 
   </div>
 
@@ -115,10 +88,10 @@ mounted() {
         this.lonCopy = data.lonCopy;
         this.latCopy = data.latCopy;
         this.image = data.image || '';
-        this.mapTag = data.mapTag || '';
+        this.mapTag = data.mapTag ? data.mapTag.map(tag => `#${tag}`).join(' ') : '';
         this.course = data.course || '';
         this.budget = data.budget || 0;
-        this.category = data.category || '';
+        this.category = '  |  '+data.category|| '';
     });
 },
 methods: {
@@ -164,22 +137,27 @@ methods: {
 }
 
 .left-area {
-  flex: 1;
-}
-
-.right-area {
-  width: 600px;
   display: flex;
-  flex-direction: row; /* 자식 요소들을 가로로 나열 */
-  justify-content: space-around; /* 아이콘 그룹들 사이의 공간을 균등하게 분배 */
-  align-items: center; /* 아이콘 그룹들을 세로 중앙 정렬 */
-  flex-wrap: wrap; /* 필요하다면 아이템들을 다음 줄로 넘김 */
-  /* flex: 0.8은 .right-area의 부모가 flex일 때만 필요합니다. */
+  flex-direction: column;
+  align-items: center;
+  width: 100%; /* 필요하다면 */
 }
 
+.card-container, .card-header, .card-body, .card-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%; /* 내부 컨테이너들이 left-area의 전체 너비를 차지하도록 */
+}
 
+.image-gallery, .tags, .rate-area {
+  display: flex;
+  justify-content: center;
+  width: 100%; /* 이미지, 태그, 평점 영역이 각각 가운데 정렬되도록 */
+}
 
 .review-span {
+  text-align: center;
   display: block; /* span을 블록 레벨 요소처럼 보이게 함 */
   white-space: pre-wrap; /* 공백과 줄바꿈을 유지 */
   overflow-wrap: break-word; /* 긴 단어가 넘치지 않도록 줄바꿈 */
@@ -187,10 +165,11 @@ methods: {
   padding: 10px; /* 패딩 추가 */
   border: 1px solid #ccc; /* 테두리 추가 */
   border-radius: 4px; /* 둥근 테두리 모양 */
-  
-  color: #ffffff; /* 글자색 */
   min-height: 100px; /* 최소 높이 */
   width: 100%; /* 너비 */
+  font-size: 22px;
+  border: none;
+  color:#444444;
 }
 
 .tag-label {
@@ -202,43 +181,7 @@ methods: {
   
   margin-left: 80px; /* 왼쪽에 20px의 공간을 추가 */
 }
-.budget-modal{
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
-.budget-modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 700px;
-  height: 700px;
-  text-align: center;
-  background-image: url('@/assets/images/blackpig.jpg');
-}
-/* 입력된 태그 표시 스타일 */
-// .tag {
-//   background-color: #ffffff;
-//   color: #007BFF;
-//   border-radius: 16px;
-//   border: solid 1px #007BFF;
-//   padding: 5px 10px;
-//   display: inline-flex;
-//   align-items: center;
-//   margin-right: 10px;
-// }
-.side-bar-wrapper {
-  display: flex;
-  color: #fff;
-
-}
  .bottom-btn-area {
   text-align: right;
   padding-right: 10px;
@@ -251,6 +194,7 @@ methods: {
 
 .card-container {
   width: 100%; /* 또는 원하는 너비 */
+  height: 600px;
   border: 1px solid #ddd; /* 경계선 스타일 */
   border-radius: 8px; /* 모서리 둥글게 */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
@@ -260,22 +204,30 @@ methods: {
 
 .card-header, .card-footer {
   padding: 15px;
-  background-color: #f9f9f9; /* 헤더와 푸터의 배경색 */
 }
 
 .card-header > h2 {
   margin: 0;
-  color: #e53e3e; /* 제목 색상 */
-  font-size: 1.5em; /* 제목 크기 */
+  color: #444444; /* 제목 색상 */
+  font-size: 2.5rem; /* 제목 크기 */
 }
 
 .card-header > p {
   margin: 5px 0 0; /* 상단에 여백, 나머지는 0 */
-  color: #666; /* 문단 색상 */
+  color: #444444; /* 문단 색상 */
+  font-size: 20px;
+}
+.card-header{
+  background: linear-gradient(to top, #f2eee5 40%, #e5c1c5 100%);
 }
 
 .card-body {
   padding: 15px;
+  background: linear-gradient(to top, #c3e2dd 20%, #f2eee5 100%);
+}
+
+.card-footer {
+  background: linear-gradient(to top, #6eceda 10%, #c3e2dd 100%);
 }
 
 .image-gallery {
@@ -284,10 +236,11 @@ methods: {
 }
 
 .image-gallery img {
-  border-radius: 4px; /* 이미지 모서리 둥글게 */
-  width: 100px; /* 이미지 너비 */
-  height: auto; /* 이미지 비율 유지 */
+  border-radius: 20px; /* 이미지 모서리 둥글게 */
+  width: 300px; /* 이미지 너비 */
+  height: 260px; /* 이미지 비율 유지 */
   margin: 0 5px; /* 이미지 사이 여백 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* 그림자를 추가하여 입체적인 느낌을 강조 */
 }
 
 .tags {
@@ -299,9 +252,18 @@ methods: {
   background-color: #eee; /* 태그 배경색 */
   border-radius: 16px; /* 태그 모서리 둥글게 */
   padding: 5px 10px; /* 태그 패딩 */
-  margin: 2px; /* 태그 간 여백 */
-  font-size: 0.75em; /* 태그 폰트 크기 */
+  margin: 5px; /* 태그 간 여백 */
+  font-size: 1.25em; /* 태그 폰트 크기 */
+  border: 1px solid #ccc; /* 경계선을 추가하여 더욱 입체적으로 보이도록 함 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* 그림자를 추가하여 입체적인 느낌을 강조 */
+  transition: transform 0.3s, box-shadow 0.3s; /* 상호작용에 대한 시각적 피드백을 위해 트랜지션 추가 */
 }
+
+.tags span:hover {
+  transform: translateY(-2px); /* 마우스를 올렸을 때 태그가 약간 떠오르는 효과 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* 마우스 호버 시 그림자를 강조하여 더 입체적으로 보임 */
+}
+
 
 .card-footer {
   display: flex;
@@ -316,62 +278,21 @@ methods: {
   border: none;
   cursor: pointer; /* 클릭 가능하게 */
 }
-
-/* 여기에 필요한 추가 스타일을 계속 추가할 수 있습니다. */
-
-.line5 {
-  width: 1200px; /* 선의 너비를 컨테이너의 100%로 설정 */
-  height: 1px; /* 선의 높이 설정 */
-  background-color: #c4c4c4; /* 선의 색상 설정 (예: 빨간색) */
-  margin-top: 30px; /* 선과 설명 사이의 여백 설정 */
-  margin-bottom: 30px; /* 선과 설명 사이의 여백 설정 */
+.card-header Input {
+  border: none; /* 테두리 제거 */
+  outline: none; /* 클릭 시 나타나는 아웃라인 제거 */
+  background: transparent; /* 배경색 투명으로 설정 */
+  color: inherit; /* 부모 요소로부터 색상 상속 */
+  font-family: inherit; /* 부모 요소로부터 폰트 상속 */
+  font-size: inherit; /* 부모 요소로부터 폰트 크기 상속 */
+  padding: 0; /* 내부 패딩 제거 */
+  margin: 0; /* 외부 마진 제거 */
 }
 
-.icon-group {
-  display: flex;
-
+.card-header Input[readonly] {
+  pointer-events: none; /* 읽기 전용 입력란에서 마우스 이벤트 제거 */
+  cursor: default; /* 커서 스타일 기본으로 설정 */
 }
 
-.icon-circle {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 80px; /* 아이콘 원의 크기 */
-  height: 80px;
-  border-radius: 50%; /* 원형 모양 */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
-  background-color: white; /* 배경색 */
-  padding: 10px;
-  transition: transform 0.3s ease; /* 마우스 오버 시 효과 */
-}
-
-.icon-circle img {
-  width: 40px; /* 아이콘 크기 */
-  height: auto;
-}
-
-.icon-circle:hover {
-  transform: translateY(-5px); /* 마우스 오버 시 위로 움직임 */
-}
-
-.icon-text {
-  display: flex;
-  flex-direction: column; /* 텍스트를 위아래로 나열 */
-  margin-left: 10px; /* 아이콘과의 간격 설정 */
-}
-
-.icon-text p {
-  margin: 0; /* 기본 마진 제거 */
-  line-height: 1.2; /* 줄 간격 */
-  color: #333; /* 텍스트 색상 */
-  font-size: 14px; /* 텍스트 크기 */
-}
-
-.right-area > div:last-child {
-  width: 100%; /* 아이콘 그룹과 같은 너비를 가지게 하려면 */
-  text-align: center; /* 텍스트를 중앙으로 정렬 */
-  /* 추가적으로 필요한 스타일 */
-}
 
 </style>
