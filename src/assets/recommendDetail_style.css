@@ -100,3 +100,7 @@
 .recommend-tags li{
     list-style-type: none; 
 }
+
+.cont-chart {
+    width: 580px;
+}

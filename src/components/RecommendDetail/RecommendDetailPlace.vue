@@ -51,9 +51,10 @@
                           <div>
                             <!-- 태그 Read -->
                             <span>이런 점이 좋았어요</span>
-                            <ul class="recommend-tags">
-                              <li v-for="tag in replyPlaceTags" :key="tag">{{ tag }}</li>
-                            </ul>
+                            <div class="cont-chart">
+                                <!-- PlaceChart 컴포넌트에 recommendPlaceId를 전달합니다 -->
+                                <PlaceChart :recommendPlaceId="place.recommendPlaceId" />
+                            </div>
                           </div>
                            <!-- 버튼 클릭 이벤트에 Place.id 전달 -->
                            <button @click="createModal(recommendPlaceId)" style="font-size: 12px; cursor: pointer">평점쓰기</button>
@@ -106,6 +107,7 @@
 
 <script>
 import CreateModalPlace from './CreateModalPlace.vue';
+import PlaceChart from './PlaceChart.vue';
 
 export default {
 name: 'RecommendListDetailPlace',
@@ -123,7 +125,8 @@ data() {
   };
 },
 components: {
-  CreateModalPlace
+  CreateModalPlace,
+  PlaceChart
 },
 props: {
   recommendPlaceId: {  // 외부에서 전달받는 ID prop

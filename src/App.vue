@@ -4,6 +4,7 @@
     <router-link to="/reviews">Review</router-link> |
     <router-link to="/list">List</router-link>  |
     <router-link to="/detail">Detail</router-link>  |
+    <router-link to="/placechart">chart</router-link>  |
   </nav>
   <router-view/>
 </template>

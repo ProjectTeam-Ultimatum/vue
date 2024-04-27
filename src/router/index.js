@@ -14,6 +14,7 @@ import RecommendDetailFood from '../components/RecommendDetail/RecommendDetailFo
 import RecommendDetailPlace from '../components/RecommendDetail/RecommendDetailPlace.vue'
 import RecommendDetailHotel from '../components/RecommendDetail/RecommendDetailHotel.vue'
 import RecommendDetailEvent from '../components/RecommendDetail/RecommendDetailEvent.vue'
+import PlaceChart from '../components/RecommendDetail/PlaceChart.vue'
 
 const routes = [
   {
@@ -79,6 +80,11 @@ const routes = [
     name: 'detailevent',
     component: RecommendDetailEvent,
     props: true
+  },
+  {
+    path: '/placechart',
+    name: 'placechart',
+    component: PlaceChart
   },
   {
     path: '/about',
