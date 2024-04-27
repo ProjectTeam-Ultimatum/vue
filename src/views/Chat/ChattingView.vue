@@ -170,7 +170,7 @@
               </div>
               <div class="button-group">
                   <button class="btn-submit" @click="enterChatRoom(room.chatRoomId)">입장</button>
-                  <button class="btn-down" @click="deleteChatRoom(room.chatRoomId)">삭제</button>
+                  <button v-if="room.memberId === currentUserId" class="btn-down" @click="deleteChatRoom(room.chatRoomId)">삭제</button>
               </div>
           </div>
       </div>
@@ -203,6 +203,7 @@ export default {
       userGender:'',
       userAge:'',
       userImages: [], // 사용자 이미지 URL을 저장할 배열
+      isLoading: true, // 로딩 상태 추가
     };
   },
   computed: {
@@ -216,9 +217,10 @@ export default {
       return filtered;
     }
   },
-  mounted() {
-    this.fetchChatRooms();
-    this.fetchUserInfo();
+  async mounted() {
+    await this.fetchUserInfo(); // 사용자 정보를 먼저 불러옵니다.
+    await this.fetchChatRooms(); // 그 다음 채팅방 목록을 불러옵니다.
+    this.isLoading = false; // 로딩 완료
   },
   methods: {
     submitChatRoom() {
@@ -243,6 +245,7 @@ export default {
         this.creatorGender = '';
         this.travelStyles = []; // 채팅방 태그 목록 초기화
         this.showModal = false; // 모달 창 닫기
+        this.userGender = '';
         this.fetchChatRooms(); // 채팅방 목록 다시 불러오기
       })
       .catch(error => {
@@ -269,16 +272,15 @@ export default {
     this.travelStyles.splice(index, 1); // 인덱스를 사용하여 배열에서 태그 삭제
     },
 
-    fetchChatRooms() {
-      this.$axios.get('http://localhost:8080/api/v1/chat/list')
-        .then(response => {
-          console.log('API Response:', response.data); // 이 부분을 추가하여 응답 확인
-          const sortedRooms = response.data.sort((a, b) => new Date(b.regDate) - new Date(a.regDate));
-          this.chatRooms = [...sortedRooms];
-        })
-        .catch(error => {
-          console.error("채팅방 목록을 불러오는데 실패했습니다:", error);
-        });
+    async fetchChatRooms() {
+      try {
+        const response = await this.$axios.get('http://localhost:8080/api/v1/chat/list');
+        console.log('API Response:', response.data); // 응답 데이터 로그
+        const sortedRooms = response.data.sort((a, b) => new Date(b.regDate) - new Date(a.regDate));
+        this.chatRooms = [...sortedRooms];
+      } catch (error) {
+        console.error("채팅방 목록을 불러오는데 실패했습니다:", error);
+      }
     },
     deleteChatRoom(roomId) {
       this.$axios.delete(`http://localhost:8080/api/v1/chat/room/${roomId}`)
@@ -294,352 +296,24 @@ export default {
       // Vue Router를 사용하여 해당 채팅방의 상세 페이지로 이동!
       this.$router.push({ name: 'ChatRoom', params: { roomId: roomId } });
     },
-    fetchUserInfo() {
-      this.$axios.get('http://localhost:8080/api/v1/user/info/detail')
-        .then(response => {
-          const data = response.data;
-          this.userName = data.userName;  // "userName" 키에 접근
-          this.userEmail = data.email;    // "email" 키에 접근
-          this.userGender = data.gender;  // "gender" 키에 접근
-          this.userAge = data.age;        // "age" 키에 접근
-          this.userAddress = data.address;// "address" 키에 접근
-          this.userImages = data.images;  // 이미지 URL 리스트 저장
-        })
-        .catch(error => {
-          console.error("사용자 정보를 불러오는 중 오류가 발생했습니다:", error);
-        });
+    async fetchUserInfo() {
+      try {
+        const response = await this.$axios.get('http://localhost:8080/api/v1/user/info/detail');
+        const data = response.data;
+        this.userName = data.userName;  // "userName" 키에 접근
+        this.userEmail = data.email;    // "email" 키에 접근
+        this.userGender = data.gender;  // "gender" 키에 접근
+        this.userAge = data.age;        // "age" 키에 접근
+        this.userAddress = data.address;// "address" 키에 접근
+        this.userImages = data.images;  // 이미지 URL 리스트 저장
+        this.currentUserId = data.memberId;  // 현재 사용자 ID 저장
+      } catch (error) {
+        console.error("사용자 정보를 불러오는 중 오류가 발생했습니다:", error);
+      }
     },
   }
 };
 </script>
 <style scoped>
-
-
-/* 전체 페이지에 적용되는 스타일 */
-.app-container {
-  max-width: 1200px; /* 최대 너비 설정 */
-  margin: 0 auto; /* 상하 마진 0, 좌우 마진 자동으로 중앙 정렬 */
-  padding: 0 20px; /* 양 옆에 20px의 패딩을 추가하여 내용과 화면 가장자리 사이에 공간을 생성 */
-}
-
-.divider {
-  padding: 50px;
-}
-
-
-/* 게시판 타이틀 스타일 */
-.title-container {
-  display: flex;
-  justify-content: space-between; /* 좌우 요소를 양 끝으로 정렬 */
-  align-items: center; /* 세로 방향으로 중앙 정렬 */
-}
-
-/* 채팅방 목록 카드 스타일 전체 컨테이너 */
-.card-container {
-  background-color:white ;
-  display: flex;
-  align-items: center; /* 세로 중앙 정렬 */
-  margin: 20px;
-  padding: 10px;
-  border: 1px solid #ccc; 
-  border-radius: 8px; 
-}
-
-/* 채팅방 목록 카드 프로필이미지가 차지하는 공간 스타일*/
-.profile-picture {
-  margin-top: 20px;
-  margin-left: 50px;
-  margin-right: 50px;
-  display: flex; /* Flexbox를 사용하여 내용을 중앙 정렬합니다. */
-  flex-direction: column; /* 요소들을 세로로 배치합니다. */
-  justify-content: center; /* 세로 방향으로 중앙 정렬합니다. */
-  align-items: center; /* 가로 방향으로 중앙 정렬합니다. */
-  text-align: center; /* 텍스트를 가운데 정렬합니다. */
-}
-
-/* 채팅방 목록 카드 프로필이미지 스타일 */
-.profile-picture img {
-  width: 130px; /* 프로필 이미지 크기 */
-  height: 130px; /* 프로필 이미지 크기 */
-  border-radius: 50%; /* 원형으로 만들기 */
-}
-
-/* 채팅방 목록 카드 내용 위치 스타일 */
-.text-content {
-  flex: 1; /* 텍스트 컨텐츠가 나머지 공간을 채우도록 */
-  text-align: left;
-}
-
-/* 채팅방 목록 카드 제목 스타일 */
-.chatroom-name {
-  margin: 30px 0;
-  font-size: 25px; /* 제목 크기 */
-  font-weight: bold;
-}
-
-/* 채팅방 목록 카드 작성자 여행스타일 */
-.author-style {
-  margin: 20px 0;
-  font-size: 16px; /* 작성자 이름 크기 */
-}
-
-/* 채팅방 내용 스타일 */
-.subtitle {
-  margin: 20px 0;
-  font-size: 14px; /* 서브타이틀 크기 */
-  color: #666; /* 서브타이틀 색상 */
-}
-
-/* 채팅방 목록 카드 백그라운드 스타일 */
-.chatting-background {
-  background-color: #FFC83B;
-  padding-bottom: 20px;
-}
-
-/* 채팅방 목록 카드 헤더 스타일 */
-.chatroom-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 15px; /* 양쪽에 패딩을 추가해줍니다. */
-}
-
-/* 채팅방 목록 카드 헤더 텍스트 스타일 */
-.title-wrapper {
-  flex-grow: 1; /* title-wrapper가 가능한 많은 공간을 차지하도록 합니다. */
-  display: flex;
-  justify-content: center; /* 가운데 정렬 */
-}
-
-/* 글쓰기 버튼 스타일 */
-.write-text{
-  cursor: pointer;
-}
-
-/* 필터 버튼 스타일 */
-.filter-text {
-  cursor: pointer;
-}
-
-/* 채팅방 목록 사용자 이름 스타일 */
-.profile-name {
-  text-align: center; /* 이름을 중앙 정렬합니다. */
-  margin-top: 8px; /* 이미지와 텍스트 사이의 마진을 추가합니다. */
-  font-size: 16px; /* 텍스트 사이즈를 조정합니다. */
-  color: #333; /* 텍스트 색상을 조정합니다. */
-  font-weight: bold;
-}
-
-/* 채팅방 목록 사용자 나이 스타일 */
-.profile-detail {
-  font-size: 13px;
-  color:#666;
-}
-
-/* 입장, 삭제버튼 스타일 */
-.button-group {
-  display: flex;
-  justify-content: flex-end; /* 오른쪽 정렬 */
-  align-items: flex-end; /* 아래 정렬 */
-  margin-top: auto; /* 나머지 모든 요소들 위에 위치 */
-}
-
-/* 글쓰기 모달창 스타일*/
-.chat-modal {
-  position: fixed; /* 화면에 고정 */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* 글쓰기 모달창 전체 스타일 */
-.chat-modal-content {
-  background-color: #FFF;
-  padding: 30px;
-  border-radius: 10px;
-  width: 700px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-/* 글쓰기 모달창 헤더(프로필) 스타일 */
-.modal-header {
-  display: flex;
-  align-items: center; /* 중앙 정렬 */
-  gap: 20px; /* 요소 사이의 간격 */
-}
-
-/* 글쓰기 모달창 헤더(프로필) 이름 스타일 */
-.name-input {
-  flex-grow: 1; /* 남은 공간을 모두 차지하도록 설정 */
-  padding: 10px; /* 입력 필드 내부의 패딩 */
-  font-size: 16px; /* 글자 크기 */
-  text-align: left;
-}
-
-/* 방제목, 방내용 입력폼 스타일*/
-.text-input,
-.form-control {
-  border: 1px solid #CCC;
-  border-radius: 4px;
-  padding: 10px;
-  width: 80%;
-}
-
-/* 방제목, 태그 입력 폼 스타일 */
-.text-input{
-  padding: 8px;
-  margin: 4px; /* 필요에 따라 조정 */
-}
-
-/* 입력된 태그 표시 스타일 */
-.tags {
-  padding-left: 40px;
-}
-
-/* 입력된 태그 표시 스타일 */
-.tag {
-  background-color: #ffffff;
-  color: #007BFF;
-  border-radius: 16px;
-  border: solid 1px #007BFF;
-  padding: 5px 10px;
-  display: inline-flex;
-  align-items: center;
-  margin-right: 10px;
-}
-
-/* 입력된 태그 삭제 버튼 스타일 */
-.remove-tag {
-  background-color: white;
-  border: none;
-  color: #FFC83B;
-  cursor: pointer;
-  margin-left: 10px;
-  border-radius: 50%;
-  padding: 0 5px;
-}
-
-/* 채팅방입장, 게시글 등록 버튼 스타일 */
-.btn-submit {
-  background-color: #007BFF;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 10px 20px;
-  cursor: pointer;
-}
-
-/* 채팅방삭제, 게시글 닫기 버튼 스타일 */
-.btn-down {
-  background-color: #ffffff;
-  color: #FFC83B;
-  border: solid 1px #FFC83B;
-  border-radius: 4px;
-  padding: 10px 20px;
-  margin-right: 10px;
-  cursor: pointer;
-}
-
-/* 태그 추가 버튼 스타일 */
-.btn-add {
-  background-color: #007BFF;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 10px 10px;
-  cursor: pointer;
-  margin-left: 20px;
-}
-
-.input-group {
-  display: flex;
-  flex-direction: row; /* 요소들을 수평 방향으로 정렬 */
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-
-.input-group label {
-  margin-right: 10px; /* 라벨과 입력 필드 사이의 공간 */
-  white-space: nowrap; /* 라벨을 줄 바꿈 없이 한 줄로 유지 */
-}
-.text-input {
-  border-radius: 5px;
-}
-.travel-style-tag {
-  display: inline-block; /* 태그를 인라인 블록으로 표시 */
-  margin-right: 10px; /* 태그 사이의 간격 */
-  /* 필요한 스타일 추가 */
-}
-
-
-.slider {
-  width: 100%;
-  margin: 10px 0;
-}
-
-.input-group label {
-  display: block;
-}
-
-.input-group span {
-  margin-left: 10px;
-}
-
-/* 체크박스 스타일 */
-.input-group label {
-  margin-right: 20px;
-}
-
-.filter-body {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.filter-body1 {
-  display: flex;
-  width: 100%;
-}
-
-.dropdown {
-  position: relative;
-  font-size: 16px; /* 폰트 크기 설정 */
-}
-
-.dropdown-select {
-  width: 16.5%; /* 컨테이너 너비에 맞춤 */
-  padding: 10px; /* 패딩 설정 */
-  background-color: transparent; /* 배경색 투명 */
-  border: 1px solid #007BFF; /* 경계선 스타일 */
-  appearance: none; /* 기본 브라우저 스타일 제거 */
-  cursor: pointer; /* 커서 모양 변경 */
-  color:#007BFF;
-}
-
-.dropdown-select::-ms-expand {
-  display: none; /* IE/Edge에서 화살표 제거 */
-}
-
-/* 선택되었을 때의 배경 및 화살표 아이콘 */
-.dropdown-select:active,
-.dropdown-select:hover {
-  background-color: #f8f8f8; /* 활성화/호버 상태의 배경색 */
-}
-
-.filter-font{
-  color:#007BFF;
-}
-
-.filter-tip{
-  margin-top:10px;
-  border-top: #ccc 1px solid;
-  text-align: start;
-  padding-top: 20px;
-}
+@import "@/assets/css/chatting_view_style.css";
 </style>

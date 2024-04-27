@@ -12,15 +12,16 @@ import RecommendListHotel from '../components/RecommendList/RecommendListHotel.v
 import RecommendListPlace from '../components/RecommendList/RecommendListPlace.vue' 
 import RecommendListEvent from '../components/RecommendList/RecommendListEvent.vue' 
 import RecommendDetail from '../views/Recommend/RecommendDetail.vue'
-//import RecommendDetailFood from '../components/RecommendDetail/RecommendDetailFood.vue'
 import RecommendDetailFood from '../components/RecommendDetail/RecommendDetailFood.vue'
+import RecommendDetailPlace from '../components/RecommendDetail/RecommendDetailPlace.vue'
+import RecommendDetailHotel from '../components/RecommendDetail/RecommendDetailHotel.vue'
+import RecommendDetailEvent from '../components/RecommendDetail/RecommendDetailEvent.vue'
 //import RecommendList from '../views/RecommendListPlace.vue' 
 import MainMap from '@/components/Course/MainMap.vue'
 import CourseView from '../views/Course/CourseView.vue'
 import TravelStyle from '@/views/TravelStyle/TravelStyle.vue';
 import TravelStyleTest from '@/components/TravelStyle/TravelStyleTest.vue'
 import StyleResult from '@/components/TravelStyle/StyleResult.vue'
-
 
 
 const routes = [
@@ -71,14 +72,14 @@ const routes = [
     component: RecommendListFood
   },
   {
-    path: '/listhotel',
-    name: 'listhotel',
-    component: RecommendListHotel
-  },
-  {
     path: '/listplace',
     name: 'listplace',
     component: RecommendListPlace
+  },
+  {
+    path: '/listhotel',
+    name: 'listhotel',
+    component: RecommendListHotel
   },
   {
     path: '/listevent',
@@ -97,6 +98,24 @@ const routes = [
     props: true  // 이를 통해 라우트 파라미터를 prop으로 전달합니다.
   },
   {
+    path: '/detailplace/:recommendPlaceId',
+    name: 'detailplace',
+    component: RecommendDetailPlace,
+    props: true
+  },
+  {
+    path: '/detailhotel/:recommendHotelId',
+    name: 'detailhotel',
+    component: RecommendDetailHotel,
+    props: true
+  },
+  {
+    path: '/detailevent/:recommendEventId',
+    name: 'detailevent',
+    component: RecommendDetailEvent,
+    props: true
+  },
+  {
     path: '/chatting',
     name: 'chatting',
     component: ChattingView
@@ -107,6 +126,7 @@ const routes = [
     component: ChatRoom,
     props: true // 컴포넌트에 URL 파라미터를 props로 전달
   },
+
 ]
 
 const router = createRouter({
