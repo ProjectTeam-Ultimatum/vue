@@ -59,7 +59,7 @@ export default {
     },
 
     userName() {
-      return this.$store.state.auth.name; // Vuex 스토어에서 사용자 이름 가져오기
+      return this.$store.state.auth.userName; // Vuex 스토어에서 사용자 이름 가져오기
     },
     userImage() {
       return this.$store.state.auth.images;

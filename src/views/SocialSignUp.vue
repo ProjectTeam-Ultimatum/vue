@@ -43,6 +43,26 @@
                 />
               </div>
             </div>
+            <!-- <div class="form-group">
+              <label for="email">이메일</label>
+              <input
+                type="email"
+                id="email"
+                v-model="email"
+                placeholder="이메일"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="text"
+                id="name"
+                v-model="name"
+                required
+                placeholder="이름"
+                class="input-field"
+              />
+            </div> -->
 
             <button @click="nextStep" class="next-button">다음</button>
           </div>
@@ -126,17 +146,16 @@
               />
             </div>
           </div>
-          <button type="submit" class="signup-button">회원가입</button>
+          <button type="submit" class="signup-button">상세정보 저장</button>
         </div>
       </form>
     </div>
   </div>
 </template>
+
 <script>
-// import { mapActions } from "vuex";
 export default {
   /* eslint-disable */
-  components: {},
   data() {
     return {
       name: "",
@@ -155,64 +174,72 @@ export default {
       accessToken: null,
     };
   },
-  mounted() {
-    const code = this.$route.query.code;
 
-    if (code) {
-      this.fetchAccessToken(code); // 인증 코드를 사용해 액세스 토큰을 요청
-    }
+  mounted() {
+    this.fetchUser();
   },
   methods: {
-    // ...mapActions("auth", ["setUserInfo", "saveToken"]),
-
     async fetchAccessToken(code) {
-      this.$axios
-        .post(`/api/v1/accessToken?code=${encodeURIComponent(code)}`)
-        .then((response) => {
-          this.accessToken = response.data.accessToken; // 액세스 토큰 저장
-          if (this.accessToken) {
-            this.fetchUser(this.accessToken); // 액세스 토큰을 사용하여 사용자 정보를 가져옵니다.
-          }
-          console.log("accessToken :", this.accessToken);
-        })
-        .catch((error) => {
-          console.error("Error fetching access token:", error);
-        });
+      try {
+        const response = await this.$axios.post(
+          `/api/v1/accessToken?code=${encodeURIComponent(code)}`
+        );
+        this.processLoginResponse(response);
+      } catch (error) {
+        console.error("Error fetching access token: ", error);
+      }
     },
-    async fetchUser(accessToken) {
+    processLoginResponse(response) {
+      //jwt 토큰을 헤더에서 추출
+      const jwtToken =
+        response.headers["authorization"] || response.headers["Authorization"];
+      if (response.data.isNewMember) {
+        this.$router.push({
+          path: "/social",
+          query: { token: jwtToken },
+        });
+      } else {
+        localStorage.setItem("Authorization", jwtToken);
+        this.$store.commit("auth/SET_USER_NAME", response.data.userName);
+        this.$store.commit("auth/SET_USER_IMAGE", response.data.images);
+        this.isAuthenticated = true;
+        this.$router.push({ path: "/" });
+      }
+    },
+    async fetchUser() {
       try {
         const response = await this.$axios.get(
-          `/api/v1/kakao/userinfo?accessToken=${encodeURIComponent(
-            accessToken
-          )}`
+          `/api/v1/kakao/userinfo
+        `
         );
         this.userInfo = response.data; // 사용자 정보 저장
+        localStorage.setItem("Authorization", jwtToken);
+        this.$store.commit("auth/SET_USER_NAME", response.data.userName);
+        this.$store.commit("auth/SET_USER_IMAGE", response.data.images);
+        this.isAuthenticated = true;
         console.log(this.userInfo);
       } catch (error) {
         console.error("Error fetching user data:", error);
+        alert("소셜로그인 실패 :" + error.response.data.message);
       }
     },
-
     socialRegister() {
       //추가 회원 정보와 함께 백엔드로 요청
       const formData = new FormData();
       // 멤버 정보를 객체로 생성
-
       formData.append("memberName", this.userInfo.memberName);
-      formData.append("memberEmail", this.userInfo.memberEmail);
+      formData.append("memberEmail", this.userInfo.meberEmail);
       formData.append("memberAge", this.age);
       formData.append("memberGender", this.gender);
       formData.append("memberAddress", this.address);
       formData.append("memberFindPasswordAnswer", this.answer);
       // 액세스 토큰 추가
       formData.append("accessToken", this.accessToken);
-
       // 프로필 이미지 파일 추가
       if (this.profileImageFile) {
         formData.append("files", this.profileImageFile);
       }
       console.log("서버 요청 전송 데이터:", formData); // 요청 전송 직전
-
       //회원가입요청보내기
       this.$axios
         .post("/api/v1/signup-with-kakao", formData, {
@@ -222,13 +249,11 @@ export default {
         })
         .then((response) => {
           console.log(response.data);
+          this.$router.push({ path: "/" });
         })
         .catch((error) => {
           console.error(error);
-          alert(
-            "소셜로그인 회원가입 실패: " +
-              (error.response.data.message || "오류가 발생했습니다.")
-          );
+          alert(error.response.data.message || "오류가 발생했습니다.");
         });
     },
     triggerFileInput() {
@@ -244,7 +269,6 @@ export default {
           this.profileImageSrc = e.target.result; // 미리보기 이미지를 데이터 URL로 설정
         };
         reader.readAsDataURL(file);
-
         // 파일 객체를 저장합니다.
         this.profileImageFile = file;
       }
@@ -262,7 +286,6 @@ export default {
           this.zonecode = data.zonecode; // 우편번호
           this.roadAddress = data.roadAddress; // 도로명 주소
           this.detailAddress = ""; // 상세 주소는 초기화
-
           // 이제 세 부분의 주소를 합쳐서 `address`에 저장
           this.address = `${data.roadAddress}`; // 도로명 주소로 초기 설정
           this.$refs.detailAddress.focus(); // 상세 주소 필드에 포커스를 줍니다.
@@ -272,6 +295,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 @import "@/assets/css/login_style.css";
 </style>

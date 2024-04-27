@@ -61,20 +61,30 @@ const socket = {
 const authModule = {
   namespaced: true,
   state: {
+    isAuthenticated: false,
+    user : null,
     token: localStorage.getItem('token') || null,
     name: localStorage.getItem('userName') || null,
     images: localStorage.getItem('images') || null,
     email: localStorage.getItem('email') || null,
+    
     
   },
   getters: {
     isAuthenticated: state => !!state.token,
     token: state => state.token,
     userName: state => state.userName,
-    email: state => state.email
-
+    email: state => state.email,
+    // isAuthenticated: state => state.isAuthenticated,
+    user: state => state.user
   },
   mutations: {
+    SET_AUTHENTICATED(state, value) {
+      state.isAuthenticated = value;
+    },
+    SET_USER(state, user) {
+      state.user = user;
+    },
     SET_TOKEN(state, token) {
       state.token = token;
       localStorage.setItem('token', token);
@@ -82,12 +92,12 @@ const authModule = {
     SET_USER_EMAIL(state, email){
       state.email = email;
       console.log('로그인 사용자 : ',state.email)
-      localStorage.setItem('email', email);
+      localStorage.setItem('memberEmail', email);
     },
-    SET_USER_NAME(state, name){
-      state.name = name;
-      console.log('로그인 사용자 이름 : ',state.name)
-      localStorage.setItem('userName', name); // 로컬 스토리지에 사용자 이름 저장
+    SET_USER_NAME(state, userName){
+      state.userName = userName;
+      console.log('로그인 사용자 이름 : ',state.userName)
+      localStorage.setItem('userName', userName); // 로컬 스토리지에 사용자 이름 저장
     },
     SET_USER_IMAGE(state, images){
       state.images = images;
@@ -104,11 +114,16 @@ const authModule = {
     },
     logout({ commit }) {
       commit('SET_TOKEN', null);
+      commit('SET_AUTHENTICATED', false);
     },
-    setUserInfo({ commit }, { name, email, images }) {
-      commit('SET_USER_NAME', name);
+    setUserInfo({ commit }, { userName, email, images }) {
+      commit('SET_USER_NAME', userName);
       commit('SET_USER_EMAIL', email);
       commit('SET_USER_IMAGE', images);
+    },
+    login({ commit }, user) {
+      commit('SET_USER', user);
+      commit('SET_AUTHENTICATED', true);
     },
   },
 };
