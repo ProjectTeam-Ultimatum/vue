@@ -51,9 +51,10 @@
                             <div>
                             <!-- 태그 Read -->
                             <span>이런 점이 좋았어요</span>
-                            <ul class="recommend-tags">
-                              <li v-for="tag in replyEventTags" :key="tag">{{ tag }}</li>
-                            </ul>
+                            <div class="cont-chart">
+                                <!-- PlaceChart 컴포넌트에 recommendPlaceId를 전달합니다 -->
+                                <EventChart :recommendEventId="event.recommendEventId" />
+                            </div>
                           </div>
                              <!-- 버튼 클릭 이벤트에 Event.id 전달 -->
                              <button @click="createModal(recommendEventId)" style="font-size: 12px; cursor: pointer">평점쓰기</button>
@@ -106,6 +107,7 @@
   
   <script>
   import CreateModalEvent from './CreateModalEvent.vue';
+  import EventChart from './EventChart.vue';
   
   export default {
   name: 'RecommendListDetailEvent',
@@ -119,11 +121,12 @@
       recommendListEventRegion: [],
       replyEventStar: '', //축제행사 평점 정보
       recommendReplyStar: '',
-      replyEventTags: ''
+      //replyEventTags: ''
     };
   },
   components: {
-    CreateModalEvent
+    CreateModalEvent,
+    EventChart
   },
   props: {
     recommendEventId: {  // 외부에서 전달받는 ID prop
@@ -149,7 +152,7 @@
                 this.replyModalCreate = false;
                 this.fetchRegionData(); // fetchRegionData 호출
                 this.fetchRatingData(); //fetchRatingData 호출 
-                this.fetchReplyTags();
+                //this.fetchReplyTags();
             }
             console.log("로딩 된 지역 정보:", this.eventeRegion);
             console.log("로딩 된 상세페이지 정보:", this.recommendListDetailEvent);
@@ -200,28 +203,6 @@
         this.replyEventStar = "평점 정보 없음";
       }
   }, //fetchRatingData
-  async fetchReplyTags() {
-      if (!this.recommendEventId) {
-      console.error("recommendEventId가 정의되지 않았습니다!");
-      return;
-    }
-    try {
-      let response = await this.$axios.get(`/api/recommendreply/event/reads/tag-counting/${this.recommendEventId}`);
-      if (response.data) {
-        // 객체 배열을 문자열 배열로 변환합니다.
-        const tags = response.data.map(tagObject => {
-          const key = Object.keys(tagObject)[0]; // 객체에서 키를 가져옵니다.
-          const value = tagObject[key]; // 키에 해당하는 값을 가져옵니다.
-          return `${key}: ${value}`; // "태그명: 개수" 형태의 문자열을 만듭니다.
-        });
-        this.replyEventTags = tags; // 변환된 문자열 배열을 저장합니다.
-      }
-      console.log("로딩 된 태그 정보:", this.replyEventTags);
-    } catch (error) {
-      console.error('태그 정보를 가져오는 중 에러 발생:', error);
-    }
-  }, //fetchReplyTags
-
     isOperating(closeTime) {  //영업중, 영업마감
       if (!closeTime) return '휴무일'; // 휴무일 처리
       

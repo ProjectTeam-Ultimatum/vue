@@ -121,7 +121,7 @@ data() {
     recommendListPlaceRegion: [],
     replyPlaceStar: '', //관광지 평점 정보
     recommendReplyStar: '',
-    replyPlaceTags: ''
+    //replyPlaceTags: ''
   };
 },
 components: {
@@ -257,7 +257,7 @@ methods: {
   refreshPage() {
     // 페이지 새로 고침
     window.location.reload();
-  }
+  } //refreshPage
   },
   mounted() {
     this.fetchPlaceDetails();
@@ -267,7 +267,6 @@ methods: {
     });
   },
   compute: { //기존 데이터를 바탕으로 새로운 데이터 값을 생성할 때
-    //this.placeRegion 로딩 된 지역정보에 맞춰서 api요청
   }
 }
 </script>
