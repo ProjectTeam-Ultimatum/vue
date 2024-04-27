@@ -22,7 +22,7 @@
           :src="userImage || 'default-image-url'"
           class="user-image"
         />
-        {{ userName }} 님 환영합니다.
+        {{ userName }} 님 환영합니다..
         <button @click="logout">로그아웃</button>
       </div>
     </div>
