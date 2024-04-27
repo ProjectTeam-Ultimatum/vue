@@ -1,5 +1,7 @@
 <template>
     <div id="container-wrap">
+        <!-- 헤더 크기만큼 패딩 -->
+        <div class="divider" ></div>
         <div id="container-wrap" class="div-cont">
             <div id="contents">
               <div :key="i" v-for="(food, i) in recommendListDetailFood">
@@ -290,5 +292,8 @@ export default {
 </script>
 
 <style scoped>
+.divider {
+  padding-top: 70px;
+}
 @import "@/assets/recommendDetail_style.css";
 </style>

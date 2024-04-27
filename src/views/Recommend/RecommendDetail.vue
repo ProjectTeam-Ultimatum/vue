@@ -1,8 +1,12 @@
 <template>
+  <div>
     <RecommendDetailFood />
     <RecommendDetailPlace />
     <RecommendDetailHotel />
     <RecommendDetailEvent />
+  </div>
+  
+
 </template>
 
 <script>
