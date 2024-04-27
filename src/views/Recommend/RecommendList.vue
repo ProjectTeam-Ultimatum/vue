@@ -5,7 +5,7 @@
     <div class="fixedTop">
       <div class="recommend-location">
         <span>지금 보고 있는 지역은
-          <!-- selectedRegion에 바인딩하기 위해 v-model -->
+          <!-- selectedRegion에 바인딩하기 위해 v-model ㅎㅎ-->
           <select v-model="selectedRegion">
             <option value="">전체</option>
             <option value="제주시">제주시</option>
