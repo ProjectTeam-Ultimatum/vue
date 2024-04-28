@@ -98,46 +98,5 @@ export default {
 };
 </script>
 <style scoped>
-.full-screen-background {
-  background-image: url("https://ultimatum0807.s3.ap-northeast-2.amazonaws.com/uploads/high-angle-shot-rock-formations-water-pukerua-bay-new-zealand.jpg");
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  height: 100vh; /* 뷰포트 높이를 100%로 설정하여 전체 화면을 채웁니다 */
-  width: 100%;
-  display: flex; /* Flexbox를 사용하여 자식 요소를 중앙에 위치시킵니다 */
-  align-items: center; /* 세로 방향 중앙 정렬 */
-  text-align: start; /* 텍스트 중앙 정렬 */
-}
-
-.centered-text {
-  font-size: 100px;
-  font-weight: bold;
-  margin-left: 100px;
-  color: white; /* 텍스트 색상 */
-  font-size: 2rem; /* 폰트 크기 */
-  max-width: 80%; /* 최대 너비 설정 */
-  padding: 20px; /* 패딩 */
-  background-color: rgba(0, 0, 0, 0.4); /* 반투명 검은색 배경으로 가독성 증가 */
-}
-.divider {
-  padding: 30px;
-}
-.recommend-style,
-.chat,
-.travel-course,
-.my-travel-course {
-  display: flex;
-  background-color: #f3f3f3;
-  padding: 50px;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  width: 100%;
-}
-.recommand-card {
-  width: 100%; /* 카드의 너비를 화면 전체로 설정 */
-  display: flex;
-  justify-content: center; /* 내부 요소를 가로축 중앙에 배치 */
-}
+@import "@/assets/css/mainpage_style.css";
 </style>
