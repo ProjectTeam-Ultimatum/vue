@@ -64,25 +64,23 @@ const authModule = {
     isAuthenticated: !!localStorage.getItem('accessToken'),
     user : null,
     token: localStorage.getItem('token') || null,
-    name: localStorage.getItem('userName') || null,
+    userName: localStorage.getItem('userName') || null,
     images: localStorage.getItem('images') || null,
     email: localStorage.getItem('email') || null,
     accessToken: localStorage.getItem('accessToken') || null,
     refreshToken: localStorage.getItem('refreshToken') || null,
-    
+    kakaoAccessToken: localStorage.getItem('kakaoAccessToken') || null,  // 카카오 액세스 토큰 상태 추가
   },
   getters: {
     isAuthenticated: state => !!state.token,
     token: state => state.token,
     userName: state => state.userName,
     email: state => state.email,
-    user: state => state.user
+    user: state => state.user,
+    kakaoAccessToken: state => state.kakaoAccessToken,  // 카카오 로그인 상태 확인
   },
   mutations: {
-    SET_AUTH(state, payload) {
-      state.isAuthenticated = payload.isAuthenticated;
-      localStorage.setItem('token', payload.token);
-    },
+    
     SET_AUTHENTICATED(state, isAuthenticated) {
       state.isAuthenticated = isAuthenticated;
       if (!isAuthenticated) {
@@ -120,6 +118,7 @@ const authModule = {
         localStorage.removeItem('accessToken');
       }
     },
+    
     SET_REFRESH_TOKEN(state, refreshToken) {
       state.refreshToken = refreshToken;
       localStorage.setItem('refreshToken', refreshToken);
@@ -130,6 +129,11 @@ const authModule = {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       // 추가로, 사용자 정보도 초기화할 수 있습니다.
+    },
+    SET_KAKAO_ACCESS_TOKEN(state, kakaoAccessToken) {
+      state.kakaoAccessToken = kakaoAccessToken;
+      localStorage.setItem('kakaoAccessToken', kakaoAccessToken);
+      
     },
   },
   actions: {
@@ -145,23 +149,18 @@ const authModule = {
       commit('CLEAR_AUTH_DATA');
       
     },
-    setUserInfo({ commit }, { userName, email}) {
-      commit('SET_USER_NAME', userName);
-      commit('SET_USER_EMAIL', email);
-    },
     login({ commit }, user) {
       commit('SET_USER', user);
       commit('SET_AUTHENTICATED', true);
     },
-    authenticateUser({ commit, dispatch }, { accessToken }) {
-      commit('SET_ACCESS_TOKEN', accessToken);
-      // accessToken이 유효하면, 추가적인 사용자 정보를 가져오는 액션을 디스패치합니다.
-      if (accessToken) {
-        dispatch('fetchUserInfo');
-      }
-    },
     setAuthenticated({ commit }, value) {
       commit('SET_AUTHENTICATED', value);
+    },
+    kakaoAccessToken({ commit }, { kakaoAccessToken, userName, email }) {
+      commit('SET_KAKAO_ACCESS_TOKEN', kakaoAccessToken);
+      commit('SET_USER_NAME', userName);
+      commit('SET_USER_EMAIL', email);
+      commit('SET_AUTHENTICATED', true);
     },
   },
   };

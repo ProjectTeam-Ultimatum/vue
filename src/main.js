@@ -23,7 +23,7 @@ axiosInstance.interceptors.request.use(function (config) {
   return config;
 });
 
-
+store.dispatch('auth/refreshApp');
 
 const app = createApp(App);
 library.add(fas, far)

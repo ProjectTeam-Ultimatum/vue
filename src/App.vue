@@ -116,6 +116,7 @@ export default {
       this.$store.commit("auth/SET_USER_EMAIL", null);
       this.$store.commit("auth/SET_USER_NAME", null);
       this.$store.commit("auth/SET_USER_IMAGE", null);
+      this.$store.commit("auth/SET_AUTHENTICATED", null);
 
       // 로컬 스토리지에서 토큰 제거
       localStorage.removeItem("Authorization");

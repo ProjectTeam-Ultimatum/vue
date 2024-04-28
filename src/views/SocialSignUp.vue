@@ -43,7 +43,7 @@
                 />
               </div>
             </div>
-            <!-- <div class="form-group">
+            <div class="form-group">
               <label for="email">이메일</label>
               <input
                 type="email"
@@ -51,18 +51,20 @@
                 v-model="email"
                 placeholder="이메일"
                 required
+                readonly
               />
             </div>
             <div class="form-group">
               <input
                 type="text"
-                id="name"
-                v-model="name"
+                id="userName"
+                v-model="userName"
                 required
                 placeholder="이름"
                 class="input-field"
+                readonly
               />
-            </div> -->
+            </div>
 
             <button @click="nextStep" class="next-button">다음</button>
           </div>
@@ -158,8 +160,8 @@ export default {
   /* eslint-disable */
   data() {
     return {
-      name: "",
-      email: "",
+      userName: this.userName,
+      email: this.email,
       age: null,
       gender: "",
       address: "",
@@ -170,8 +172,6 @@ export default {
       zonecode: "",
       roadAddress: "",
       detailAddress: "",
-      userInfo: null,
-      accessToken: null,
     };
   },
   computed: {
@@ -185,7 +185,7 @@ export default {
   methods: {
     async fetchAccessToken() {
       const code = this.$route.query.code;
-      this.$axios({
+      await this.$axios({
         method: "post",
         url: "/api/v1/accessToken",
         params: {
@@ -195,6 +195,7 @@ export default {
         .then((response) => {
           console.log("code : ", code);
           console.log(response);
+
           this.processLoginResponse(response);
         })
         .catch((error) => {
@@ -205,37 +206,57 @@ export default {
       //jwt 토큰을 헤더에서 추출
       const jwtToken =
         response.headers["authorization"] || response.headers["Authorization"];
+      const kakaoAccessToken = response.data.kakaoAccessToken; // 서버 응답에서 kakaoAccessToken 추출
+      this.userName = response.data.userName; // 예: 사용자 이름
+      this.email = response.data.email; // 예: 이메일
+      console.log(userName, email, kakaoAccessToken);
 
-      if (jwtToken) {
+      if (jwtToken && kakaoAccessToken) {
         localStorage.setItem("Authorization", jwtToken);
-        console.log("jwtToken : ", jwtToken);
+        localStorage.setItem("kakaoAccessToken", kakaoAccessToken); // 로컬 스토리지에 카카오 액세스 토큰 저장
+        localStorage.setItem("userName", this.userName);
+        localStorage.setItem("email", this.email);
 
-        // 사용자 인증 상태를 true로 설정
+        this.$store.dispatch("auth/kakaoAccessToken", {
+          jwtToken,
+          kakaoAccessToken,
+          userName,
+          email,
+        });
+
         if (response.data.isNewMember) {
           this.$router.push({
             path: "/social",
             query: { token: jwtToken },
           });
         } else {
-          this.$router.push("/");
+          this.$router.push("/").then(() => {
+            // 페이지 이동 후 새로고침
+            window.location.reload();
+          });
         }
-      } else {
-        alert("JWT 토큰이 없슴! 오류가 발생했습니다.");
       }
     },
 
     socialRegister() {
+      const kakaoAccessToken = this.$store.state.auth.kakaoAccessToken;
+      console.log("회원정보", kakaoAccessToken);
+      if (!kakaoAccessToken) {
+        alert("엑세스 토큰이 누락되었습니다.");
+        return;
+      }
       //추가 회원 정보와 함께 백엔드로 요청
       const formData = new FormData();
       // 멤버 정보를 객체로 생성
-      formData.append("memberName", this.userInfo.memberName);
-      formData.append("memberEmail", this.userInfo.meberEmail);
+      formData.append("memberName", this.userName);
+      formData.append("memberEmail", this.email);
       formData.append("memberAge", this.age);
       formData.append("memberGender", this.gender);
       formData.append("memberAddress", this.address);
       formData.append("memberFindPasswordAnswer", this.answer);
       // 액세스 토큰 추가
-      formData.append("accessToken", this.accessToken);
+      formData.append("accessToken", kakaoAccessToken);
+
       // 프로필 이미지 파일 추가
       if (this.profileImageFile) {
         formData.append("files", this.profileImageFile);
@@ -243,14 +264,17 @@ export default {
       console.log("서버 요청 전송 데이터:", formData); // 요청 전송 직전
       //회원가입요청보내기
       this.$axios
-        .post("/api/v1/signup-with-kakao", formData, {
+        .put("/api/v1/signup-with-kakao", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         })
         .then((response) => {
           console.log(response.data);
-          this.$router.push({ path: "/" });
+          this.$router.push("/").then(() => {
+            // 페이지 이동 후 새로고침
+            window.location.reload();
+          });
         })
         .catch((error) => {
           console.error(error);
