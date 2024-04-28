@@ -1,9 +1,10 @@
 <template>
+<div class="all-container">
   <div class="app-container">
     <div class="divider" ></div>
   <div class="title-container">
   <!-- 타이틀 -->
-    <h1>여행 조인 게시판</h1>
+    <h1>여행 <span class="highlight" style="font-size:47px">조인</span> 게시판</h1>
     <p class="write-text" @click="showModal = true">
   <font-awesome-icon icon="fa-solid fa-pen-to-square" /> 글쓰기
 </p>
@@ -78,7 +79,7 @@
 </div>
 
   <!-- 서브타이틀 -->
-  <p style="text-align: left;">당신의 여행이 더욱 특별해질 수 있게 여행메이트를 찾아보세요.</p>
+  <p style="text-align: left; margin-left:50px;">당신의 여행이 더욱 특별해질 수 있게 여행메이트를 찾아보세요.</p>
 
   <!-- 검색 폼 -->
   <div class="d-flex justify-content-center pb-5 pt-5">
@@ -91,12 +92,38 @@
       <div class="chatroom-header">
         <!-- 채팅방 목록 가운데 정렬을 위한 래퍼 -->
         <div class="title-wrapper">
-        <h2 style="margin-top: 20px;">채팅방 목록</h2>
+        <h2>채팅방 목록</h2>
         </div>
         <div class="filter-text" @click="showFilterModal = true">
           <font-awesome-icon icon="fa-solid fa-sliders" /> 필터
         </div>
       </div>
+
+      <!-- 채팅방 카드 목록 -->
+      <div v-for="room in filteredAndSortedChatRooms" :key="room.chatRoomId" class="card-container">
+          <div class="profile-picture">
+              <img :src="room.creatorImage || require('@/assets/images/profile.png')" alt="Profile Picture">
+              <p class="profile-name">{{ room.creatorName }}
+                <img v-if="room.creatorGender === 'M'" :src="require('@/assets/images/male.png')" alt="Male" style="height: 25px; width: 25px;"/>
+                <img v-else :src="require('@/assets/images/female.png')" alt="Female" style="height: 25px; width: 25px;"/>
+              </p> <!-- 작성자 이름 -->
+              <p class="profile-detail">{{ room.creatorAge }}살</p> <!-- 작성자 나이 -->
+          </div>
+          <div class="text-content">
+              <h3 class="chatroom-name">[{{ room.reviewLocation }}]  {{ room.chatRoomName }}</h3>
+              <p class="subtitle">{{ room.chatRoomContent }}</p>
+              <div class="tag">
+                  <span v-for="tag in room.travelStyleTags" :key="tag" class="travel-style-tag">
+                      #{{ tag }}
+                  </span>
+              </div>
+              <div class="button-group">
+                  <button class="btn-submit" @click="enterChatRoom(room.chatRoomId)">입장</button>
+                  <button v-if="room.memberId === currentUserId" class="btn-down" @click="deleteChatRoom(room.chatRoomId)">삭제</button>
+              </div>
+          </div>
+      </div>
+    </div>
 
     <!-- 필터 모달창 내용 -->
     <div v-if="showFilterModal" class="chat-modal" @click.self="showFilterModal = false">
@@ -149,34 +176,7 @@
         </div>
       </div>
     </div>
-
-      <!-- 채팅방 카드 목록 -->
-      <div v-for="room in filteredAndSortedChatRooms" :key="room.chatRoomId" class="card-container">
-          <div class="profile-picture">
-              <img :src="room.creatorImage || require('@/assets/images/profile.png')" alt="Profile Picture">
-              <p class="profile-name">{{ room.creatorName }}
-                <img v-if="room.creatorGender === 'M'" :src="require('@/assets/images/male.png')" alt="Male" style="height: 25px; width: 25px;"/>
-                <img v-else :src="require('@/assets/images/female.png')" alt="Female" style="height: 25px; width: 25px;"/>
-              </p> <!-- 작성자 이름 -->
-              <p class="profile-detail">{{ room.creatorAge }}살</p> <!-- 작성자 나이 -->
-          </div>
-          <div class="text-content">
-              <h3 class="chatroom-name">[{{ room.reviewLocation }}]  {{ room.chatRoomName }}</h3>
-              <p class="subtitle">{{ room.chatRoomContent }}</p>
-              <div class="tag">
-                  <span v-for="tag in room.travelStyleTags" :key="tag" class="travel-style-tag">
-                      #{{ tag }}
-                  </span>
-              </div>
-              <div class="button-group">
-                  <button class="btn-submit" @click="enterChatRoom(room.chatRoomId)">입장</button>
-                  <button v-if="room.memberId === currentUserId" class="btn-down" @click="deleteChatRoom(room.chatRoomId)">삭제</button>
-              </div>
-          </div>
-      </div>
-
-    </div>
-
+</div>
 </div>
 </template>
 
