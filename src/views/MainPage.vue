@@ -1,9 +1,18 @@
 <template>
-  <div class="full-screen-background">
+  <!-- 기존 메인 이미지-->
+  <!-- <div class="full-screen-background">
     <div v-if="isValidStyle" class="centered-text">
       반갑습니다~<br />
       당신의 여행스타일은<span style="color: #F7C347;"> {{ getMbtiNickname() }} </span>입니다.
     </div>
+  </div> -->
+  <div>
+    <SlideMainImg class="main_vis">
+      <!-- <div v-if="isValidStyle" class="centered-text">
+        반갑습니다~<br />
+        당신의 여행스타일은<span style="color: #F7C347;"> {{ getMbtiNickname() }} </span>입니다.
+      </div> -->
+    </SlideMainImg>
   </div>
   <div class="divider" ></div>
   <div class="recommend-style">
@@ -36,12 +45,17 @@
 </template>
 
 <script>
+
 import LatestReviews from "../components/Review/LatestReviews.vue";
+import SlideMainImg from "../components/MainPage/SlideMainImg.vue";
 // @ is an alias to /src
 /* eslint-disable */
 export default {
   name: "MainPage",
-  components: { LatestReviews },
+  components: { 
+    LatestReviews,
+    SlideMainImg
+  },
   
   data(){
     return {

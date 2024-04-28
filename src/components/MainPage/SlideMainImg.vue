@@ -7,21 +7,30 @@
   </div>
   <div class="carousel-inner">
     <div class="carousel-item active">
-      <img src="..." class="d-block w-100" alt="...">
-      <div class="carousel-caption d-none d-md-block">
-        <h5>First slide label</h5>
-        <p>Some representative placeholder content for the first slide.</p>
+      <img src="@/assets/images/main02.jpg" class="d-block w-100" alt="...">
+      <div class="swiper-slide">
+        <div class="tit_wrap">
+            <h1>
+                <p><strong>같이</strong> 하는 여행</p>
+                <p><strong>함께</strong> 하는 여행</p>
+            </h1>
+            <h6>
+                <p>여행 장소와 날짜부터 1:1 채팅까지</p>
+                <p>나와 꼭 맞는 여행 친구 찾기</p>
+            </h6>
+            <!-- <a href="" tabindex="-1">자세히 보기</a> -->
+        </div>
       </div>
     </div>
     <div class="carousel-item">
-      <img src="..." class="d-block w-100" alt="...">
-      <div class="carousel-caption d-none d-md-block">
+      <img src="@/assets/images/main01.jpg" class="d-block w-100" alt="...">
+      <div class="carousel-caption d-none d-md-block">np
         <h5>Second slide label</h5>
         <p>Some representative placeholder content for the second slide.</p>
       </div>
     </div>
     <div class="carousel-item">
-      <img src="..." class="d-block w-100" alt="...">
+      <img src="@/assets/images/main03.jpg" class="d-block w-100" alt="...">
       <div class="carousel-caption d-none d-md-block">
         <h5>Third slide label</h5>
         <p>Some representative placeholder content for the third slide.</p>

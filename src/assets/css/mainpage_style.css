@@ -9,7 +9,33 @@
     align-items: center; /* 세로 방향 중앙 정렬 */
     text-align: start; /* 텍스트 중앙 정렬 */
   }
+
+  .main_vis {
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 70vh; /* 뷰포트 높이를 100%로 설정하여 전체 화면을 채웁니다 */
+    width: 100%;
+    display: flex; /* Flexbox를 사용하여 자식 요소를 중앙에 위치시킵니다 */
+    align-items: center; /* 세로 방향 중앙 정렬 */
+    text-align: start; /* 텍스트 중앙 정렬 */
+    overflow: hidden;
+    position: relative;
+  }
+
+  .swiper-slide {
+    width: 370px;
+    position: absolute;
+    left: 10%;
+    top: 35%;
+  }
   
+  .tit_wrap {
+    margin: 90px 0 0;
+    border: 1px solid red;
+    margin: 30px;
+  }
+
   .centered-text {
     font-size: 100px;
     font-weight: bold;
@@ -40,3 +66,4 @@
     display: flex;
     justify-content: center; /* 내부 요소를 가로축 중앙에 배치 */
   }
+
