@@ -86,7 +86,6 @@ export default {
       try {
         const response = await this.$axios.get("/api/v1/user/info/detail");
         this.memberStyle = response.data.memberStyle; // 스타일 정보를 로컬 데이터에 저장
-        console.log("API response:", response.data); // API 응답 로깅
       } catch (error) {
         console.error("인증된 사용자가 아닙니다. : ", error);
         this.memberStyle = "정보를 불러올 수 없습니다"; // 에러 처리 추가
