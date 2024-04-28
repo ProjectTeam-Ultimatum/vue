@@ -16,8 +16,15 @@ const socket = {
     SOCKET_DISCONNECT(state) {
       state.isConnected = false;
     },
+
     SOCKET_MESSAGE(state, message) {
       state.messages.push(message);
+
+    mutations: {
+        savePlanInfo(state, payload) {
+            state.planInfo = payload;
+        }
+
     },
   },
   actions: {
