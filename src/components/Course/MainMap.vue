@@ -195,7 +195,7 @@ methods: {
         this.currentDescription = '코스설명1';
         break;
       case 'B':
-        this.currentSchedule = '2박3일 여행';
+        this.currentSchedule = '2박 3일';
         this.currentTheme = '올레길 탐방';
         this.currentDescription = '제주 올레길은 골목길들이 크게 하나로 이어지는 제주도 도보 여행 코스이다. 총 26코스 425km으로 이어진 올레길은 겉으로 잘 보이지 않는 제주의 아름다운 속살을 다채롭게 보여준다. 길 따라 걷다 보면 신천 바다목장의 주황색 귤 꽃밭, 제주도 명소인 민물과 바닷물이 만나는 쇠소깍도 만날 수 있다. 제주도가 사시사철 매 순간 다양한 모습을 보여주듯 천천히 걸을수록 더 많은 것을 볼 수 있다.';
         break;
