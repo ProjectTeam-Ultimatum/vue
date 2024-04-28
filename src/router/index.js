@@ -23,6 +23,7 @@ import TravelStyle from '@/views/TravelStyle/TravelStyle.vue';
 import TravelStyleTest from '@/components/TravelStyle/TravelStyleTest.vue'
 import StyleResult from '@/components/TravelStyle/StyleResult.vue'
 import MonthCalendar from '../views/schedule/MonthCalendar.vue'
+import PlanCourse from '../views/schedule/PlanCourse.vue'
 
 
 
@@ -58,6 +59,13 @@ const routes = [
     name: 'schedule',
     component: MonthCalendar
   },
+
+  {
+    path: '/plancourse',
+      name: 'plancourse',
+      component: PlanCourse
+  },
+
   {
     path: '/course',
     name: 'course',
