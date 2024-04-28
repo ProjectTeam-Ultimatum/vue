@@ -22,6 +22,8 @@ import CourseView from '../views/Course/CourseView.vue'
 import TravelStyle from '@/views/TravelStyle/TravelStyle.vue';
 import TravelStyleTest from '@/components/TravelStyle/TravelStyleTest.vue'
 import StyleResult from '@/components/TravelStyle/StyleResult.vue'
+import MonthCalendar from '../views/schedule/MonthCalendar.vue'
+
 
 
 const routes = [
@@ -50,6 +52,11 @@ const routes = [
     path: '/reviews',
     name: 'reviews',
     component: ReviewBoard
+  },
+  {
+  path: '/schedule',
+    name: 'schedule',
+    component: MonthCalendar
   },
   {
     path: '/course',

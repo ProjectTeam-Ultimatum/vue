@@ -1,5 +1,4 @@
 <template>
-
   <nav :class="{ 'main-page': isMainPage, scrolled: isScrolled }">
     <router-link class="main-logo" to="/"
       ><img src="./assets/images/logoImage.png" style="width: 40px" />제주랑
@@ -33,6 +32,11 @@
     />
   </nav>
   <router-view />
+  <!-- <nav>
+    <router-link to="/">Home</router-link> |
+    <router-link to="/reviews">Review</router-link> |
+    <router-link to="/schedule">schedule</router-link>
+  </nav> -->
 </template>
 
 <script>
