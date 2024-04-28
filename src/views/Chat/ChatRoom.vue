@@ -38,14 +38,14 @@
       <!-- 채팅 메시지 목록 -->
       <ul>
         <li v-for="message in messages" :key="message.chatMessageId"
-            :class="{'my-message': message.senderId === userName, 'other-message': message.senderId !== userName, 'enter-leave-message': message.messageType === 'ENTER' || message.messageType === 'LEAVE'}"
+            :class="{'my-message': message.senderId === userName, 'other-message': message.senderId !== userName, 'enter-leave-message': message.messageType === 'ENTER' || message.messageType === 'LEAVE' || message.messageType === 'WARNING'}"
             @click="activateMessage(message)">
-          <span v-if="message.messageType !== 'ENTER' && message.messageType !== 'LEAVE'" class="message-sender">{{ message.senderId }}:</span>
+          <span v-if="message.messageType !== 'ENTER' && message.messageType !== 'LEAVE' && message.messageType !== 'WARNING'" class="message-sender">{{ message.senderId }}:</span>
           <span v-if="isImageUrl(message.message)" class="message-content">
             <img :src="message.message" alt="Image" style="max-width: 200px; max-height: 200px;">
           </span>
           <span v-else class="message-content">{{ message.message }}</span>
-          <img v-if="message.senderId !== userName && message.messageType !== 'ENTER' && message.messageType !== 'LEAVE' && message.chatMessageId === activeChatMessageId"
+          <img v-if="message.senderId !== userName && message.messageType !== 'ENTER' && message.messageType !== 'LEAVE' && message.messageType !== 'WARNING' && message.chatMessageId === activeChatMessageId"
             :src="require('@/assets/images/siren.png')" alt="Report" class="report-button"
             @click.stop="reportUser(message.senderEmail, message.message)">
         </li>
@@ -106,7 +106,7 @@
         <button @click="showReportModal = false" class="closeReportButton">취소</button>
       </div>
     </div>
-
+    
   </div>
 </template>
 
@@ -272,35 +272,35 @@ export default {
         this.connectedChatRooms = data.chatRooms;
       }
 
+
       // 시스템 메시지 (사용자 입장 및 퇴장) 처리
-      else if (data.messageType === 'ENTER' || data.messageType === 'LEAVE') {
+      if (data.messageType === 'ENTER' || data.messageType === 'LEAVE') {
         data.isSystemMessage = true;
         this.messages.push(data);
       }
       
       // 새로운 일반 메시지 처리
-      else if (data.type === 'NEW_MESSAGE') {
+      else if (data.messageType === 'TALK') {
         // 새 메시지 객체 생성
         const newMessage = {
           chatMessageId: data.chatMessageId, // 메시지에 고유 ID 할당
           senderId: data.senderId,
           message: data.message,
           messageType: data.messageType,
-          isMine:data.senderId === this.userName
+          isMine: data.senderId === this.userName
         };
-
         // 메시지 배열에 새 메시지 추가
         this.messages.push(newMessage);
+        this.fetchMessages(); // 메시지 전송 후 메시지 목록 새로고침
       }
 
-      // 기존 일반 메시지 처리 (기존 로직 유지)
+      // 기존 일반 메시지 처리
       else if (data.senderId && data.message) {
         data.isMine = data.senderId === this.userName;
         this.messages.push(data);
-        this.fetchMessages(); // 메시지 전송 후 메시지 목록 새로고침
+        
       }
     },
-    
 
     fetchChatRoomDetails(roomId) {
       // Axios를 사용하여 백엔드 API 호출
@@ -331,9 +331,11 @@ export default {
           console.error("사용자 정보를 불러오는 중 오류가 발생했습니다:", error);
         });
     },
+
     getMbtiNickname() {
       return this.mbtiNicknames[this.userStyle] || '알 수 없는 스타일';
     },
+
     fetchMessages() {
       // 채팅방 메시지 내역을 불러오는 API 호출
       this.$axios.get(`http://localhost:8080/api/v1/chat/room/${this.chatRoomId}/messages`)
@@ -344,6 +346,7 @@ export default {
           console.error("채팅방 메시지를 불러오는 중 오류가 발생했습니다:", error);
         });
     },
+
     // 웹소켓 메세지 전송 메소드 
     sendMessage(imageUrl = '') {
 
@@ -373,7 +376,6 @@ export default {
       if (this.socket && this.socket.readyState === WebSocket.OPEN) {
         this.socket.send(JSON.stringify(messageData));
         this.newMessage = '';  // 입력 필드 초기화
-        this.fetchMessages(); // 메시지 전송 후 메시지 목록 새로고침
       } else {
         console.error("WebSocket 연결이 되어있지 않습니다.");
       }
@@ -386,21 +388,21 @@ export default {
         this.warningCount = 0;  // 경고 횟수 초기화
       }, 300000); // 5분 동안 채팅 금지
     },
+
     // 욕설 필터링 함수
     filterMessage(message) {
       return this.badWordsPattern.test(message);
     },
-    displayMessage(msg) {
-      this.warningMessage = msg;
-      this.showModal = true;
-    },
+ 
     closeModal() {
       this.showModal = false;
     },
+
     // 이미지 url 이 실제 사진으로 보이게 하는 메소드
     isImageUrl(message) {
       return message.startsWith("http") && (message.endsWith(".png") || message.endsWith(".jpg") || message.endsWith(".jpeg") || message.endsWith(".gif"));
     },
+
     enterChatRoom() {
     // WebSocket이 열려있는지 확인하고, 열려있다면 서버에 입장 신호만 전송합니다.
       if (this.socket && this.socket.readyState === WebSocket.OPEN) {
@@ -417,10 +419,12 @@ export default {
         console.error("WebSocket 연결이 준비되지 않았습니다.");
       }
     },
+
     goBackToChatList() {
       // 채팅 목록 페이지로 이동
       this.$router.push('/chatting');
     },
+
     leaveChatRoom() {
       const leaveMessage = {
         messageType: "LEAVE",
@@ -433,6 +437,7 @@ export default {
       }
       this.$router.push({ name: 'chatting' });
     },
+    
     scrollToBottom() {
       this.$nextTick(() => {
         const container = this.$refs.messageContainer;
@@ -468,6 +473,7 @@ export default {
           console.error('신고 접수 중 문제가 발생했습니다.', error);
         });
     },
+
     closeReportModal() {
       this.showReportModal = false;
       // 신고 상태 초기화
@@ -475,6 +481,7 @@ export default {
       this.report.reportedMessage = '';
       this.report.reportReason = '';
     },
+    
     activateMessage(message) {
       if (this.activeChatMessageId === message.chatMessageId) {
         this.activeChatMessageId = null;
