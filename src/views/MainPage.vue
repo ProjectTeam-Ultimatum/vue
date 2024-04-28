@@ -7,12 +7,7 @@
     </div>
   </div> -->
   <div>
-    <SlideMainImg class="main_vis">
-      <!-- <div v-if="isValidStyle" class="centered-text">
-        반갑습니다~<br />
-        당신의 여행스타일은<span style="color: #F7C347;"> {{ getMbtiNickname() }} </span>입니다.
-      </div> -->
-    </SlideMainImg>
+    <SlideMainImg class="main-vis" />
   </div>
   <div class="divider" ></div>
   <div class="recommend-style">
