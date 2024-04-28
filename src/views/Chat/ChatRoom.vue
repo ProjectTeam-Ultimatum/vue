@@ -273,7 +273,7 @@ export default {
       }
 
       // 시스템 메시지 (사용자 입장 및 퇴장) 처리
-      if (data.messageType === 'ENTER' || data.messageType === 'LEAVE') {
+      else if (data.messageType === 'ENTER' || data.messageType === 'LEAVE') {
         data.isSystemMessage = true;
         this.messages.push(data);
       }
@@ -286,11 +286,8 @@ export default {
           senderId: data.senderId,
           message: data.message,
           messageType: data.messageType,
-          // ...기타 메시지 관련 필드
+          isMine:data.senderId === this.userName
         };
-
-        // 메시지가 내가 보낸 메시지인지 타인이 보낸 메시지인지 판단
-        newMessage.isMine = newMessage.senderId === this.userName;
 
         // 메시지 배열에 새 메시지 추가
         this.messages.push(newMessage);
@@ -300,6 +297,7 @@ export default {
       else if (data.senderId && data.message) {
         data.isMine = data.senderId === this.userName;
         this.messages.push(data);
+        this.fetchMessages(); // 메시지 전송 후 메시지 목록 새로고침
       }
     },
     
@@ -375,6 +373,7 @@ export default {
       if (this.socket && this.socket.readyState === WebSocket.OPEN) {
         this.socket.send(JSON.stringify(messageData));
         this.newMessage = '';  // 입력 필드 초기화
+        this.fetchMessages(); // 메시지 전송 후 메시지 목록 새로고침
       } else {
         console.error("WebSocket 연결이 되어있지 않습니다.");
       }
