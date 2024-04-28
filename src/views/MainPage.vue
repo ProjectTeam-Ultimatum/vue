@@ -83,14 +83,8 @@ export default {
 
   methods: {
     async fetchUserInfo() {
-      if (!this.Authenticated) {
-        console.log("사용자가 로그인하지 않았습니다.");
-        return;
-      }
       try {
         const response = await this.$axios.get("/api/v1/user/info/detail");
-        this.$store.commit("auth/SET_USER_NAME", response.data.userName);
-        this.$store.commit("auth/SET_USER_IMAGE", response.data.images);
         this.memberStyle = response.data.memberStyle; // 스타일 정보를 로컬 데이터에 저장
         console.log("API response:", response.data); // API 응답 로깅
       } catch (error) {

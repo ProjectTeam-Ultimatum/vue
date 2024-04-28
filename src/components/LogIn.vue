@@ -541,6 +541,10 @@ export default {
       this.passwordFieldType =
         this.passwordFieldType === "password" ? "text" : "password";
     },
+    // switchToSignup() {
+    //   this.showModal = false; // 로그인 모달 닫기
+    //   this.showSignupModal = true; // 회원가입 모달 열기
+    // },
     triggerFileInput() {
       this.$refs.profileImage.click();
     },

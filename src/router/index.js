@@ -109,9 +109,14 @@ const routes = [
     props: true // 컴포넌트에 URL 파라미터를 props로 전달
   },
   {
-    path: '/social', // 이 경로는 카카오 개발자 콘솔에 설정한 리디렉트 URI와 일치해야 합니다.
-    component: () => import('@/views/SocialSignUp.vue') // OAuth2 콜백을 처리할 컴포넌트
+    path: '/social', // 동적 세그먼트를 사용한 경로
+    name: 'SocialSignUp',
+    component: SocialSignUp,
   },
+  // {
+  //   path: '/social', // 이 경로는 카카오 개발자 콘솔에 설정한 리디렉트 URI와 일치해야 합니다.
+  //   component: () => import('@/views/SocialSignUp.vue') // OAuth2 콜백을 처리할 컴포넌트
+  // },
 ]
 
 const router = createRouter({

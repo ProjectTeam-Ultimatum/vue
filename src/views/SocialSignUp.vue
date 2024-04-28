@@ -174,55 +174,56 @@ export default {
       accessToken: null,
     };
   },
-
+  computed: {
+    isAuthenticated() {
+      return this.$store.state.isAuthenticated;
+    },
+  },
   mounted() {
-    this.fetchUser();
+    this.fetchAccessToken();
   },
   methods: {
-    async fetchAccessToken(code) {
-      try {
-        const response = await this.$axios.post(
-          `/api/v1/accessToken?code=${encodeURIComponent(code)}`
-        );
-        this.processLoginResponse(response);
-      } catch (error) {
-        console.error("Error fetching access token: ", error);
-      }
+    async fetchAccessToken() {
+      const code = this.$route.query.code;
+      this.$axios({
+        method: "post",
+        url: "/api/v1/accessToken",
+        params: {
+          code: code, // URL 인코딩이 필요 없는 경우
+        },
+      })
+        .then((response) => {
+          console.log("code : ", code);
+          console.log(response);
+          this.processLoginResponse(response);
+        })
+        .catch((error) => {
+          console.error("Error message:", error.message);
+        });
     },
     processLoginResponse(response) {
       //jwt 토큰을 헤더에서 추출
       const jwtToken =
         response.headers["authorization"] || response.headers["Authorization"];
-      if (response.data.isNewMember) {
-        this.$router.push({
-          path: "/social",
-          query: { token: jwtToken },
-        });
+
+      if (jwtToken) {
+        localStorage.setItem("Authorization", jwtToken);
+        console.log("jwtToken : ", jwtToken);
+
+        // 사용자 인증 상태를 true로 설정
+        if (response.data.isNewMember) {
+          this.$router.push({
+            path: "/social",
+            query: { token: jwtToken },
+          });
+        } else {
+          this.$router.push("/");
+        }
       } else {
-        localStorage.setItem("Authorization", jwtToken);
-        this.$store.commit("auth/SET_USER_NAME", response.data.userName);
-        this.$store.commit("auth/SET_USER_IMAGE", response.data.images);
-        this.isAuthenticated = true;
-        this.$router.push({ path: "/" });
+        alert("JWT 토큰이 없슴! 오류가 발생했습니다.");
       }
     },
-    async fetchUser() {
-      try {
-        const response = await this.$axios.get(
-          `/api/v1/kakao/userinfo
-        `
-        );
-        this.userInfo = response.data; // 사용자 정보 저장
-        localStorage.setItem("Authorization", jwtToken);
-        this.$store.commit("auth/SET_USER_NAME", response.data.userName);
-        this.$store.commit("auth/SET_USER_IMAGE", response.data.images);
-        this.isAuthenticated = true;
-        console.log(this.userInfo);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        alert("소셜로그인 실패 :" + error.response.data.message);
-      }
-    },
+
     socialRegister() {
       //추가 회원 정보와 함께 백엔드로 요청
       const formData = new FormData();
