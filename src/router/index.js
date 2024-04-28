@@ -22,8 +22,8 @@ const routes = [
     component: MonthCalendar
   },
   {
-    path: '/plans/:planId',
-      name: 'PlanDetails',
+    path: '/plancourse',
+      name: 'plancourse',
       component: PlanCourse
   },
   {

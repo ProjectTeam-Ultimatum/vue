@@ -16,7 +16,7 @@
             <div class="stepOff1">숙소 선택</div>
           </div>
         </div>
-        <div class="calendar-plan">
+        <div>
           <div>
             <div class="scheduletitle1">여행 기간 설정</div>
             <div class="scheduletitle2">*최대 5일까지 설정 가능합니다*</div>
@@ -27,6 +27,8 @@
                 <h3>
                 </h3>
                 <div class="navs">
+                  <span class="monthbutton1" @click="prevMonth"><font-awesome-icon icon="fa-solid fa-chevron-left" /></span>
+                  <span class="yearmonth">{{ cal.yearText }}년 {{ cal.monthText }}월</span>
                 </div>
               </nav>
               <section class="dow">
@@ -42,23 +44,25 @@
               <section class="month-body">
                 <div v-for="week in cal.getWeeks()" :key="week" class="week">
                   <div
-                      v-for="date in week.days()"
-                      :key="date"
-                      class="cell"
-                      @mouseover="onMouseover(date)"
-                      :class="{
-                        'today': cal.isToday(date),
-                        'saturday-cell': date.weekOffset === 6,
-                        'sunday-cell': date.weekOffset === 0,
-                        'hide-date': cal.isOutOfBoundCurrentMonth(date),
-                        'past-date': cal.isPastDate(date),
-                        'in-range': isDateInRange(date),
-                        'selected': isSelected(date),
-                        'hover-selected': isHoverSelected(date),
-                        'hover-in-range': isHoverInRange(date)
-                      }"
-                      @click="handleDateClick(date)"
-                    >
+                  v-for="date in week.days()"
+                  :key="date"
+                  class="cell"
+                  @mouseover="onMouseover(date)"
+                  @click="handleDateClick(date)"
+                  :class="{
+                    'today': cal.isToday(date),
+                    'today-not-selected': cal.isToday(date) && !isSelected(date),
+                    'next-month': cal.isOutOfBoundCurrentMonth(date),
+                    'saturday-cell': date.weekOffset === 6,
+                    'sunday-cell': date.weekOffset === 0,
+                    'hide-date': cal.isOutOfBoundCurrentMonth(date),
+                    'past-date': cal.isPastDate(date),
+                    'in-range': isDateInRange(date),
+                    'selected': isSelected(date),
+                    'hover-selected': isHoverSelected(date),
+                    'hover-in-range': isHoverInRange(date),
+                  }"
+                >
                     <span class="date">{{ date.date }}</span>
                   </div>
                 </div>
@@ -66,8 +70,8 @@
             </div>
             <div class="month-container">
               <nav>
-                <h3>
-                </h3>
+                <span class="yearmonth">{{ cal.nextYearText }}년 {{ cal.nextMonthText }}월</span>
+                <span class="monthbutton2" @click="nextMonth"><font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
               </nav>
               <section class="dow">
                 <div v-for="day in days" :key="day" class="day">{{ day }}</div>
@@ -75,12 +79,14 @@
               <section class="month-body">
                 <div v-for="week in cal.getNextMonthWeeks()" :key="week" class="week">
                   <div
-                    v-for="date in week.days()"
-                    :key="date"                                             
-                    class="cell"
-                    @mouseover="onMouseover(date)"
+                  v-for="date in week.days()"
+                      :key="date"
+                      class="cell"
+                      @mouseover="onMouseover(date)"
+                      @click="handleDateClick(date)"
                       :class="{
                         'today': nextCal.isToday(date),
+                        'today-not-selected': nextCal.isToday(date) && !isSelected(date),
                         'next-month': cal.nextContainsDate(date),
                         'saturday-cell': date.weekOffset === 6,
                         'sunday-cell': date.weekOffset === 0,
@@ -91,13 +97,14 @@
                         'hover-selected': isHoverSelected(date),
                         'hover-in-range': isHoverInRange(date)
                       }"
-                      @click="handleDateClick(date)"
                     >
                     <span class="date">{{ date.date }}</span>
                   </div>
                 </div>
               </section>
-              <button @click="currentStep = 2">다음</button>
+              <div style="display:flex; justify-content:right;">
+                <button class="nextbutton" @click="currentStep = 2">다음</button>
+              </div>
             </div>
           </div>
         </div>
@@ -118,27 +125,32 @@
           </div>
         </div>
         <div class="plantime">
-          <div class="plantimetitle">{{ formattedSelectedDates }}
-            <button>일정</button>
+          <div class="plantimetitle">{{ formattedSelectedDates }}&nbsp;
+            <span @click="currentStep = 1" style="font-size: 25px; cursor: pointer;"><font-awesome-icon icon="fa-solid fa-calendar-days" /></span>
           </div>
-          <div class="plandaytime"></div>
           <div class="time-settings">
             <div v-for="(daytime, index) in formattedDateRange" :key="index" class="day-container">
-              <div class="date-title">{{ 'day' + daytime.dayNumber + ' ' + daytime.dateFormatted }}</div>
+              <span class="date-title1">{{ 'day' + (index + 1) }}</span>&nbsp;&nbsp;
+              <span class="date-title2">{{ simpleday(daytime.dateFormatted.split('/')[0]) }}</span>
               <div class="time-range">
                 <div class="time-setting">
-                  <label :for="'startTime' + index">시작</label>
-                  <input type="time" :id="'startTime' + index" v-model="daytime.startTime" @change="updateDaystime">
+                  <div :for="'startTime' + index">시작</div>
+                  <input type="time" :id="'startTime' + index"
+                    :value="displayedTimes[index].startTime"
+                    @input="handleTimeChange($event, index, 'startTime')">
                 </div>
                 <div class="time-setting">
-                  <label :for="'finishTime' + index">종료</label>
-                  <input type="time" :id="'finishTime' + index" v-model="daytime.finishTime" @change="updateDaystime">
+                  <div :for="'finishTime' + index">종료</div>
+                  <input type="time" :id="'finishTime' + index"
+                    :value="displayedTimes[index].finishTime"
+                    @input="handleTimeChange($event, index, 'finishTime')">
                 </div>
+                <div class="simpletime">{{ displayedTimes[index].startTime }} ~ {{ displayedTimes[index].finishTime }} ({{ calculateDuration(displayedTimes[index].startTime, displayedTimes[index].finishTime) }})</div>
               </div>
             </div>
           </div>
-          <button @click="currentStep = 3">다음</button>
         </div>
+        <button class="nextbutton" style="margin-top:117px; margin-left:858px;" @click="currentStep = 3">다음</button>
       </div>
       <div v-if="currentStep === 3" class="STEP02">
         <div class="stepkey">
@@ -186,12 +198,25 @@
         <div class="place-container">
           <div class="list-container">
             <div v-for="item in items" :key="item.title" class="list-item">
-                <img :src="item.imgPath" :alt="item.title" class="item-image" @error="handleImageError"/>
-                <div class="item-group">
-                    <div class="item-title">{{ item.title }}</div>
-                    <div class="item-description">{{ item.address }}</div>
-                    <button @click="addToSelected(item, item.category)">+</button>
+              <img :src="item.imgPath" :alt="item.title" class="item-image" @error="handleImageError"/>
+              <div class="item-group">
+                <div>
+                  <div class="item-title">{{ item.title }}</div>
+                  <div class="item-description">{{ item.address }}</div>
                 </div>
+                <button
+                  v-if="item.selected"
+                  @click="removeItem(findIndexInSelectedItems(item))"
+                  class="selected-button">
+                  <font-awesome-icon icon="fa-solid fa-check" />
+                </button>
+                <button
+                  v-else
+                  @click="addToSelected(item)"
+                  class="add-button">
+                  +
+                </button>
+              </div>
             </div>
           </div>
           <div class="selected-items">
@@ -250,9 +275,11 @@
           <div class="hotels-list">
             <div v-for="hotel in hotels" :key="hotel.id" class="hotel-item">
               <img :src="hotel.imgPath" :alt="hotel.title" class="hotel-image" @error="handleImageError" />
-              <div class="hotel-group">
-                <div class="item-title">{{ hotel.title }}</div>
-                <div class="item-description">{{ hotel.address }}</div>
+              <div class="item-group">
+                <div>
+                  <div class="item-title">{{ hotel.title }}</div>
+                  <div class="item-description">{{ hotel.address }}</div>
+                </div>
                 <button @click="addToSelectedhotel(hotel)">+</button>
               </div>
             </div>
@@ -278,7 +305,7 @@
 
 <script>
 import { Calendar } from './calendar.js';
-import 'material-icons/iconfont/material-icons.css';
+import 'material-icons/iconfont/material-icons.css'; //npm install material-icons --save
 import axios from 'axios';
 
 export default {
@@ -289,6 +316,7 @@ export default {
       selectedDates: [],
       hoveredDate: null,
       daystime: [],
+      displayedTimes: [],
       currentStep: 1,
       items: [],
       selectedCategory: 'all',
@@ -307,6 +335,7 @@ export default {
   created() {
       this.fetchData();
       this.fetchHotels();
+      this.initializeDisplayTimes();
   },
   computed: {
     cal() {
@@ -339,18 +368,17 @@ export default {
         const dates = [];
 
         while (currentDate <= endDate) {
-          const formattedDate = this.formatDate(currentDate); // YYYY-MM-DD 형식으로 반환되는지 확인
+          const formattedDate = this.formatDate(currentDate);
           const weekDay = currentDate.toLocaleDateString('ko-KR', { weekday: 'short' }).replace('.', '');
           dates.push({
             dayNumber: dayCounter,
-            dateFormatted: `${formattedDate}/${weekDay}`, // '/' 대신 '-'를 사용하던 부분을 수정
+            dateFormatted: `${formattedDate}/${weekDay}`,
             startTime: '10:00',
             finishTime: '22:00',
           });
           currentDate.setDate(currentDate.getDate() + 1);
           dayCounter++;
         }
-        
         return dates;
       }
       return [];
@@ -388,7 +416,17 @@ export default {
     },
   },
   watch: {
-      selectedDates: {
+    formattedDateRange: {
+      deep: true,
+      immediate: true,
+      handler(newVal) {
+        this.displayedTimes = newVal.map(day => ({
+          startTime: day.startTime,
+          finishTime: day.finishTime
+        }));
+      }
+    },
+    selectedDates: {
       immediate: true,
       handler() {
         this.updateDaystime();
@@ -491,6 +529,48 @@ export default {
       const date = new Date(dateString);
       return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
     },
+    simpleday(dateString) {
+      const [year, month, day] = dateString.split('-');
+      const date = new Date(year, month - 1, day);
+      const weekDay = date.toLocaleDateString('ko-KR', { weekday: 'short' }).replace('.', '');
+      return `${parseInt(month)}.${parseInt(day)}/${weekDay}`;
+    },
+    initializeDisplayTimes() {
+      this.displayedTimes = this.formattedDateRange.map(day => ({
+        startTime: day.startTime,
+        finishTime: day.finishTime
+      }));
+    },
+    handleTimeChange(event, index, type) {
+    const newTime = event.target.value;
+    
+    // Directly assign new values to properties
+    this.displayedTimes[index][type] = newTime;
+
+    // Update daystime accordingly
+    if (type === 'startTime') {
+      this.daystime[index].startTime = this.formatDateToISOTime(newTime);
+    } else if (type === 'finishTime') {
+      this.daystime[index].finishTime = this.formatDateToISOTime(newTime);
+    }
+
+    // Recalculate the display duration if both times are present
+    const startTime = this.displayedTimes[index].startTime;
+    const finishTime = this.displayedTimes[index].finishTime;
+    if (startTime && finishTime) {
+      this.displayedTimes[index].displayDuration = this.calculateDuration(startTime, finishTime);
+    }
+
+    // Force update to ensure reactivity
+    this.displayedTimes = [...this.displayedTimes];
+    this.daystime = [...this.daystime];
+  },
+    updateDisplayTimes() {
+      this.displayedTimes = this.displayedTimes.map((day, index) => ({
+        ...day,
+        displayDuration: this.calculateDuration(this.formattedDateRange[index].startTime, this.formattedDateRange[index].finishTime)
+      }));
+    },
     saveHotel(planDayId, hotel) {
       const hotelData = {
         planDayId: planDayId, // 저장된 planId 사용
@@ -510,6 +590,45 @@ export default {
       // Ensure the time is in HH:mm format, then convert it to HH:mm:ss for backend compatibility
       const [hours, minutes] = time.split(':').map(Number);
       return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+    },
+    submitDates() {
+      if (this.daystime.length === 0) {
+        alert("시간 설정이 완료되지 않았습니다.");
+        return;
+      }
+
+      const planDaysFormatted = this.daystime.map(day => ({
+        date: day.date,
+        startTime: this.formatToLocalTime(day.startTime),
+        finishTime: this.formatToLocalTime(day.finishTime)
+      }));
+
+      // 여기에 selectedItems와 selectedHotels 정보를 추가합니다.
+      const planRequest = {
+        memberId: '회원ID',
+        planStartDay: this.formatDateOnly(this.selectedDates[0]),
+        planEndDay: this.formatDateOnly(this.selectedDates[this.selectedDates.length - 1]),
+        planTitle: '여행 일정',
+        planDays: planDaysFormatted,
+        items: this.selectedItems,
+        hotels: this.selectedHotels
+      };
+
+      axios.post('http://localhost:8080/api/plans/create', planRequest)
+      .then(response => {
+        if (response.data && response.data.planId) {
+          const planId = response.data.planId;
+          this.planId = planId;
+          console.log("Plan created successfully with ID:", planId);
+        } else {
+          console.error("Plan ID not found in the response");
+          alert("일정 생성 응답에서 ID를 찾을 수 없습니다.");
+        }
+      })
+      .catch(error => {
+        console.error("일정 저장 실패", error);
+        alert('일정 저장에 실패했습니다: ' + error.message);
+      });
     },
     submitPlan() {
       const planRequest = {
@@ -544,7 +663,6 @@ export default {
       .then(response => {
         this.planId = response.data.planId;
         console.log("Plan created successfully with ID:", this.planId);
-        this.$router.push({ name: 'PlanDetails', params: { planId: this.planId }});
       })
       .catch(error => {
         console.error("Failed to save the plan", error);
@@ -552,15 +670,30 @@ export default {
       });
     },
     updateDaystime() {
-      this.daystime = this.formattedDateRange.map(day => {
+      this.daystime = this.formattedDateRange.map((day, index) => {
         const date = day.dateFormatted.split('/')[0];
+        const startTime = this.formatDateToISOTime(day.startTime);
+        const finishTime = this.formatDateToISOTime(day.finishTime);
+        const duration = this.calculateDuration(startTime, finishTime);
+
+        // displayedTimes 배열 업데이트
+        this.updateDisplayedTime(index, startTime, finishTime, duration);
+
         return {
           date: date,
-          startTime: this.formatDateToISOTime(day.startTime),
-          finishTime: this.formatDateToISOTime(day.finishTime)
+          startTime: startTime,
+          finishTime: finishTime
         };
       });
       console.log("Updated daystime:", this.daystime);
+    },
+    updateDisplayedTime(index, startTime, finishTime, duration) {
+      if (!this.displayedTimes[index]) {
+        this.displayedTimes[index] = { startTime, finishTime, displayDuration: '' };
+      }
+      this.displayedTimes[index].startTime = startTime;
+      this.displayedTimes[index].finishTime = finishTime;
+      this.displayedTimes[index].displayDuration = `${duration}시간`;
     },
     formatToISODateTime(date, time) {
       if (!time) return null;
@@ -656,7 +789,7 @@ export default {
 
     trimAddress(address) {
         if (!address) return ""; // address가 null 또는 undefined인 경우 빈 문자열 반환
-        return address.length > 16 ? `${address.substring(0, 14)}...` : address;
+        return address.length > 18 ? `${address.substring(0, 16)}...` : address;
     },
     trimTitle(title) {
       return title.length > 24 ? `${title.substring(0, 20)}...` : title;
@@ -671,11 +804,12 @@ export default {
           this.items = response.data.content.map(item => {
             const categoryKey = this.getCategoryKey(item);
             return {
+              selected: false,
               recommendFoodId: item[`${categoryKey}Id`],
               recommendEventId: item[`${categoryKey}Id`],
               recommendPlaceId: item[`${categoryKey}Id`],
-              title: item[`${categoryKey}Title`],
-              address: item[`${categoryKey}Address`],
+              title: this.trimTitle(item[`${categoryKey}Title`]), // title을 trimTitle로 처리
+              address: this.trimAddress(item[`${categoryKey}Address`]), // address를 trimAddress로 처리
               imgPath: item[`${categoryKey}ImgPath`],
               category: categoryKey.replace('recommend', '').toLowerCase()
             };
@@ -750,6 +884,7 @@ export default {
     addToSelected(item) {
       const recommendIdKey = this.getIdFieldNameByCategory(item.category);
       if (!this.selectedItems.some(selected => selected[recommendIdKey] === item[recommendIdKey])) {
+        item.selected = true;
         const newItemDuration = (parseFloat(item.durationHours) || 0) + (parseFloat(item.durationMinutes) || 0) / 60;
         const currentTotalDuration = parseFloat(this.calculateTotalItemDuration());
         const scheduledHours = parseFloat(this.totalScheduledHours);
@@ -760,8 +895,8 @@ export default {
           this.selectedItems.push({
             ...item,
             order: this.selectedItems.length + 1,
-            durationHours: 2,
-            durationMinutes: 0,
+            durationHours: item.durationHours || 2, // 기본값이 2시간이지만 item에 설정된 값이 있으면 그 값을 사용
+            durationMinutes: item.durationMinutes || 0
           });
           this.updateTotalItemHours();
         } else {
@@ -771,6 +906,11 @@ export default {
           alert(`총 아이템 시간이 예정된 일정 시간을 초과합니다. (현재: ${currentHours}시간 ${currentMinutes}분, 예정: ${Math.floor(scheduledHours)}시간 ${scheduledMinutes}분)`);
         }
       }
+      this.items = [...this.items];
+    },
+    findIndexInSelectedItems(item) {
+      const recommendIdKey = this.getIdFieldNameByCategory(item.category);
+      return this.selectedItems.findIndex(selected => selected[recommendIdKey] === item[recommendIdKey]);
     },
     calculateTotalItemDuration() {
       const total = this.selectedItems.reduce((sum, item) => {
@@ -807,22 +947,33 @@ export default {
       return `${dateTime.getFullYear()}-${(dateTime.getMonth() + 1).toString().padStart(2, '0')}-${dateTime.getDate().toString().padStart(2, '0')}T${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
     },
     removeItem(index) {
+      const selectedItem = this.selectedItems[index];
+      const recommendIdKey = this.getIdFieldNameByCategory(selectedItem.category);
+      const foundIndex = this.items.findIndex(i => i[recommendIdKey] === selectedItem[recommendIdKey]);
+      if (foundIndex !== -1) {
+        this.items[foundIndex].selected = false;
+      }
       this.selectedItems.splice(index, 1);
       this.selectedItems.forEach((item, idx) => {
         item.order = idx + 1;
       });
       this.itemCount = this.selectedItems.length;
       this.updateTotalItemHours();
-    },
-    addHoursToItem(item, startTime, finishTime) {
-      const duration = this.calculateDuration(startTime, finishTime);
-      this.totalItemHours += duration;
-      item.duration = duration;
+      this.items = [...this.items];
     },
     calculateDuration(startTime, finishTime) {
-      const start = new Date('2024-01-01 ' + startTime);
-      const end = new Date('2024-01-01 ' + finishTime);
-      return (end - start) / (1000 * 60 * 60);
+      const start = new Date(`1970-01-01T${startTime}`);
+      const finish = new Date(`1970-01-01T${finishTime}`);
+      const diff = finish - start; // 밀리초 단위 차이
+      const hours = Math.floor(diff / 3600000); // 시간으로 변환
+      const minutes = Math.round((diff % 3600000) / 60000); // 남은 밀리초를 분으로 변환
+
+      let duration = "";
+      if (hours > 0) duration += `${hours}시간 `;
+      if (minutes > 0) duration += `${minutes}분`;
+      if (duration === "") return "0시간"; // 시간과 분이 모두 0인 경우
+
+      return duration.trim();
     },
     formatStayDate(date) {
       const month = `${date.getMonth() + 1}`.padStart(2, '0');
@@ -890,9 +1041,9 @@ export default {
   background-color: white;
   display: flex;
   flex-wrap: nowrap;
-  flex-direction: column; /* 세로 정렬 */
-  align-items: center; /* 가운데 정렬 */
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 1000px;
   height: 700px;
   border-radius: 10px;
@@ -904,9 +1055,9 @@ export default {
 }
 
 .schedulecontainer .stepkey {
-  width: 100%; /* 너비를 컨테이너의 너비와 같게 설정 */
+  width: 100%;
   display: flex;
-  justify-content: center; /* 가로 방향 중앙 정렬 */
+  justify-content: center;
 }
 
 .stepOn {
@@ -934,34 +1085,45 @@ margin-right: 100px; /* 오른쪽 내부 여백 */
 }
 
 .scheduletitle1 {
-  position: absolute;
-  margin: 10px 400px;
+  display:flex;
+  justify-content: center;
+  margin-top:20px;
+  margin-bottom:10px;
   font-size: 25px;
-
 }
 
 .scheduletitle2 {
-  position: absolute;
+  display:flex;
+  justify-content: center;
   color:grey;
-  margin: 40px 370px;
+  margin-bottom:40px;
 }
 
 .yearmonth{
+  margin-top: 50px;
   font-size:30px;
-  margin-left:150px;
+}
+
+.monthbutton1, .monthbutton2{
+  position:absolute;
+  font-size:22px;
+  color: rgb(163, 163, 163);
+  cursor: pointer;
+}
+
+.monthbutton1{
+  margin: 10px -140px;
+}
+
+.monthbutton2{
+  margin: 10px 130px;
 }
 
 $border-color: #efefef;
 .calendar {
   display: flex;
-  position: absolute;
   justify-content: center; // 가운데 정렬
-  align-items: flex-start; // 상단에 정렬
-  width: 80%; // 전체 너비의 80%를 사용
-  margin-top: 70px;
-  margin-left: -15px;
-  max-width: 1024px; // 최대 너비를 제한
-  cursor: pointer;
+  margin-top:-50px;
 }
 .month-container {
   display: flex; // flex item 설정
@@ -999,6 +1161,7 @@ $border-color: #efefef;
           flex: 1 1 calc(100% / 7);
           width: calc(100% / 7);
           position: relative;
+          cursor: pointer;
 
           &.today {
             .date {
@@ -1055,6 +1218,10 @@ $border-color: #efefef;
   }
 }
 
+.today-not-selected .date {
+  background-color: white;
+  color: #000000;
+}
 
 .saturday-cell .date {
   color: #0064bb;
@@ -1072,94 +1239,60 @@ $border-color: #efefef;
   color: #ccc;
 }
 
-// .month-body .cell.selected .date {
-//   background-color: orange !important; /* 첫 번째 선택된 날짜 */
-//   width:50px;
-//   height: 50px;
-//   color: #ffffff;
-//   border-radius: 10px;
-//   margin: 4px 6px;
-// }
-
-// .month-body .cell.hover-selected .date {
-//   background-color: yellow !important; /* 마우스 오버된 날짜 */
-//   width:50px;
-//   height: 50px;
-//   color: #ffffff;
-//   border-radius: 10px;
-//   margin: 4px 6px;
-// }
-
-// .month-body .cell.in-range .date {
-//   background-color: yellow; /* 선택된 날짜 범위 */
-//   width:50px;
-//   height: 50px;
-//   color: #ffffff;
-//   border-radius: 10px;
-//   margin: 4px 6px;
-// }
-
-.plantime {
-  position: absolute;
-  display: flex;
-  flex-wrap: nowrap;
-  flex-direction: column; /* 세로 정렬 */
-  align-items: center; /* 가운데 정렬 */
-  margin-top: 100px;
-  justify-content: space-between;
-}
-
-.plantime > div{
-  flex: 1;
-}
-
-.plantime .plantimetitle {
+.plantimetitle {
   text-align: center;
   width: 100%;
   font-size: 22px;
-}
-
-.plantimetitle button {
-  margin-left: 10px;
-}
-
-.plantime .plandaytime {
-  width: calc(1000px / n);
-  text-align: center;
-  font-size: 25px;
+  margin-top: 25px;
 }
 
 .time-settings {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: space-around;
+  margin-top:50px;
   .day-container {
     margin: 10px;
-    border: 1px solid #ddd;
-    padding: 10px;
-    .date-title {
-      font-size: 16px;
+    border: none;
+    .date-title1 {
+      font-size: 23px;
       font-weight: bold;
-      margin-bottom: 10px;
+      color:#007bff;
+
+    }
+    .date-title2 {
+      font-size: 23px;
+      color:#707070;
     }
     .time-range {
       display: flex;
+      margin-top:50px;
       flex-direction: column;
       .time-setting {
         display: flex;
         align-items: center;
         margin-bottom: 5px;
-        label {
-          margin-right: 5px;
+        div {
+          margin-right: 10px;
+          font-weight: 600;
+          font-size: 20px;
         }
         input[type="time"] {
-          border: 1px solid #ccc;
-          padding: 5px;
-          border-radius: 4px;
+          border: none;
+          margin-top:70px;
+          font-weight: 700;
+          color: #666666;
+          font-size: 20px;
         }
       }
     }
   }
+}
+
+.simpletime{
+  margin-top:50px;
+  font-weight: 500;
+  font-size:20px;
 }
 
 .selector{
@@ -1171,6 +1304,17 @@ $border-color: #efefef;
   border-radius: 5px;
   border: 1px solid #ccc;
   margin-top: 10px;
+}
+
+.nextbutton{
+  background-color: rgb(102, 102, 211);
+  color:white;
+  font-size:23px;
+  width: 100px;
+  height: 45px;
+  border-radius: 7px;
+  border:none;
+  cursor: pointer;
 }
 
 .search-container {
@@ -1201,8 +1345,8 @@ $border-color: #efefef;
 }
 
 .search-button i {
-  color: #5b59bd; /* 아이콘 색상 */
-  font-size: 24px; /* 아이콘 크기 */
+  color: #5b59bd;
+  font-size: 24px;
 }
 
 .place-container {
@@ -1222,11 +1366,6 @@ $border-color: #efefef;
   margin-bottom: 10px;
 }
 
-.item-group{
-  flex-direction: column;
-  text-align: left;
-}
-
 .item-image {
   width: 70px;
   height: 70px;
@@ -1235,15 +1374,6 @@ $border-color: #efefef;
   border-radius: 7px;
 }
 
-.item-title {
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.item-description {
-  font-size: 12px;
-  color: #666;
-}
 
 .selected-items {
   height: 530px;
@@ -1284,14 +1414,50 @@ $border-color: #efefef;
     margin-top: 5px;
 }
 
-.item-group button,
-.hotel-group button {
-    padding: 5px 10px;
-    margin-top: 10px;
-    background-color: #007bff;
+.item-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.item-description {
+    flex-grow: 1;
+    font-size: 12px;
+    color: #666;
+    text-align: left;
+}
+
+.item-title {
+    font-size: 14px;
+    font-weight: bold;
+    flex-shrink: 0;
+    text-align: left;
+}
+
+.item-group .add-button {
+    width:30px;
+    height: 30px;
+    font-size:18px;
+    margin-top: 25px;
+    margin-right:10px;
+    background-color:rgb(192, 192, 192);
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.item-group .selected-button,
+.hotel-group button {
+    width:30px;
+    height: 30px;
+    margin-top: 25px;
+    margin-right:10px;
+    background-color: #4795e9;
+    color: white;
+    border: none;
+    border-radius: 6px;
     cursor: pointer;
 }
 
@@ -1329,16 +1495,27 @@ $border-color: #efefef;
   margin-bottom: 10px;
 }
 
-.hotel-group{
-  flex-direction: column;
-  text-align: left;
-}
-
 .hotel-image {
   width: 70px;
   height: 70px;
   object-fit: cover;
   margin-right: 10px;
   border-radius: 7px;
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 10px;
+  margin-right: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #bebebe;
+  border-radius: 5px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
 }
 </style>
