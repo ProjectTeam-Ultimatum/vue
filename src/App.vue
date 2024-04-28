@@ -1,7 +1,7 @@
 <template>
   <nav :class="{ 'main-page': isMainPage, scrolled: isScrolled }">
     <router-link class="main-logo" to="/"
-      ><img src="./assets/images/logoImage.png" style="width: 40px" />제주랑
+      ><img src="./assets/images/jejurang-logo.png" style="width: 140px" />
     </router-link>
 
     <div class="nav-links">
@@ -22,7 +22,7 @@
           :src="userImage || 'default-image-url'"
           class="user-image"
         />
-        {{ userName }} 님 환영합니다.
+        {{ userName }} 님 환영합니다..
         <button @click="logout">로그아웃</button>
       </div>
     </div>
