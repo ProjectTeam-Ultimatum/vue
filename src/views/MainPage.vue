@@ -1,15 +1,14 @@
 <template>
   <!-- 기존 메인 이미지-->
   <!-- <div class="full-screen-background">
-    <div v-if="isValidStyle" class="centered-text">
-      반갑습니다~<br />
-      당신의 여행스타일은<span style="color: #F7C347;"> {{ getMbtiNickname() }} </span>입니다.
-    </div>
   </div> -->
   <div>
     <SlideMainImg class="main-vis" />
   </div>
   <div class="divider" ></div>
+        <div v-if="isValidStyle">
+          당신의 여행스타일은<span style="color: #F7C347;"> {{ getMbtiNickname() }} </span>입니다.
+        </div>
   <div class="recommend-style">
     <h2 class="mb-3">여행스타일 추천</h2>
     <div class="recommand-card"></div>
