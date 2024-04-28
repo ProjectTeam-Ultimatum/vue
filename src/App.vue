@@ -10,6 +10,7 @@
       <router-link to="/list">리스트</router-link>
       <router-link to="/course">코스</router-link>
       <router-link to="/travel">여행스타일</router-link>
+      <router-link to="/map">지도</router-link>
     </div>
     <div class="login">
       <div v-if="!isAuthenticated">

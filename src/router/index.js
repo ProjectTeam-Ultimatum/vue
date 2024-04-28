@@ -24,6 +24,7 @@ import TravelStyleTest from '@/components/TravelStyle/TravelStyleTest.vue'
 import StyleResult from '@/components/TravelStyle/StyleResult.vue'
 import MonthCalendar from '../views/schedule/MonthCalendar.vue'
 import PlanCourse from '../views/schedule/PlanCourse.vue'
+import MapApi from '../views/MapApi.vue'
 
 
 
@@ -32,6 +33,11 @@ const routes = [
     path: '/',
     name: 'MainPage',
     component: MainPage
+  },
+  {
+    path: '/map',
+    name: 'MapApi',
+    component: MapApi,
   },
   {
     path: '/result',
