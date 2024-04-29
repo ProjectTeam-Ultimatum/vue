@@ -190,9 +190,9 @@
             </button>
           </div>
           <div>
-            {{ itemCount }}개
-            <br>
-            {{ totalItemHours }}시간 / {{ formattedTotalScheduledHours  }}
+            <span class="itemcount">{{ itemCount }}</span>
+            <span class="itemtotalhour">{{ ItemSelectTotalHours }} / {{ TotalScheduledHours  }}</span>
+            <button @click="removeAllSelectedItems" class="remove-all-Items">장소 설정 초기화</button>
           </div>
         </div>
         <div class="place-container">
@@ -221,19 +221,21 @@
           </div>
           <div class="selected-items">
             <div v-for="(selected, index) in selectedItems" :key="selected.title" class="selected-item">
-              <span>{{ selected.order }}.</span>
+              <span>{{ selected.order }}</span>
               <img :src="selected.imgPath" :alt="selected.title" class="selected-image" @error="handleImageError"/>
               <div>
                 <div class="selected-title">{{ selected.title }}</div>
                 <div class="selected-description">{{ selected.address }}</div>
-                <div class="time-adjustment">머무는 시간 
+              </div>
+              <div>
+                <div class="time-remain">머무는 시간 
                   <input type="number" v-model.number="selected.durationHours" @change="updateTotalItemHours" min="0" max="12"/>
                   시간
                   <input type="number" v-model.number="selected.durationMinutes" @change="updateTotalItemHours" min="0" max="59"/>
                   분
                 </div>
-                <button @click="removeItem(index)">X</button>
               </div>
+              <button @click="removeItem(index)">X</button>
             </div>
           </div>
         </div>
@@ -254,22 +256,17 @@
             <div class="stepOn1">숙소 선택</div>
           </div>
         </div>
+        <div style="margin-left:-680px; color:grey">{{ formattedSelectedDates }}</div>
         <div class="STEP3-container">
           <div class="STEP3-search">
-            <input
-              type="text"
-              v-model="hotelSearchQuery"
-              @keyup.enter="searchDatahotel"
-              placeholder="숙소명 검색"
-              class="hotel-search-input"
-            />
+            <input type="text" v-model="hotelSearchQuery" @keyup.enter="searchDatahotel" placeholder="숙소명 검색" class="hotel-search-input" />
             <button @click="searchDatahotel" class="search-button">
               <i class="material-icons">search</i>
             </button>
           </div>
-          <div>
-            {{ selectedHotelsMessage }}
-          </div>
+          <span class="hotelcount">{{ hotelCount }}</span>
+          <span class="hotel-selectedday">{{ selectedHotelsMessage }}</span>
+          <button class="hotelallremove" @click="removeAllSelectedHotels">숙소 설정 초기화</button>
         </div>
         <div class="place-container">
           <div class="hotels-list">
@@ -280,19 +277,28 @@
                   <div class="item-title">{{ hotel.title }}</div>
                   <div class="item-description">{{ hotel.address }}</div>
                 </div>
-                <button @click="addToSelectedhotel(hotel)">+</button>
+                <button @click="addToSelectedhotel(hotel)" class="add-button">
+                  +
+                </button>
               </div>
             </div>
           </div>
           <div class="selected-items">
-            <div v-for="(selected, index) in selectedHotels" :key="selected.title" class="selected-item">
-              <span>{{ selected.order }}.</span>
-              <img :src="selected.imgPath" :alt="selected.title" class="selected-image" @error="handleImageError"/>
-              <div>
-                <div class="selected-title">{{ selected.title }}</div>
-                <div class="selected-description">{{ selected.address }}</div>
-                <div>{{ selected.checkIn }} ~ {{ selected.checkOut }}</div>
-                <button @click="removeHotelFromSelection(index)">X</button>
+            <div v-for="(container, index) in availableHotelContainers" :key="index">
+              <div v-if="container.hotel">
+                <div class="hotel-info">
+                  <span>{{ index + 1 }}</span>
+                  <div class="hotel-info2">
+                    <img :src="container.hotel.imgPath" :alt="container.hotel.title" class="hotel-selected-image" />
+                    <div style="margin-left:10px;">
+                      <div style="margin-bottom:20px;">{{ container.date }}</div>
+                      <div class="selected-title">{{ container.hotel.title }}</div>
+                    </div>
+                    <button style="margin-left:120px;" @click="removeHotelFromSelection(index)">X</button>
+                  </div>
+                </div>
+              </div>
+              <div class="empty-container" v-else>
               </div>
             </div>
           </div>
@@ -321,21 +327,22 @@ export default {
       items: [],
       selectedCategory: 'all',
       searchQuery: '',
-      loading: false,
       selectedItems: [],
       totalItemHours: 0,
       itemCount: 0,
+      hotelCount: 0,
       hotelSearchQuery: '',
       hotels: [],
-      selectedHotels:[],
       planDays: [],
       planId: null,
+      availableHotelSlots: [],
+      selectedHotels: [],
     };
   },
   created() {
-      this.fetchData();
-      this.fetchHotels();
-      this.initializeDisplayTimes();
+    this.fetchData();
+    this.fetchHotels();
+    this.updateAvailableHotelSlots();
   },
   computed: {
     cal() {
@@ -393,7 +400,7 @@ export default {
         return total + duration;
       }, 0);
     },
-    formattedTotalScheduledHours() {
+    TotalScheduledHours() {
       const totalHours = this.totalScheduledHours;
       if (isNaN(totalHours) || totalHours === 0) {
         return "0시간 0분"; // NaN이나 0시간 처리
@@ -401,6 +408,16 @@ export default {
       const hours = Math.floor(totalHours);
       const minutes = Math.round((totalHours - hours) * 60);
       return `${hours}시간 ${minutes}분`;
+    },
+    ItemSelectTotalHours() {
+      const totalMinutes = this.selectedItems.reduce((total, item) => {
+        return total + (item.durationHours * 60) + item.durationMinutes;
+      }, 0);
+
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+
+      return `${hours}시간 ${minutes.toString().padStart(2, '0')}분`;
     },
     selectedHotelsMessage() {
       if (this.selectedDates.length === 2) {
@@ -410,9 +427,27 @@ export default {
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
         const maxSelection = diffDays;
 
-        return `${this.selectedHotels.length}일/${maxSelection}일`;
+        return `${this.selectedHotels.length}일 / ${maxSelection}일`;
       }
-      return "0/0"; // 기본값은 0/0으로 설정
+      return "0 / 0"; // 기본값은 0/0으로 설정
+    },
+    availableHotelContainers() {
+      const containers = [];
+      if (this.selectedDates.length === 2) {
+        const startDate = new Date(this.selectedDates[0]);
+        const endDate = new Date(this.selectedDates[1]);
+        let currentDate = new Date(startDate);
+        while (currentDate < endDate) {
+          const nextDate = new Date(currentDate);
+          nextDate.setDate(currentDate.getDate() + 1);
+          containers.push({
+            date: `${this.formatDate(currentDate)} ~ ${this.formatDate(nextDate)}`,
+            hotel: null  // 초기에는 호텔이 할당되지 않음
+          });
+          currentDate = nextDate;
+        }
+      }
+      return containers;
     },
   },
   watch: {
@@ -432,11 +467,6 @@ export default {
         this.updateDaystime();
       },
     },
-  },
-  calculateWidth() {
-    return (length) => {
-      return `calc(1000px / ${length})`;
-    };
   },
   methods: {
     updateMonth(increment) {
@@ -535,100 +565,29 @@ export default {
       const weekDay = date.toLocaleDateString('ko-KR', { weekday: 'short' }).replace('.', '');
       return `${parseInt(month)}.${parseInt(day)}/${weekDay}`;
     },
-    initializeDisplayTimes() {
-      this.displayedTimes = this.formattedDateRange.map(day => ({
-        startTime: day.startTime,
-        finishTime: day.finishTime
-      }));
-    },
     handleTimeChange(event, index, type) {
-    const newTime = event.target.value;
-    
-    // Directly assign new values to properties
-    this.displayedTimes[index][type] = newTime;
+      const newTime = event.target.value;
+      this.displayedTimes[index][type] = newTime;
 
-    // Update daystime accordingly
-    if (type === 'startTime') {
-      this.daystime[index].startTime = this.formatDateToISOTime(newTime);
-    } else if (type === 'finishTime') {
-      this.daystime[index].finishTime = this.formatDateToISOTime(newTime);
-    }
+      if (type === 'startTime') {
+        this.daystime[index].startTime = this.formatDateToISOTime(newTime);
+      } else if (type === 'finishTime') {
+        this.daystime[index].finishTime = this.formatDateToISOTime(newTime);
+      }
 
-    // Recalculate the display duration if both times are present
-    const startTime = this.displayedTimes[index].startTime;
-    const finishTime = this.displayedTimes[index].finishTime;
-    if (startTime && finishTime) {
-      this.displayedTimes[index].displayDuration = this.calculateDuration(startTime, finishTime);
-    }
+      const startTime = this.displayedTimes[index].startTime;
+      const finishTime = this.displayedTimes[index].finishTime;
+      if (startTime && finishTime) {
+        this.displayedTimes[index].displayDuration = this.calculateDuration(startTime, finishTime);
+      }
 
-    // Force update to ensure reactivity
-    this.displayedTimes = [...this.displayedTimes];
-    this.daystime = [...this.daystime];
-  },
-    updateDisplayTimes() {
-      this.displayedTimes = this.displayedTimes.map((day, index) => ({
-        ...day,
-        displayDuration: this.calculateDuration(this.formattedDateRange[index].startTime, this.formattedDateRange[index].finishTime)
-      }));
-    },
-    saveHotel(planDayId, hotel) {
-      const hotelData = {
-        planDayId: planDayId, // 저장된 planId 사용
-        recommendHotelId: hotel.recommendHotelId,
-      };
-
-      axios.post('http://localhost:8080/api/plans/hotel/add', hotelData)
-        .then(response => {
-          console.log("호텔 저장 성공:", response.data);
-        })
-        .catch(error => {
-          console.error("호텔 저장 실패", error);
-          alert('호텔 저장에 실패했습니다: ' + error.message);
-        });
+      this.displayedTimes = [...this.displayedTimes];
+      this.daystime = [...this.daystime];
     },
     formatDateToISOTime(time) {
       // Ensure the time is in HH:mm format, then convert it to HH:mm:ss for backend compatibility
       const [hours, minutes] = time.split(':').map(Number);
       return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
-    },
-    submitDates() {
-      if (this.daystime.length === 0) {
-        alert("시간 설정이 완료되지 않았습니다.");
-        return;
-      }
-
-      const planDaysFormatted = this.daystime.map(day => ({
-        date: day.date,
-        startTime: this.formatToLocalTime(day.startTime),
-        finishTime: this.formatToLocalTime(day.finishTime)
-      }));
-
-      // 여기에 selectedItems와 selectedHotels 정보를 추가합니다.
-      const planRequest = {
-        memberId: '회원ID',
-        planStartDay: this.formatDateOnly(this.selectedDates[0]),
-        planEndDay: this.formatDateOnly(this.selectedDates[this.selectedDates.length - 1]),
-        planTitle: '여행 일정',
-        planDays: planDaysFormatted,
-        items: this.selectedItems,
-        hotels: this.selectedHotels
-      };
-
-      axios.post('http://localhost:8080/api/plans/create', planRequest)
-      .then(response => {
-        if (response.data && response.data.planId) {
-          const planId = response.data.planId;
-          this.planId = planId;
-          console.log("Plan created successfully with ID:", planId);
-        } else {
-          console.error("Plan ID not found in the response");
-          alert("일정 생성 응답에서 ID를 찾을 수 없습니다.");
-        }
-      })
-      .catch(error => {
-        console.error("일정 저장 실패", error);
-        alert('일정 저장에 실패했습니다: ' + error.message);
-      });
     },
     submitPlan() {
       const planRequest = {
@@ -695,23 +654,6 @@ export default {
       this.displayedTimes[index].finishTime = finishTime;
       this.displayedTimes[index].displayDuration = `${duration}시간`;
     },
-    formatToISODateTime(date, time) {
-      if (!time) return null;
-      
-      // 시간이 'HH:MM' 형식인지 검사합니다.
-      const [hours, minutes] = time.split(':').map(Number);
-      if (isNaN(hours) || isNaN(minutes)) {
-        console.error('Invalid time format:', time);
-        return null;
-      }
-
-      // 날짜 객체 생성
-      const dateTime = new Date(date);
-      dateTime.setHours(hours, minutes, 0);
-      
-      // ISO 8601 형식으로 변환
-      return dateTime.toISOString();
-    },
     formatDateOnly(date) {
       const d = new Date(date);
       return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
@@ -722,73 +664,14 @@ export default {
 
       return `${hoursFormatted}:${minutesFormatted}:00`;
     },
-    savePlan(planRequest) {
-      axios.post('http://localhost:8080/api/plans/create', planRequest)
-        .then(response => {
-          this.saveSelectedItems(response.data.planId);
-        })
-        .catch(error => {
-          console.error("일정 저장 실패", error);
-          alert('일정 저장에 실패했습니다: ' + error.message);
-        });
-    },
-    saveSelectedItems(planId) {
-      this.selectedItems.forEach(item => this.saveItem(planId, item));
-    },
-    saveItem(planId, item) {
-      const categoryPath = this.getCategoryPath(item.category);
-      const recommendIdKey = this.getIdFieldNameByCategory(item.category);
-      const recommendId = item[recommendIdKey];
-      console.log(`Adding item in category: ${item.category}, Path: ${categoryPath}, ID: ${recommendId}`); // 로그 추가
-
-      const planData = {
-        plan: { id: this.planId },
-        recommendFoodId: recommendId,
-        recommendPlaceId: recommendId,
-        recommendEventId: recommendId,
-        recommendHotelId: recommendId,
-        stayTime: this.formatStayTime(item.durationHours, item.durationMinutes)
-      };
-
-      const apiUrl = `http://localhost:8080/api/plans/${categoryPath}/add`;
-      console.log(`Sending data to ${apiUrl}:`, planData); // 데이터 로깅
-
-      axios.post(apiUrl, planData)
-        .then(res => {
-          console.log(`${item.category} 저장 성공`, res);
-        })
-        .catch(err => {
-          console.error(`${item.category} 저장 오류`, err);
-          alert(`저장 오류: ${item.category} - ${err.message}`);
-          if (err.response) {
-            console.log('에러 응답:', err.response.data);
-          }
-        });
-    },
     formatDateWithWeekday(dateString) {
       const date = new Date(dateString);
       const options = { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' };
       const formattedDate = date.toLocaleDateString('ko-KR', options);
       return formattedDate.replace(/(\d{4})\.(\d{2})\.(\d{2})\.(\w+)/, '$1.$2.$3($4)');
     },
-    generateDateRange(startDate, endDate) {
-    let currentDate = new Date(startDate);
-    const dates = [];
-    let dayCounter = 1;
-
-      while (currentDate <= new Date(endDate)) {
-        const formattedDate = this.formatDate(currentDate);
-        const weekDay = currentDate.toLocaleDateString('ko-KR', { weekday: 'short' }).replace('.', '');
-        dates.push(`day${dayCounter} ${formattedDate.substring(5).replace('-', '.')}/${weekDay}`);
-        currentDate.setDate(currentDate.getDate() + 1);
-        dayCounter++;
-      }
-
-      return dates.join(', ');
-    },
-
     trimAddress(address) {
-        if (!address) return ""; // address가 null 또는 undefined인 경우 빈 문자열 반환
+        if (!address) return "";
         return address.length > 18 ? `${address.substring(0, 16)}...` : address;
     },
     trimTitle(title) {
@@ -850,6 +733,7 @@ export default {
               title: this.trimTitle(hotel.recommendHotelTitle),
               address: this.trimAddress(hotel.recommendHotelAddress),
               imgPath: hotel.recommendHotelImgPath,
+              selected: false,
               category: 'hotel'
             }));
           })
@@ -891,11 +775,11 @@ export default {
 
         console.log(`New Item Duration: ${newItemDuration}, Current Total: ${currentTotalDuration}, Scheduled: ${scheduledHours}`);
 
-        if (currentTotalDuration + newItemDuration <= scheduledHours) {
+        if (currentTotalDuration + newItemDuration < scheduledHours) {
           this.selectedItems.push({
             ...item,
             order: this.selectedItems.length + 1,
-            durationHours: item.durationHours || 2, // 기본값이 2시간이지만 item에 설정된 값이 있으면 그 값을 사용
+            durationHours: item.durationHours || 2,
             durationMinutes: item.durationMinutes || 0
           });
           this.updateTotalItemHours();
@@ -904,6 +788,7 @@ export default {
           const currentMinutes = Math.round((currentTotalDuration - currentHours) * 60);
           const scheduledMinutes = Math.round((scheduledHours - Math.floor(scheduledHours)) * 60);
           alert(`총 아이템 시간이 예정된 일정 시간을 초과합니다. (현재: ${currentHours}시간 ${currentMinutes}분, 예정: ${Math.floor(scheduledHours)}시간 ${scheduledMinutes}분)`);
+          item.selected = false;
         }
       }
       this.items = [...this.items];
@@ -940,12 +825,6 @@ export default {
       time.setHours(hours, minutes, 0, 0);
       return time;
     },
-    formatToDateTime(date, time) {
-      const [year, month, day] = date.split('-').map(Number);
-      const [hours, minutes] = time.split(':').map(Number);
-      const dateTime = new Date(year, month - 1, day, hours, minutes);
-      return `${dateTime.getFullYear()}-${(dateTime.getMonth() + 1).toString().padStart(2, '0')}-${dateTime.getDate().toString().padStart(2, '0')}T${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
-    },
     removeItem(index) {
       const selectedItem = this.selectedItems[index];
       const recommendIdKey = this.getIdFieldNameByCategory(selectedItem.category);
@@ -959,6 +838,19 @@ export default {
       });
       this.itemCount = this.selectedItems.length;
       this.updateTotalItemHours();
+      this.items = [...this.items];
+    },
+    removeAllSelectedItems() {
+      this.items.forEach(item => {
+        const recommendIdKey = this.getIdFieldNameByCategory(item.category);
+        this.selectedItems.forEach(selectedItem => {
+          if (selectedItem[recommendIdKey] === item[recommendIdKey]) {
+            item.selected = false;
+          }
+        });
+      });
+      this.selectedItems = [];
+      this.itemCount = 0;
       this.items = [...this.items];
     },
     calculateDuration(startTime, finishTime) {
@@ -981,6 +873,9 @@ export default {
       const weekday = date.toLocaleDateString('ko-KR', { weekday: 'short' }).replace('.', '');
       return `${month}.${day}(${weekday})`;
     },
+    findIndexInSelectedHotels(hotel) {
+      return this.selectedHotels.findIndex(h => h.id === hotel.id);
+    },
     addToSelectedhotel(hotel) {
       const startDate = new Date(this.selectedDates[0]);
       const endDate = new Date(this.selectedDates[1]);
@@ -993,20 +888,41 @@ export default {
         const checkOutDate = new Date(checkInDate);
         checkOutDate.setDate(checkOutDate.getDate() + 1);
 
-        this.selectedHotels.push({
+        const newHotel = {
           ...hotel,
+          selected: true,
           order: this.selectedHotels.length + 1,
           planId: this.planId,
           checkIn: this.formatStayDate(checkInDate),
           checkOut: this.formatStayDate(checkOutDate),
-        });
+        };
+
+        this.selectedHotels.push(newHotel);
+        const containerIndex = this.selectedHotels.length - 1;
+        this.availableHotelContainers[containerIndex].hotel = newHotel;
+        this.hotelCount = this.selectedHotels.length;
         alert(`호텔이 선택되었습니다. (${this.selectedHotels.length}/${diffDays}개 선택됨)`);
       } else {
         alert(`최대 ${diffDays}개의 호텔을 선택할 수 있습니다.`);
       }
     },
     removeHotelFromSelection(index) {
+      const removedHotelId = this.selectedHotels[index].id;
       this.selectedHotels.splice(index, 1);
+      this.hotels = this.hotels.map(hotel => {
+        if (hotel.id === removedHotelId) {
+          return { ...hotel, selected: false };
+        }
+        return hotel;
+      });
+
+      this.availableHotelContainers[index].hotel = null;
+
+      for (let i = index; i < this.availableHotelContainers.length - 1; i++) {
+        this.availableHotelContainers[i].hotel = this.availableHotelContainers[i + 1].hotel;
+        this.availableHotelContainers[i + 1].hotel = null;
+      }
+
       this.selectedHotels.forEach((hotel, idx) => {
         const newCheckInDate = new Date(this.selectedDates[0]);
         newCheckInDate.setDate(newCheckInDate.getDate() + idx);
@@ -1017,7 +933,34 @@ export default {
         hotel.checkIn = this.formatStayDate(newCheckInDate);
         hotel.checkOut = this.formatStayDate(newCheckOutDate);
       });
+      this.hotelCount = this.selectedHotels.length;
       alert('호텔 선택이 취소되었습니다.');
+    },
+    removeAllSelectedHotels() {
+      this.availableHotelContainers = this.availableHotelContainers.map(container => {
+        return { ...container, hotel: null };
+      });
+      this.selectedHotels = [];
+      this.hotelCount = 0;
+    },
+    updateAvailableHotelSlots() {
+      const startDate = new Date(this.selectedDates[0]);
+      const endDate = new Date(this.selectedDates[1]);
+      const diffTime = Math.abs(endDate - startDate);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      this.availableHotelSlots = Array.from({ length: diffDays }, (_, index) => {
+        const checkInDate = new Date(startDate);
+        checkInDate.setDate(checkInDate.getDate() + index);
+        const checkOutDate = new Date(checkInDate);
+        checkOutDate.setDate(checkOutDate.getDate() + 1);
+        return {
+          id: index,
+          checkIn: this.formatStayDate(checkInDate),
+          checkOut: this.formatStayDate(checkOutDate),
+          hotel: null
+        };
+      });
     },
   },
 };
@@ -1330,8 +1273,8 @@ $border-color: #efefef;
 .search-input {
   flex-grow: 1;
   padding: 8px;
-  border: none; /* 기본 테두리 제거 */
-  outline: none; /* 선택 시 외곽선 제거 */
+  border: none;
+  outline: none;
 }
 
 .search-button {
@@ -1349,8 +1292,40 @@ $border-color: #efefef;
   font-size: 24px;
 }
 
+.itemcount{
+  margin-left:70px;
+  font-size:35px;
+  font-weight: bold;
+}
+
+.itemtotalhour{
+  margin-left:30px;
+  font-size:20px;
+}
+
+.remove-all-Items{
+  margin-left:100px;
+  font-size:15px;
+  background-color: white;
+  color: red;
+  border: none;
+  cursor: pointer;
+}
+
 .place-container {
   display: flex;
+}
+
+.hotels-list button {
+    width:30px;
+    height: 30px;
+    margin-top: 25px;
+    margin-right:10px;
+    background-color: #4795e9;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
 }
 
 .list-container {
@@ -1374,44 +1349,72 @@ $border-color: #efefef;
   border-radius: 7px;
 }
 
-
 .selected-items {
+  display:flex;
+  flex-direction: column;
   height: 530px;
   width: 630px;
   overflow-y: auto;
   margin-top: 20px;
-  margin-left: 20px;
+  margin-left: 10px;
+}
+
+.selected-items span{
+  display:flex;
+  margin-right:15px;
+  background-color:#8fc3ff;
+  color:white;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.selected-items button {
+    width:30px;
+    height: 30px;
+    font-size:18px;
+    background-color: white;
+    color: rgb(192, 192, 192);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
 }
 
 .selected-item {
     display: flex;
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
+    margin-left:20px;
     height: 70px;
     padding: 10px;
-    background-color: #f8f8f8;
-    border: 1px solid #ddd;
-    border-radius: 5px;
     text-align: left;
 }
 
 .selected-image {
-    width: 45px;
-    height: 45px;
-    margin-right: 10px;
+    width: 50px;
+    height: 50px;
     object-fit: cover;
-    border-radius: 50%;
+    border-radius: 10px;
 }
 
 .selected-title {
-    font-size: 14px;
+    font-size: 17px;
     font-weight: bold;
 }
 
 .selected-description {
-    font-size: 12px;
+    font-size: 14px;
     color: #666;
     margin-top: 5px;
+}
+
+.time-remain input{
+  width: 35px;
+  border: none;
+  font-size:20px;
 }
 
 .item-group {
@@ -1448,8 +1451,7 @@ $border-color: #efefef;
     cursor: pointer;
 }
 
-.item-group .selected-button,
-.hotel-group button {
+.item-group .selected-button {
     width:30px;
     height: 30px;
     margin-top: 25px;
@@ -1465,10 +1467,14 @@ $border-color: #efefef;
     background-color: #0056b3;
 }
 
-.STEP3-search {
+.STEP3-container{
+  display: flex;
+}
+
+.STEP3-search{
   display: flex;
   padding: 5px;
-  width: 350px;
+  width: 340px;
   height: 23px;
   margin-top: 10px;
   border: 1px solid #ccc;
@@ -1482,11 +1488,32 @@ $border-color: #efefef;
   outline: none;
 }
 
-.hotels-list{
+.hotelcount {
+  margin-left:70px;
+  font-size:35px;
+  font-weight: bold;
+}
+
+.hotel-selectedday {
+  margin-left: 30px;
+  margin-top: 10px;
+  font-size: 20px;
+}
+
+.hotels-list {
   height: 530px;
   width: 360px;
   overflow-y: auto;
   margin-top: 20px;
+}
+
+.hotelallremove {
+  margin-left:230px;
+  font-size:15px;
+  background-color: white;
+  color: red;
+  border: none;
+  cursor: pointer;
 }
 
 .hotel-item{
@@ -1501,6 +1528,41 @@ $border-color: #efefef;
   object-fit: cover;
   margin-right: 10px;
   border-radius: 7px;
+}
+
+.empty-container {
+  display: flex;
+  background-color: #93b3c9;
+  margin-bottom: 10px;
+  margin-left:20px;
+  height: 70px;
+  padding: 10px;
+}
+
+.hotel-info {
+  display: flex;
+  margin-bottom: 10px;
+  align-items: center;
+  margin-left:60px;
+}
+
+.hotel-info2{
+  display: flex;
+  width: 450px;
+  height: 90px;
+  align-items: center;
+  margin-left:10px;
+  text-align: left;
+  border-radius: 10px;
+  box-shadow : 0px 3px 7px 1px grey;
+}
+
+.hotel-selected-image {
+  width: 65px;
+  height: 65px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-left:10px;
 }
 
 ::-webkit-scrollbar {
