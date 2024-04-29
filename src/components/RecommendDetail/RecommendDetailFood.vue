@@ -54,7 +54,6 @@
                             <!-- 태그 Read -->
                             <span>이런 점이 좋았어요</span>
                             <div class="cont-chart">
-                                <!-- PlaceChart 컴포넌트에 recommendPlaceId를 전달합니다 -->
                                 <FoodChart :recommendFoodId="food.recommendFoodId" />
                             </div>
                           </div>
@@ -71,9 +70,9 @@
                     </div>
                 <div id="subright-cont">
                     <div class="mini-map">
-                        <div>
-                            <img alt="map" src="@/assets/images/map.png" style="width:160px">
-                        </div>
+                      <div v-for="(food, i) in recommendListDetailFood" :key="i">
+                          <KakaoMap :latitude="food.recommendFoodLatitude" :longitude="food.recommendFoodLongitude" />
+                      </div>
                     </div>
                   <!-- recommendListfoodRegion 표시 -->
                   <div class="recommend-list">
@@ -108,6 +107,7 @@
 </template>
 
 <script>
+import KakaoMap from "@/components/KakaoMap/KakaoMap.vue";
 import CreateModalFood from './CreateModalFood.vue';
 import FoodChart from './FoodChart.vue';
 
@@ -120,6 +120,8 @@ export default {
       activeFoodId: null,  // 활성화된 음식 ID 저장, 모달 전달
       currentType: 'food',
       foodRegion: '', //주변 지역 정보
+      placeLatitude: 0,
+      placeLongitude: 0,
       recommendListFoodRegion: [],
       replyFoodStar: '', //관광지 평점 정보
       recommendReplyStar: '',
@@ -127,6 +129,7 @@ export default {
     };
   },
   components: {
+    KakaoMap,
     CreateModalFood,
     FoodChart
   },
@@ -151,6 +154,8 @@ export default {
                 data.recommendFoodAllTag = data.recommendFoodAllTag.split(',').slice(0, 16).join(', ');
                 this.recommendListDetailFood = [data];
                 this.foodRegion = data.recommendFoodRegion;
+                this.placeLatitude = data.recommendFoodLatitude;
+                this.placeLongitude = data.recommendFoodLongitude;
                 this.replyModalCreate = false;
                 this.fetchRegionData(); // fetchRegionData 호출
                 this.fetchRatingData(); //fetchRatingData 호출 

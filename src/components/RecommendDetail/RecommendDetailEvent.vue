@@ -69,9 +69,9 @@
                     </div>
                 <div id="subright-cont">
                     <div class="mini-map">
-                        <div>
-                            <img alt="map" src="@/assets/images/map.png" style="width:160px">
-                        </div>
+                      <div v-for="(event, i) in recommendListDetailEvent" :key="i">
+                          <KakaoMap :latitude="event.recommendEventLatitude" :longitude="event.recommendEventLongitude" />
+                      </div>
                     </div>
                   <!-- recommendListEventRegion 표시 -->
                   <div class="recommend-list">
@@ -106,6 +106,7 @@
   </template>
   
   <script>
+  import KakaoMap from "@/components/KakaoMap/KakaoMap.vue";
   import CreateModalEvent from './CreateModalEvent.vue';
   import EventChart from './EventChart.vue';
   
@@ -118,6 +119,8 @@
       activeEventId: null,  // 활성화된 음식 ID 저장, 모달 전달
       currentType: 'event',
       eventRegion: '', //주변 지역 정보
+      placeLatitude: 0,
+      placeLongitude: 0,
       recommendListEventRegion: [],
       replyEventStar: '', //축제행사 평점 정보
       recommendReplyStar: '',
@@ -125,6 +128,7 @@
     };
   },
   components: {
+    KakaoMap,
     CreateModalEvent,
     EventChart
   },
@@ -149,6 +153,9 @@
                 data.recommendEventTag = data.recommendEventTag ? data.recommendEventTag.split(',').slice(0, 8).join(', ') : '';
                 data.recommendEventAllTag = data.recommendEventAllTag ? data.recommendEventAllTag.split(',').slice(0, 16).join(', ') : '';
                 this.recommendListDetailEvent = [data];
+                this.eventRegion = data.recommendEventRegion;
+                this.placeLatitude = data.recommendEventLatitude;
+                this.placeLongitude = data.recommendEventLongitude;
                 this.replyModalCreate = false;
                 this.fetchRegionData(); // fetchRegionData 호출
                 this.fetchRatingData(); //fetchRatingData 호출 
