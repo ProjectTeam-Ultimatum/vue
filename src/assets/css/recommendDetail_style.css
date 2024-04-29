@@ -289,8 +289,11 @@
 
 /* 오른 쪽 */
 .mini-map{
-    width: 220px;
+    width: 270px;
     padding: 12px;
+    background-color: #FFFFFF;
+    border-radius: 20px;  /* 모서리의 둥근 정도 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  /* 그림자 추가 */
 }
 
 .mini-map-wrap{

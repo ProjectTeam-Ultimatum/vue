@@ -114,9 +114,10 @@
                   </div>
               <div id="subright-cont">
                   <div class="mini-map">
-                    <div v-for="(place, i) in recommendListDetailPlace" :key="i">
+                    <div v-for="(place, i) in recommendListDetailPlace" :key="i" >
                         <!-- 기타 컨텐츠 -->
-                        <KakaoMap :latitude="place.recommendPlaceLatitude" :longitude="place.recommendPlaceLongitude" />
+                        <KakaoMap :latitude="place.recommendPlaceLatitude" :longitude="place.recommendPlaceLongitude" 
+                        :placeTitle="place.recommendPlaceTitle" />
                     </div>
                   </div>
                   <!-- recommendListplaceRegion 표시 -->
@@ -128,7 +129,7 @@
                       </h6>
                       <div>
                       <ul>
-                        <li v-for="(place, index) in recommendListPlaceRegion" :key="index" class="recommend-item">
+                        <li v-for="(place, index) in recommendListPlaceRegion" :key="index" >
                           <div @click="goToDetail(place.recommendPlaceId)" class="recommend-info">
                             <div class="recommend-name-region">
                               <p class="recommend-name">{{ place.recommendPlaceTitle }}</p>
@@ -172,6 +173,7 @@ data() {
     recommendListPlaceRegion: [],
     replyPlaceStar: '', //관광지 평점 정보
     recommendReplyStar: '',
+    placeTitle:'',
     //replyPlaceTags: ''
   };
 },
@@ -203,6 +205,7 @@ methods: {
               this.placeRegion = data.recommendPlaceRegion;
               this.placeLatitude = data.recommendPlaceLatitude;
               this.placeLongitude = data.recommendPlaceLongitude;
+              this.placeTitle = data.recommendPlaceTitle;
               this.replyModalCreate = false;
               this.fetchRegionData(); // fetchRegionData 호출
               this.fetchRatingData(); //fetchRatingData 호출 
@@ -331,4 +334,5 @@ methods: {
 
 <style scoped>
 @import "@/assets/css/recommendDetail_style.css";
+
 </style>
