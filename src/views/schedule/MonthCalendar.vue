@@ -1026,7 +1026,7 @@ export default {
 
 <style lang="scss" scoped>
 .schedulebackimg {
-  background-image: url('~@/assets/map.jpg');
+  background-image: url('~@/assets/images/map.jpg');
   background-size: cover;
   background-position: center;
   margin: -8px -8px;

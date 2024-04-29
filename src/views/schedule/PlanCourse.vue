@@ -26,7 +26,7 @@
           <div class="line1"></div>
           <span class="placetitle1">명소</span>
           <span class="placetitle2">제주국제공항</span>
-          <img class="planimg" :src="require('@/assets/jejuairport.png')">
+          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon" icon="fa-solid fa-car" />
             <span style="color: grey;">&nbsp;&nbsp;23분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
@@ -39,7 +39,7 @@
           <div class="line3"></div>
           <span class="placetitle1">명소</span>
           <span class="placetitle2">제주국제공항</span>
-          <img class="planimg" :src="require('@/assets/jejuairport.png')">
+          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon" icon="fa-solid fa-car" />
             <span style="color: grey;">&nbsp;&nbsp;23분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
@@ -52,7 +52,7 @@
           <div class="line5"></div>
           <span class="placetitle1">명소</span>
           <span class="placetitle2">제주국제공항</span>
-          <img class="planimg" :src="require('@/assets/jejuairport.png')">
+          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon" icon="fa-solid fa-car" />
             <span style="color: grey;">&nbsp;&nbsp;23분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
@@ -65,7 +65,7 @@
           <div class="line7"></div>
           <span class="placetitle1">명소</span>
           <span class="placetitle2">제주국제공항</span>
-          <img class="planimg" :src="require('@/assets/jejuairport.png')">
+          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon2" icon="fa-solid fa-circle" />
           </div>
@@ -82,7 +82,7 @@
           <div class="line1"></div>
           <span class="placetitle1">명소</span>
           <span class="placetitle2">제주국제공항</span>
-          <img class="planimg" :src="require('@/assets/jejuairport.png')">
+          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon" icon="fa-solid fa-car" />
             <span style="color: grey;">&nbsp;&nbsp;23분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
@@ -95,7 +95,7 @@
           <div class="line3"></div>
           <span class="placetitle1">명소</span>
           <span class="placetitle2">제주국제공항</span>
-          <img class="planimg" :src="require('@/assets/jejuairport.png')">
+          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon" icon="fa-solid fa-car" />
             <span style="color: grey;">&nbsp;&nbsp;23분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
@@ -108,7 +108,7 @@
           <div class="line5"></div>
           <span class="placetitle1">명소</span>
           <span class="placetitle2">제주국제공항</span>
-          <img class="planimg" :src="require('@/assets/jejuairport.png')">
+          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon" icon="fa-solid fa-car" />
             <span style="color: grey;">&nbsp;&nbsp;23분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
@@ -121,7 +121,7 @@
           <div class="line7"></div>
           <span class="placetitle1">명소</span>
           <span class="placetitle2">제주국제공항</span>
-          <img class="planimg" :src="require('@/assets/jejuairport.png')">
+          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon2" icon="fa-solid fa-circle" />
           </div>
@@ -138,7 +138,7 @@
           <div class="line1"></div>
           <span class="placetitle1">명소</span>
           <span class="placetitle2">제주국제공항</span>
-          <img class="planimg" :src="require('@/assets/jejuairport.png')">
+          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon" icon="fa-solid fa-car" />
             <span style="color: grey;">&nbsp;&nbsp;23분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
@@ -151,7 +151,7 @@
           <div class="line3"></div>
           <span class="placetitle1">명소</span>
           <span class="placetitle2">제주국제공항</span>
-          <img class="planimg" :src="require('@/assets/jejuairport.png')">
+          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon" icon="fa-solid fa-car" />
             <span style="color: grey;">&nbsp;&nbsp;23분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
@@ -164,7 +164,7 @@
           <div class="line5"></div>
           <span class="placetitle1">명소</span>
           <span class="placetitle2">제주국제공항</span>
-          <img class="planimg" :src="require('@/assets/jejuairport.png')">
+          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon" icon="fa-solid fa-car" />
             <span style="color: grey;">&nbsp;&nbsp;23분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
@@ -177,7 +177,7 @@
           <div class="line7"></div>
           <span class="placetitle1">명소</span>
           <span class="placetitle2">제주국제공항</span>
-          <img class="planimg" :src="require('@/assets/jejuairport.png')">
+          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon2" icon="fa-solid fa-circle" />
           </div>
@@ -232,7 +232,7 @@ export default {
 
 <style lang="scss" scoped>
 .backimg {
-  background-image: url('~@/assets/map.jpg');
+  background-image: url('~@/assets/images/map.jpg');
   background-size: cover;
   background-position: center;
   margin: -8px -8px;
