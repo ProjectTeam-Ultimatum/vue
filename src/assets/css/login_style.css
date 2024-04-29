@@ -81,7 +81,7 @@
   flex-direction: column;
   align-items: center; /* 모든 자식 요소를 중앙 정렬 */
   width: 450px;
-  height: 600px;
+  height: 700px;
 }
 
 .signup-group {
