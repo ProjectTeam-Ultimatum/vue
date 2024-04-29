@@ -104,7 +104,6 @@ export default {
     background-color: rgba(255, 255, 255, 0.9);  /* 배경색 및 투명도 */
     border-radius: 20px;  /* 모서리의 둥근 정도 */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  /* 그림자 추가 */
-    font-family: 'Arial', sans-serif;  /* 글꼴 */
     color: #333;  /* 글자 색상 */
     font-size: 14px;  /* 글자 크기 */
     text-align: center;  /* 텍스트 중앙 정렬 */
