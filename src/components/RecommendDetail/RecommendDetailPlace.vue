@@ -6,58 +6,100 @@
               <div id="subleft-cont">
                   <div id="div_profile">
                           <div class="cont-main"  >
-                              <div >
-                                  <img :src="place.recommendPlaceImgPath || 'default-image-url'" alt="Review Image">
+                              <div class="reply-img-wrap">
+                                  <img :src="place.recommendPlaceImgPath || 'default-image-url'" alt="Detail Image" class="cont-main-img">
                               </div>
                               <div class="detail-content">
-                                  <div class="detail-title-wrap">
-                                      <h4>{{ place.recommendPlaceTitle }}</h4>
-                                      <div class="detail-subtitle">{{ place.recommendPlaceIntroduction }}</div>
-                                      <!-- 평균 평점 (숫자와 별로 표시) -->
-                                      <div style="font-size: 20px;">
-                                        평점 {{ replyPlaceStar }}
-                                        <span v-for="star in 5" :key="star" class="star"
-                                            :class="{ filled: star <= Math.round(replyPlaceStar) }">★</span>
-                                      </div>
-                                      <!-- 영업상태 -->
-                                      <div>
+                                  <div class="detail-info-wrap">
+                                      <div class="detail-info-header">
+                                        <div>
+                                          <h2 class="detail-title">{{ place.recommendPlaceTitle }}</h2>
+                                        </div>
+                                        <!-- 영업상태 -->
+                                        <div>
                                           <span class="status" :class="getStatusClass(place.recommendPlaceClosetime)">
                                               {{ getStatusMessage(place.recommendPlaceClosetime) }}
                                           </span>
+                                        </div>
+                                      </div>
+                                      <div class="detail-subtitle">{{ place.recommendPlaceIntroduction }}</div>
+                                      <!-- 평균 평점 (숫자와 별로 표시) -->
+                                      <div class="detail-rating">
+                                        <span v-for="star in 5" :key="star" class="star"
+                                            :class="{ filled: star <= Math.round(replyPlaceStar) }">★</span>
+                                        <span class="rating-txt">{{ replyPlaceStar }}</span>
                                       </div>
                                   </div>
-                                  <div class="detail-option">{{ place.recommendPlaceAddress }}</div>
-                                  <div class="detail-option">{{ place.recommendPlacePhoneNo }}</div>
-                                  <div class="detail-option">{{ place.recommendPlaceTag }}</div>
+                                  <div class="detail-option-wrap">
+                                    <div class="detail-option">
+                                      <span class="detail-option-icon"><font-awesome-icon :icon="['fas', 'location-dot']" /></span>
+                                      <span>{{ place.recommendPlaceAddress }}</span>
+                                    </div>
+                                    <div class="detail-option">
+                                      <span class="detail-option-icon"><font-awesome-icon :icon="['fas', 'square-phone']" /></span>
+                                      <span>{{ place.recommendPlacePhoneNo }}</span>
+                                    </div>
+                                    <div class="detail-option">
+                                      <span class="detail-option-icon"><font-awesome-icon :icon="['fas', 'tag']" /></span>
+                                      <span>{{ place.recommendPlaceTag }}</span>
+                                    </div>
+                                  </div>
                               </div>
                           </div>
                           <div class="cont-sub">
                               <div class="cont-time">
-                                  <h6>영업시간</h6>
-                                  <ul>
-                                      <li v-for="day in ['월', '화', '수', '목', '금', '토', '일']" :key="day">
-                                      {{ day }}요일: <span>{{ place.recommendPlaceOpentime }}</span> - <span>{{ place.recommendPlaceClosetime }}</span>
-                                      </li>
-                                  </ul>
-                              </div>
+                                  <div>
+                                    <h4 class="detail-title">영업시간</h4>
+                                    <ul>
+                                        <li v-for="day in ['월', '화', '수', '목', '금', '토', '일']" :key="day">
+                                          <div class="cont-time-wrap">
+                                          <div>
+                                            {{ day }}요일: 
+                                          </div>
+                                          <div>
+                                            <span>{{ place.recommendPlaceOpentime }}</span>
+                                            - 
+                                            <span>{{ place.recommendPlaceClosetime }}</span>
+                                        </div>
+                                        </div>
+                                        </li>
+                                    </ul>
+                                  </div>
+                                  <div class="detail-tags-wrap">
+                                    <h4 class="detail-title">{{ place.recommendPlaceTitle }} 태그</h4>
+                                    <div>
+                                      <button
+                                        type="button"
+                                        class="btn btn-outline-primary detail-tags"
+                                        v-for="tag in parseTags(place.recommendPlaceAllTag)"
+                                        :key="tag"
+                                      >
+                                        {{ tag }}
+                                      </button>
+                                    </div>
+                                  </div>
+                            </div><!-- cont-time -->
+                        <div class="cont-reply">
+                          <div class="cont-reply-info">
+                            <h4 class="detail-title">방문자 평가</h4>
+                            <div class="detail-info-header cont-reply-line" >
+                              <p class="detail-reply-txt">😎 이런 점이 좋았어요</p>
                               <div>
-                                  <h6>{{ place.recommendPlaceTitle }} 정보</h6>
-                                  <div>{{ place.recommendPlaceAllTag }}</div>
+                              <button type="button" class="btn btn-primary btn-reply" @click="createModal(recommendPlaceId)" style="cursor: pointer">
+                                <span><font-awesome-icon :icon="['far', 'pen-to-square']" /></span>평점쓰기</button>
                               </div>
+                            </div>
                           </div>
-                      </div>
-                      <div class="cont-reply">
-                          <h6>방문자 평가</h6>
                           <div>
-                            <!-- 태그 Read -->
-                            <span>이런 점이 좋았어요</span>
                             <div class="cont-chart">
                                 <!-- PlaceChart 컴포넌트에 recommendPlaceId를 전달합니다 -->
                                 <PlaceChart :recommendPlaceId="place.recommendPlaceId" />
                             </div>
                           </div>
-                           <!-- 버튼 클릭 이벤트에 Place.id 전달 -->
-                           <button @click="createModal(recommendPlaceId)" style="font-size: 12px; cursor: pointer">평점쓰기</button>
+                          <div class="cont-reply-caution">
+                            <span class="cont-reply-caution-massage">😊 이 {{place.recommendPlaceCategory }}는 여러 방문객들의 생생한 평가를 통해 신뢰를 쌓았어요. 여러분도 마음 편히 즐겨보세요!</span>
+                            <p class="cont-reply-caution-massage">※홍보 및 비방 등 부적절한 평가는  평점 산정에서 제외될 수 있습니다.</p>
+                          </div>
                            <!-- Place.recommendPlaceId를 activePlaceId로 설정하여 전달 -->
                           <CreateModalPlace
                               v-if="replyModalCreate"
@@ -65,7 +107,10 @@
                               :recommendPlaceId="activePlaceId" 
                               :type="currentType"
                               @close="closeModal" />
-                          </div>
+                        </div><!-- cont-reply -->
+                    </div><!-- cont-sub -->
+                  </div><!-- div_profile -->
+
                   </div>
               <div id="subright-cont">
                   <div class="mini-map">
@@ -86,12 +131,14 @@
                         <li v-for="(place, index) in recommendListPlaceRegion" :key="index" class="recommend-item">
                           <div @click="goToDetail(place.recommendPlaceId)" class="recommend-info">
                             <div class="recommend-name-region">
-                              <span class="recommend-name">{{ place.recommendPlaceTitle }} {{ place.recommendPlaceLatitude }}{{ place.recommendPlaceLongitude }}</span>
-                              <span class="recommend-region"><span></span>{{ place.recommendPlaceRegion }}</span>
+                              <p class="recommend-name">{{ place.recommendPlaceTitle }}</p>
+                              <p class="recommend-region"><span><font-awesome-icon :icon="['fas', 'location-dot']" /></span>{{ place.recommendPlaceRegion }}</p>
                             </div>
                             <div class="recommend-details">
-                              <span class="recommend-tag">{{ place.recommendPlaceTag }}</span>
-                              <img class="recommend-photo" :src="place.recommendPlaceImgPath || 'default-image-url'" alt="관광지 사진">
+                              <p class="recommend-tag">{{ place.recommendPlaceTag }}</p>
+                              <div>
+                                <img class="recommend-photo" :src="place.recommendPlaceImgPath || 'default-image-url'" alt="관광지 사진">
+                              </div>
                             </div>
                           </div> <!-- goToDetail recommend-info -->
                         </li> <!-- v-for -->
@@ -264,7 +311,11 @@ methods: {
   refreshPage() {
     // 페이지 새로 고침
     window.location.reload();
-  } //refreshPage
+  }, //refreshPage
+  parseTags(tagsString) {
+    //태그 버튼 디자인 적용
+    return tagsString.split(',').map(tag => tag.trim());
+  },
   },
   mounted() {
     this.fetchPlaceDetails();
