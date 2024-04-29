@@ -192,5 +192,5 @@ export default {
 </script>
 
 <style scoped>
-@import "@/assets/createModal_style.css";
+@import "@/assets/css/createModal_style.css";
 </style>

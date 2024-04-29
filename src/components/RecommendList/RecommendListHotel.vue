@@ -49,7 +49,7 @@
           </div>
         </div>
         <div>
-          <img alt="map" src="@/assets/map.png" style="width:160px">
+          <img alt="map" src="@/assets/images/map.png" style="width:160px">
         </div>
     </div> <!-- recomemnd_info -->
     <div class="content_list">
@@ -242,5 +242,5 @@ mounted() {
 </script>
 
 <style scoped>
-@import "@/assets/recommendList_style.css";
+@import "@/assets/css/recommendList_style.css";
 </style>

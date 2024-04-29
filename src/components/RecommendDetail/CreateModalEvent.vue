@@ -192,5 +192,5 @@ food: ['음식이 맛있어요', '재료가 신선해요', '양이 많아서 좋
 </script>
 
 <style scoped>
-@import "@/assets/createModal_style.css";
+@import "@/assets/css/createModal_style.css";
 </style>

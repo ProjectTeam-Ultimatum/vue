@@ -72,7 +72,7 @@
                 <div id="subright-cont">
                     <div class="mini-map">
                         <div>
-                            <img alt="map" src="@/assets/map.png" style="width:160px">
+                            <img alt="map" src="@/assets/images/map.png" style="width:160px">
                         </div>
                     </div>
                   <!-- recommendListfoodRegion 표시 -->
@@ -295,5 +295,5 @@ export default {
 .divider {
   padding-top: 70px;
 }
-@import "@/assets/recommendDetail_style.css";
+@import "@/assets/css/recommendDetail_style.css";
 </style>

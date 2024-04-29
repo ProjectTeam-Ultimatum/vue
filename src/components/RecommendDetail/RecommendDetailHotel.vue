@@ -70,7 +70,7 @@
                 <div id="subright-cont">
                     <div class="mini-map">
                         <div>
-                            <img alt="map" src="@/assets/map.png" style="width:160px">
+                            <img alt="map" src="@/assets/images/map.png" style="width:160px">
                         </div>
                     </div>
                   <!-- recommendListHotelRegion 표시 -->
@@ -293,5 +293,5 @@ async fetchRatingData() {
   </script>
   
   <style scoped>
-  @import "@/assets/recommendDetail_style.css";
+  @import "@/assets/css/recommendDetail_style.css";
   </style>

@@ -70,7 +70,7 @@
               <div id="subright-cont">
                   <div class="mini-map">
                       <div>
-                          <img alt="map" src="@/assets/map.png" style="width:160px">
+                        <KakaoMap />
                       </div>
                   </div>
                   <!-- recommendListplaceRegion 표시 -->
@@ -85,7 +85,7 @@
                         <li v-for="(place, index) in recommendListPlaceRegion" :key="index" class="recommend-item">
                           <div @click="goToDetail(place.recommendPlaceId)" class="recommend-info">
                             <div class="recommend-name-region">
-                              <span class="recommend-name">{{ place.recommendPlaceTitle }}</span>
+                              <span class="recommend-name">{{ place.recommendPlaceTitle }} {{ place.recommendPlaceLatitude }}{{ place.recommendPlaceLongitude }}</span>
                               <span class="recommend-region"><span></span>{{ place.recommendPlaceRegion }}</span>
                             </div>
                             <div class="recommend-details">
@@ -106,6 +106,7 @@
 </template>
 
 <script>
+import KakaoMap from "@/components/KakaoMap/KakaoMap.vue";
 import CreateModalPlace from './CreateModalPlace.vue';
 import PlaceChart from './PlaceChart.vue';
 
@@ -118,6 +119,8 @@ data() {
     activePlaceId: null,  // 활성화된 음식 ID 저장, 모달 전달
     currentType: 'place',
     placeRegion: '', //주변 지역 정보
+    placeLatitude: 0,
+    placeLongitude: 0,
     recommendListPlaceRegion: [],
     replyPlaceStar: '', //관광지 평점 정보
     recommendReplyStar: '',
@@ -125,6 +128,7 @@ data() {
   };
 },
 components: {
+  KakaoMap,
   CreateModalPlace,
   PlaceChart
 },
@@ -149,6 +153,8 @@ methods: {
               data.recommendPlaceAllTag = data.recommendPlaceAllTag ? data.recommendPlaceAllTag.split(',').slice(0, 16).join(', ') : '';
               this.recommendListDetailPlace = [data];
               this.placeRegion = data.recommendPlaceRegion;
+              this.placeLatitude = data.recommendPlaceLatitude;
+              this.placeLongitude = data.recommendPlaceLongitude;
               this.replyModalCreate = false;
               this.fetchRegionData(); // fetchRegionData 호출
               this.fetchRatingData(); //fetchRatingData 호출 
@@ -272,5 +278,5 @@ methods: {
 </script>
 
 <style scoped>
-@import "@/assets/recommendDetail_style.css";
+@import "@/assets/css/recommendDetail_style.css";
 </style>
