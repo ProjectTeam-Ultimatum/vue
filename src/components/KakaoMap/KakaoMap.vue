@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div id="map" style="width:250px;height:250px;"></div>
+        <div id="map" style="width:190px; height:190px; border-radius: 12px;"></div>
     </div>
 </template>
 <style scoped>
@@ -51,6 +51,7 @@ export default {
             const script = document.createElement("script");
             script.src=
             //&autoload=false api를 로드한 후 맵을 그리는 함수가 실행되도록 구현
+            // 카카오 개발자 javascript 코드
             "//dapi.kakao.com/v2/maps/sdk.js?appkey=652bc7bf611ac245081578c73084c7df&autoload=false";
             // 스크립트 로드가 끝나면 지도를 실행 될 준비가 되어 있다면 지도가 실행되도록 구현
             script.onload = () => window.kakao.maps.load(this.initMap); 
