@@ -75,7 +75,13 @@ export default {
     if (this.isAuthenticated) {
       this.fetchUserName(); // 로그인 되어 있을 때만 사용자 정보를 가져옵니다.
     }
-
+  },
+  watch: {
+    "$store.state.auth.isAuthenticated"(newValue) {
+      if (newValue === true) {
+        this.handleLoginSuccess();
+      }
+    },
   },
   methods: {
     async fetchUserName() {
@@ -83,7 +89,7 @@ export default {
         const response = await this.$axios.get("/api/v1/user/info/detail");
         this.$store.commit("auth/SET_USER_NAME", response.data.userName);
         this.$store.commit("auth/SET_USER_IMAGE", response.data.images);
-        this.isAuthenticated = true;
+        this.$store.commit("auth/SET_AUTHENTICATED", true);
 
         // 설문조사 필요 여부 확인 후 조치
         if (response.data.needSurvey) {
@@ -92,16 +98,21 @@ export default {
 
         console.log("API response:", response.data); // API 응답 로깅
       } catch (error) {
-        console.error("인증된 사용자가 아닙니다. : ", error);
+        console.error("로그인해주세요 : ", error);
+        this.$store.commit("auth/SET_AUTHENTICATED", false);
         this.isAuthenticated = false; // 에러 발생 시 인증 상태 업데이트
       }
     },
     promptSurvey() {
-    // 간단한 confirm 창을 사용하여 설문 조사 유도
-    if (confirm("나만의 여행스타일을 알아보세요! 검사 페이지로 이동하시겠습니까?")) {
-      this.$router.push('/travel');  // 설문 조사 페이지로 리디렉션
-    }
-  },
+      // 간단한 confirm 창을 사용하여 설문 조사 유도
+      if (
+        confirm(
+          "나만의 여행스타일을 알아보세요! 검사 페이지로 이동하시겠습니까?"
+        )
+      ) {
+        this.$router.push("/travel"); // 설문 조사 페이지로 리디렉션
+      }
+    },
     showLoginModal() {
       this.showModal = true;
     },
@@ -111,12 +122,17 @@ export default {
       this.$store.commit("auth/SET_USER_EMAIL", null);
       this.$store.commit("auth/SET_USER_NAME", null);
       this.$store.commit("auth/SET_USER_IMAGE", null);
+      this.$store.commit("auth/SET_AUTHENTICATED", null);
+      this.$store.commit("auth/CLEAR_AUTH_DATA", null);
 
       // 로컬 스토리지에서 토큰 제거
       localStorage.removeItem("Authorization");
       localStorage.removeItem("email");
       localStorage.removeItem("userName");
       localStorage.removeItem("images");
+      localStorage.removeItem("memberEmail");
+      localStorage.removeItem("token");
+      localStorage.removeItem("kakaoAccessToken");
 
       this.isAuthenticated = false;
       // 로그아웃 성공 메시지 표시 후 페이지 새로 고침
@@ -128,7 +144,6 @@ export default {
       //상태를 업데이트 하거나 필요한 ui 변경을 수행합니다.
       this.isAuthenticated = true;
       this.showModal = false;
-      //사용자를 홈페이지로 리다이랙션
     },
   },
   mounted() {

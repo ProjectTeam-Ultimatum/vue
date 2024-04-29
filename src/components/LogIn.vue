@@ -60,7 +60,9 @@
 
         <button type="submit" class="submit-button">로그인</button>
         <p>OR</p>
-        <button class="google-signin">카카오 계정으로 로그인하기</button>
+        <button class="google-signin" @click="redirectToKakaoLogin">
+          카카오 계정으로 로그인하기
+        </button>
         <p class="signup-prompt">
           아직 회원이 아니신가요?
           <a @click="switchView('signup')">회원가입 하기</a>
@@ -493,6 +495,17 @@ export default {
     },
   },
   methods: {
+    redirectToKakaoLogin() {
+      //카카오 로그인페이지로 리디렉션할 url 생성
+      //client_id와 redirect_ri는 실제 어플리케이션에 맞게 변경해야한다.
+      const CLIENT_ID = "100bde42d2ac4c0bf9cf54655e5395cc";
+      const REDIRECT_URI = "http://localhost:8081/social";
+
+      const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+
+      //사용자를 카카오 로그인페이지로 리디렉션
+      window.location.href = kakaoAuthUrl;
+    },
     login() {
       const data = {
         memberEmail: this.username,

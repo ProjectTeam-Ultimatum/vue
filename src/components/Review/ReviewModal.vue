@@ -344,6 +344,30 @@ export default {
       }
     },
 
+    async incrementLikes(review) {
+      // 좋아요를 증가시키는 로직
+      review.reviewLike += 1;
+      try {
+        // 백엔드 서버에 변경사항을 전달
+        await this.$axios.post(
+          `/api/reviews/${review.reviewId}`,
+          {
+            reviewLike: review.reviewLike,
+          },
+          console.log(review)
+        );
+        // 필요하다면 응답 처리
+      } catch (error) {
+        if (error.response && error.response.data) {
+          //백엔드에서 보낸 에러메시지 표시
+          alert(`${error.response.data.message}`);
+          console.error(error.response.data.message);
+        } else {
+          console.error("좋아요 업데이트 중 에러 발생: " + error);
+        }
+      }
+    },
+
     nextImage() {
       if (this.currentImageIndex < this.review.reviewImages.length - 1) {
         this.currentImageIndex++;
