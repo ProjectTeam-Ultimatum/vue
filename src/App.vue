@@ -16,13 +16,13 @@
       <div v-if="!isAuthenticated">
         <button @click="showLoginModal">로그인</button>
       </div>
-      <div v-else class="user-info">
+      <div v-else class="user-info" @click="goToMyPage">
         <img
           v-if="userImage"
           :src="userImage || 'default-image-url'"
           class="user-image"
         />
-        {{ userName }} 님 환영합니다..
+        {{ userName }} 님 환영합니다.
         <button @click="logout">로그아웃</button>
       </div>
     </div>
@@ -144,6 +144,9 @@ export default {
       //상태를 업데이트 하거나 필요한 ui 변경을 수행합니다.
       this.isAuthenticated = true;
       this.showModal = false;
+    },
+    goToMyPage() {
+      this.$router.push("/mypage");
     },
   },
   mounted() {
