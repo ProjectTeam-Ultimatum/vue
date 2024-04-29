@@ -11,38 +11,38 @@
                   :class="{ 'active': selectedTag === '' }"
                   @click="selectTag('')">전체</button>
                   <button type="button" class="btn btn-outline-primary"
-          :class="{ 'active': selectedTag === '친구' }"
-          @click="selectTag('친구')">친구</button>
-      <button type="button" class="btn btn-outline-primary"
-          :class="{ 'active': selectedTag === '혼자' }"
-          @click="selectTag('혼자')">혼자</button>
-      <button type="button" class="btn btn-outline-primary"
-          :class="{ 'active': selectedTag === '커플' }"
-          @click="selectTag('커플')">커플</button>
-      <button type="button" class="btn btn-outline-primary"
-          :class="{ 'active': selectedTag === '아이' }"
-          @click="selectTag('아이')">아이</button>
-      <button type="button" class="btn btn-outline-primary"
-          :class="{ 'active': selectedTag === '휴식/힐링' }"
-          @click="selectTag('휴식/힐링')">휴식/힐링</button>
-      <button type="button" class="btn btn-outline-primary"
-      :class="{ 'active': selectedTag === '걷기/등산' }"
-      @click="selectTag('걷기/등산')">걷기/등산</button>
-      <button type="button" class="btn btn-outline-primary"
-          :class="{ 'active': selectedTag === '액티비티' }"
-          @click="selectTag('액티비티')">액티비티</button>
-      <button type="button" class="btn btn-outline-primary"
-      :class="{ 'active': selectedTag === '레저/체험' }"
-      @click="selectTag('레저/체험')">레저/체험</button>
-      <button type="button" class="btn btn-outline-primary"
-      :class="{ 'active': selectedTag === '반려동물동반입장' }"
-      @click="selectTag('반려동물동반입장')">반려동물동반입장</button> 
-          </div>
+                      :class="{ 'active': selectedTag === '친구' }"
+                      @click="selectTag('친구')">친구</button>
+                  <button type="button" class="btn btn-outline-primary"
+                      :class="{ 'active': selectedTag === '혼자' }"
+                      @click="selectTag('혼자')">혼자</button>
+                  <button type="button" class="btn btn-outline-primary"
+                      :class="{ 'active': selectedTag === '커플' }"
+                      @click="selectTag('커플')">커플</button>
+                  <button type="button" class="btn btn-outline-primary"
+                      :class="{ 'active': selectedTag === '아이' }"
+                      @click="selectTag('아이')">아이</button>
+                  <button type="button" class="btn btn-outline-primary"
+                      :class="{ 'active': selectedTag === '휴식/힐링' }"
+                      @click="selectTag('휴식/힐링')">휴식/힐링</button>
+                  <button type="button" class="btn btn-outline-primary"
+                  :class="{ 'active': selectedTag === '걷기/등산' }"
+                  @click="selectTag('걷기/등산')">걷기/등산</button>
+                  <button type="button" class="btn btn-outline-primary"
+                      :class="{ 'active': selectedTag === '액티비티' }"
+                      @click="selectTag('액티비티')">액티비티</button>
+                  <button type="button" class="btn btn-outline-primary"
+                  :class="{ 'active': selectedTag === '레저/체험' }"
+                  @click="selectTag('레저/체험')">레저/체험</button>
+                  <button type="button" class="btn btn-outline-primary"
+                  :class="{ 'active': selectedTag === '반려동물동반입장' }"
+                  @click="selectTag('반려동물동반입장')">반려동물동반입장</button> 
+          </div> <!-- tag-wrap-->
         </div>
         <div>
-          <img alt="map" src="@/assets/map.png" style="width:160px">
+          <img alt="map" src="@/assets/images/map.png" style="width:160px">
         </div>
-    </div>
+    </div> <!-- recomemnd_info -->
     
     <div class="content_list">
         <div style="width: 820px; margin: 16px auto; text-align:left;">
@@ -50,9 +50,8 @@
             <span style="margin-left: 5px;">제주랑 고객님들이 엄선한 구경거리 입니다</span>
         </div>
         <div class="card-wrap">
-        <!-- <div v-for="list in recommendList" :key="list.id"> -->
           <div :key="i" v-for="(place, i) in filteredPlaces">
-            <div class="card">
+            <div @click="goToDetail(place.recommendPlaceId)" class="card">
               <div class="card-image">
                 <img :src="place.recommendPlaceImgPath || 'default-image-url'" alt="Review Image">
                 <!-- <div class="score">{{ place.recommendPlaceStar }}</div> -->
@@ -70,11 +69,11 @@
                 <div class="card-option-blue">{{ place.recommendPlaceRegion }}</div>
                 <div class="card-subtitle">{{ place.recommendPlaceIntroduction }}</div>
                 <div class="card-option">{{ place.recommendPlaceTag }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+              </div> <!-- card-content -->
+           </div>  <!-- goToDetail -->
+          </div> <!-- v-for -->
+        </div> <!-- card-wrap -->
+      </div> <!-- content_list -->
       <PaginationComponent
           :total-pages="totalPages"
           :current-page="currentPage"
@@ -103,11 +102,11 @@ export default {
     return {
       loading: false,
       recommendListPlace: [],
+      selectedRegion: this.region, // prop을 직접 사용
+      selectedTag: '',  // 초기값으로 '전체' 태그 활성화
       currentPage: 1, // currentPage로 업데이트
       totalPages: 0,
       pageSize: 12,  // 페이지 크기 정의
-      selectedTag: '',  // 초기값으로 '전체' 태그 활성화
-      selectedRegion: this.region // prop을 직접 사용
     };
   },
   //created, mounted
@@ -134,7 +133,7 @@ export default {
     console.log('Requesting data with params:', params); 
 
     // Axios 요청에 params 적용
-    this.$axios.get("http://localhost:8080/api/recommend/listplace", { params })
+    this.$axios.get("/api/recommend/listplace", { params })
     .then((response) => {
         if (response.data.content.length === 0) {
           console.error('No data returned for the page:', this.currentPage);
@@ -172,7 +171,7 @@ export default {
       console.error("에러났어요 : " + error);
       this.loading = false; // 에러 발생 시 로딩 상태 비활성화
   });
-  },
+  }, //fetchData
   selectTag(tag) { //태그 필터링
       this.selectedTag = tag; // 선택된 태그 업데이트
       this.currentPage = 1;
@@ -202,7 +201,15 @@ export default {
   },
   getStatusMessage(closeTime) {
     return this.isOperating(closeTime);
-  }
+  }, //getStatusMessage
+  goToDetail(recommendPlaceId) {
+    if (!recommendPlaceId) {
+      console.error("Error: recommendPlaceId 찾을 수 없음");
+      return;
+    }
+    console.log("이동 할 recommendPlaceId:", recommendPlaceId);
+    this.$router.push({ name: 'detailplace', params: { recommendPlaceId } });  //recommendPlaceId 페이지 이동
+  } //goToDetail
 },
 computed: {
   filteredPlaces() {
@@ -226,5 +233,5 @@ mounted() {
 </script>
 
 <style scoped>
-@import "@/assets/recommendList_style.css";
+@import "@/assets/css/recommendList_style.css";
 </style>

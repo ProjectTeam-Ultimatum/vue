@@ -1,7 +1,7 @@
 <template>
   <nav :class="{ 'main-page': isMainPage, scrolled: isScrolled }">
     <router-link class="main-logo" to="/"
-      ><img src="./assets/images/logoImage.png" style="width: 40px" />제주랑
+      ><img src="./assets/images/jejurang-logo.png" style="width: 140px" />
     </router-link>
 
     <div class="nav-links">
@@ -10,6 +10,7 @@
       <router-link to="/list">리스트</router-link>
       <router-link to="/course">코스</router-link>
       <router-link to="/travel">여행스타일</router-link>
+      <router-link to="/map">지도</router-link>
     </div>
     <div class="login">
       <div v-if="!isAuthenticated">
@@ -21,7 +22,7 @@
           :src="userImage || 'default-image-url'"
           class="user-image"
         />
-        {{ userName }} 님 환영합니다.
+        {{ userName }} 님 환영합니다..
         <button @click="logout">로그아웃</button>
       </div>
     </div>
@@ -32,6 +33,11 @@
     />
   </nav>
   <router-view />
+  <!-- <nav>
+    <router-link to="/">Home</router-link> |
+    <router-link to="/reviews">Review</router-link> |
+    <router-link to="/schedule">schedule</router-link>
+  </nav> -->
 </template>
 
 <script>

@@ -12,8 +12,10 @@ import RecommendListHotel from '../components/RecommendList/RecommendListHotel.v
 import RecommendListPlace from '../components/RecommendList/RecommendListPlace.vue' 
 import RecommendListEvent from '../components/RecommendList/RecommendListEvent.vue' 
 import RecommendDetail from '../views/Recommend/RecommendDetail.vue'
-//import RecommendDetailFood from '../components/RecommendDetail/RecommendDetailFood.vue'
 import RecommendDetailFood from '../components/RecommendDetail/RecommendDetailFood.vue'
+import RecommendDetailPlace from '../components/RecommendDetail/RecommendDetailPlace.vue'
+import RecommendDetailHotel from '../components/RecommendDetail/RecommendDetailHotel.vue'
+import RecommendDetailEvent from '../components/RecommendDetail/RecommendDetailEvent.vue'
 //import RecommendList from '../views/RecommendListPlace.vue' 
 import MainMap from '@/components/Course/MainMap.vue'
 import CourseView from '../views/Course/CourseView.vue'
@@ -21,6 +23,9 @@ import TravelStyle from '@/views/TravelStyle/TravelStyle.vue';
 import TravelStyleTest from '@/components/TravelStyle/TravelStyleTest.vue'
 import StyleResult from '@/components/TravelStyle/StyleResult.vue'
 import SocialSignUp from'@/views/SocialSignUp.vue'
+import MonthCalendar from '../views/schedule/MonthCalendar.vue'
+import PlanCourse from '../views/schedule/PlanCourse.vue'
+import MapApi from '../views/MapApi.vue'
 
 
 
@@ -29,6 +34,11 @@ const routes = [
     path: '/',
     name: 'MainPage',
     component: MainPage
+  },
+  {
+    path: '/map',
+    name: 'MapApi',
+    component: MapApi,
   },
   {
     path: '/result',
@@ -52,6 +62,18 @@ const routes = [
     component: ReviewBoard
   },
   {
+  path: '/schedule',
+    name: 'schedule',
+    component: MonthCalendar
+  },
+
+  {
+    path: '/plancourse',
+      name: 'plancourse',
+      component: PlanCourse
+  },
+
+  {
     path: '/course',
     name: 'course',
     component: CourseView
@@ -72,14 +94,14 @@ const routes = [
     component: RecommendListFood
   },
   {
-    path: '/listhotel',
-    name: 'listhotel',
-    component: RecommendListHotel
-  },
-  {
     path: '/listplace',
     name: 'listplace',
     component: RecommendListPlace
+  },
+  {
+    path: '/listhotel',
+    name: 'listhotel',
+    component: RecommendListHotel
   },
   {
     path: '/listevent',
@@ -96,6 +118,24 @@ const routes = [
     name: 'detailfood',
     component: RecommendDetailFood,
     props: true  // 이를 통해 라우트 파라미터를 prop으로 전달합니다.
+  },
+  {
+    path: '/detailplace/:recommendPlaceId',
+    name: 'detailplace',
+    component: RecommendDetailPlace,
+    props: true
+  },
+  {
+    path: '/detailhotel/:recommendHotelId',
+    name: 'detailhotel',
+    component: RecommendDetailHotel,
+    props: true
+  },
+  {
+    path: '/detailevent/:recommendEventId',
+    name: 'detailevent',
+    component: RecommendDetailEvent,
+    props: true
   },
   {
     path: '/chatting',
@@ -117,6 +157,7 @@ const routes = [
   //   path: '/social', // 이 경로는 카카오 개발자 콘솔에 설정한 리디렉트 URI와 일치해야 합니다.
   //   component: () => import('@/views/SocialSignUp.vue') // OAuth2 콜백을 처리할 컴포넌트
   // },
+
 ]
 
 const router = createRouter({

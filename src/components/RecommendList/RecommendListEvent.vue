@@ -46,9 +46,9 @@
           </div>
         </div>
         <div>
-          <img alt="map" src="@/assets/map.png" style="width:160px">
+          <img alt="map" src="@/assets/images/map.png" style="width:160px">
         </div>
-    </div>
+    </div><!-- recomemnd_info -->
     <div class="content_list">
         <div style="width: 820px; margin: 16px auto; text-align:left;">
             <span class="headline2" >제주도 가볼만한 곳</span>
@@ -57,7 +57,7 @@
         <div class="card-wrap">
         <!-- <div v-for="list in recommendList" :key="list.id"> -->
           <div :key="i" v-for="(event, i) in filteredEvents">
-            <div class="card">
+            <div @click="goToDetail(event.recommendEventId)" class="card">
               <div class="card-image">
                 <img :src="event.recommendEventImgPath || 'default-image-url'" alt="Review Image">
                 <!-- <div class="score">{{ event.recommendEventStar }}</div> -->
@@ -76,10 +76,10 @@
                 <div class="card-subtitle">{{ event.recommendEventIntroduction }}</div>
                 <div class="card-option">{{ event.recommendEventTag }}</div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
+            </div><!-- goToDetail-->
+          </div><!-- v-for-->
+        </div><!-- card-wrap -->
+      </div><!-- content_list -->
       <PaginationComponent
           :total-pages="totalPages"
           :current-page="currentPage"
@@ -139,7 +139,7 @@ export default {
     console.log('Requesting data with params:', params); 
 
     // Axios 요청에 params 적용
-    this.$axios.get("http://localhost:8080/api/recommend/listevent", { params })
+    this.$axios.get("/api/recommend/listevent", { params })
     .then((response) => {
         if (response.data.content.length === 0) {
           console.error('No data returned for the page:', this.currentPage);
@@ -207,7 +207,15 @@ export default {
     },
     getStatusMessage(closeTime) {
       return this.isOperating(closeTime);
+    },
+    goToDetail(recommendEventId) {
+    if (!recommendEventId) {
+      console.error("Error: recommendEventId 찾을 수 없음");
+      return;
     }
+    console.log("이동 할 recommendEventId:", recommendEventId);
+    this.$router.push({ name: 'detailevent', params: { recommendEventId } });
+  } //goToDetail
   },
   computed: {
   filteredEvents() {
@@ -231,5 +239,5 @@ export default {
 </script>
 
 <style scoped>
-@import "@/assets/recommendList_style.css";
+@import "@/assets/css/recommendList_style.css";
 </style>

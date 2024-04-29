@@ -52,7 +52,8 @@ export default {
 
 <style scoped>
 .rating {
-  font-size: 24px; /* 별의 크기를 설정합니다. */
+  font-size: 30px; /* 별의 크기를 설정합니다. */
+  font-weight: bold;
 }
 
 .rating span {
@@ -62,10 +63,12 @@ export default {
 .rating span::after {
   content: '☆'; /* 별 모양의 평점 기본 값으로 설정합니다. */
   color: #ccc; /* 비활성화된 별의 색상을 설정합니다. */
+  text-shadow: 0 0 3px #000; /* 검은색 테두리를 추가합니다. */
 }
 
 .rating span.filled::after {
   content: '★'; /* 활성화된 별의 색상을 설정합니다. */
   color: gold; /* 활성화된 별의 색상을 설정합니다. */
+  text-shadow: 0 0 3px #000; /* 활성화된 별에도 검은색 테두리를 추가합니다. */
 }
 </style>
