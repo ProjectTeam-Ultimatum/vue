@@ -6,7 +6,7 @@
     <SlideMainImg class="main-vis" />
   </div>
   <div class="divider"></div>
-  <div v-if="isValidStyle">
+  <div v-if="isValidStyle" style="font-size: 30px;">
     당신의 여행스타일은<span style="color: #f7c347">
       {{ getMbtiNickname() }} </span
     >입니다.
@@ -26,13 +26,10 @@
   <div class="divider"></div>
   <div class="my-travel-course">
     <h2 class="mb-3">나만의 여행 코스</h2>
-    <div class="recommand-card"></div>
+    <MyCarouse />
   </div>
   <div class="divider"></div>
-  <div class="travel-course">
-    <h2 class="mb-3">코스 안내 배너</h2>
-    <div class="recommand-card"></div>
-  </div>
+  <CarouselBanner />
   <div class="divider"></div>
   <div class="travel-course">
     <LatestReviews />
@@ -43,6 +40,8 @@
 <script>
 import LatestReviews from "../components/Review/LatestReviews.vue";
 import SlideMainImg from "../components/MainPage/SlideMainImg.vue";
+import CarouselBanner from "../components/MainPage/CarouselBanner.vue";
+import MyCarouse from "../components/MainPage/MyCarouse.vue";
 // @ is an alias to /src
 /* eslint-disable */
 export default {
@@ -50,6 +49,8 @@ export default {
   components: {
     LatestReviews,
     SlideMainImg,
+    CarouselBanner,
+    MyCarouse
   },
   data() {
     return {
