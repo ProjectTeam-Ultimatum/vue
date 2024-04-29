@@ -13,8 +13,16 @@
   </div>
   <div class="recommend-style">
     <h2 class="mb-3">여행스타일 추천</h2>
-    <div class="recommand-card"></div>
+    <div class="main-travel-style">
+      <div class="main-travel-style-txt" > 
+        당신의 여행스타일은
+        <strong style="color: #f7c347"> ESTJ</strong>
+        입니다.
+      </div>
+    </div>
+    <RecommendBanner/>
   </div>
+    <div class="recommand-card"></div>
   <div class="divider"></div>
   <div class="chat">
     <h2 class="mb-3">채팅 소개 영역</h2>
@@ -26,7 +34,7 @@
   <div class="divider"></div>
   <div class="my-travel-course">
     <h2 class="mb-3">나만의 여행 코스</h2>
-    <MyCarouse />
+    <MyCourse />
   </div>
   <div class="divider"></div>
   <CarouselBanner />
@@ -41,7 +49,8 @@
 import LatestReviews from "../components/Review/LatestReviews.vue";
 import SlideMainImg from "../components/MainPage/SlideMainImg.vue";
 import CarouselBanner from "../components/MainPage/CarouselBanner.vue";
-import MyCarouse from "../components/MainPage/MyCarouse.vue";
+import MyCourse from "../components/MainPage/MyCourse.vue";
+import RecommendBanner from "../components/MainPage/RecommendBanner.vue";
 // @ is an alias to /src
 /* eslint-disable */
 export default {
@@ -50,7 +59,8 @@ export default {
     LatestReviews,
     SlideMainImg,
     CarouselBanner,
-    MyCarouse
+    MyCourse,
+    RecommendBanner
   },
   data() {
     return {
