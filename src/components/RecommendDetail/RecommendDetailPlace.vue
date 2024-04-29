@@ -69,9 +69,10 @@
                   </div>
               <div id="subright-cont">
                   <div class="mini-map">
-                      <div>
-                        <KakaoMap />
-                      </div>
+                    <div v-for="(place, i) in recommendListDetailPlace" :key="i">
+                        <!-- 기타 컨텐츠 -->
+                        <KakaoMap :latitude="place.recommendPlaceLatitude" :longitude="place.recommendPlaceLongitude" />
+                    </div>
                   </div>
                   <!-- recommendListplaceRegion 표시 -->
                   <div class="recommend-list">
