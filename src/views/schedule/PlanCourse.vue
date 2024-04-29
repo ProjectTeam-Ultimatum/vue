@@ -240,6 +240,7 @@ export default {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  margin-top: 150px;
 }
 
 .topbar{
@@ -256,6 +257,7 @@ export default {
   width: 80%;
   height: 100px;
   border-right: 2px solid rgb(189, 189, 189);
+  border-top: 2px solid rgb(189, 189, 189);
   width: calc(100%);
   font-size: 20px;
 }
@@ -267,6 +269,7 @@ export default {
   width: 20%;
   height: 100px;
   border-right: 2px solid rgb(189, 189, 189);
+  border-top: 2px solid rgb(189, 189, 189);
   margin-left: auto;
 }
 

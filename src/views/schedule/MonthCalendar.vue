@@ -1013,7 +1013,7 @@ export default {
   align-items: center;
   justify-content: center;
   width: 1000px;
-  height: 700px;
+  height: 750px;
   border-radius: 10px;
   padding: 20px;
 }
