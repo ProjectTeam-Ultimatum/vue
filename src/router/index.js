@@ -26,7 +26,7 @@ import SocialSignUp from'@/views/SocialSignUp.vue'
 import MonthCalendar from '../views/schedule/MonthCalendar.vue'
 import PlanCourse from '../views/schedule/PlanCourse.vue'
 import MapApi from '../views/MapApi.vue'
-import MemberMyPage from '../views/MemberMyPage.vue'
+import MemberMyPage from '../views/MyPage.vue'
 
 
 

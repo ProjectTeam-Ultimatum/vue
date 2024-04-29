@@ -256,6 +256,8 @@ nav a.router-link-exact-active {
 .user-info {
   display: flex;
   align-items: center;
+  color: white; /* 버튼 내 텍스트 색상을 흰색으로 설정합니다 */
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
 }
 
 .user-image {

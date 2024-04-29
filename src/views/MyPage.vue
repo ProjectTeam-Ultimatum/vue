@@ -1,0 +1,240 @@
+<template>
+  <div class="divider" />
+  <div class="info-container">
+    <div class="member">
+      <div class="mypage-maintext">마이 페이지</div>
+      <div class="mypage-content-row">
+        <div class="member-image">
+          <div class="file-upload-wrapper">
+            <div class="image-upload-preview" v-if="profileImageSrc">
+              <img :src="profileImageSrc" class="profile-image" />
+              <button
+                type="button"
+                class="image-edit-button"
+                @click.prevent="triggerFileInput"
+              >
+                &#9998;
+              </button>
+              <!-- 이모티콘은 적절한 아이콘으로 교체 가능 -->
+            </div>
+            <div v-else class="image-upload-placeholder">
+              <button
+                type="button"
+                @click="triggerFileInput"
+                class="file-upload-button"
+              ></button>
+            </div>
+            <input
+              type="file"
+              id="profileImage"
+              ref="profileImage"
+              @change="handleFileChange"
+              style="display: none"
+            />
+          </div>
+        </div>
+        <div class="member-content">
+          <div class="info-group">
+            <label for="email">이메일</label>
+            <div class="member-info" id="name">{{ memberDetails.email }}</div>
+          </div>
+          <div class="info-group">
+            <label for="name">이 름</label>
+            <div class="member-info" id="name">
+              {{ memberDetails.userName }}
+            </div>
+          </div>
+          <div class="info-group-pw">
+            <label for="pw">비밀번호</label>
+            <div type="button" id="pw" class="pw">비밀번호 변경</div>
+          </div>
+          <div class="info-group">
+            <label for="age">나 이</label>
+            <div class="member-info" id="age">{{ memberDetails.age }}</div>
+          </div>
+          <div class="info-group">
+            <label for="gender">성 별</label>
+            <div class="member-info" id="gender">
+              {{
+                memberDetails.gender === "F"
+                  ? "여"
+                  : memberDetails.gender === "M"
+                  ? "남"
+                  : "정보 없음"
+              }}
+            </div>
+          </div>
+          <div class="info-group">
+            <label for="address">주 소</label>
+            <div class="member-info" id="address">
+              {{ memberDetails.address }}
+            </div>
+          </div>
+          <div class="info-group">
+            <label for="style">여행 스타일</label>
+            <div class="member-info" id="style">
+              {{ memberDetails.memberStyle }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="buttons">
+        <button type="button" class="goToModify">수 정</button>
+        <button type="button" class="goBack">뒤로가기</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      memberDetails: [],
+      profileImageSrc: null,
+      profileImageFile: null,
+    };
+  },
+  mounted() {
+    this.fetchUserDetail();
+  },
+  methods: {
+    async fetchUserDetail() {
+      try {
+        const response = await this.$axios.get("/api/v1/user/info/detail");
+
+        this.memberDetails = response.data;
+        this.profileImageSrc = response.data.images;
+
+        console.log("멤버 디테일 : ", response.data); // API 응답 로깅
+      } catch (error) {
+        console.error("로그인해주세요 : ", error);
+        this.$store.commit("auth/SET_AUTHENTICATED", false);
+        this.isAuthenticated = false; // 에러 발생 시 인증 상태 업데이트
+      }
+    },
+    triggerFileInput() {
+      console.log("File input triggered");
+      this.$refs.profileImage.click();
+    },
+    handleFileChange() {
+      const file = this.$refs.profileImage.files[0];
+      if (file) {
+        // 데이터 URL을 읽어 이미지 미리보기를 설정합니다.
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.profileImageSrc = e.target.result; // 미리보기 이미지를 데이터 URL로 설정
+        };
+        reader.readAsDataURL(file);
+        // 파일 객체를 저장합니다.
+        this.profileImageFile = file;
+      }
+    },
+  },
+};
+</script>
+
+<style scoped>
+@import "@/assets/css/login_style.css";
+
+.info-container {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10%;
+  margin-right: 10%;
+  margin-top: 50px;
+}
+.mypage-maintext {
+  padding: 50px;
+  color: #393939;
+  font-size: 40px;
+  font-weight: bold;
+}
+.mypage-content-row {
+  border: 1px solid #e1e1e1;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  padding: 50px;
+}
+.member {
+  justify-content: center;
+  text-align: center;
+}
+.info-group {
+  display: flex;
+  flex-direction: row;
+  font-size: 20px;
+  color: #393939;
+  border-bottom: 1px solid #e1e1e1;
+}
+.member-image {
+  display: flex;
+  justify-content: center;
+  width: 30%;
+  padding: 20px;
+}
+.member-content {
+  width: 70%;
+}
+label {
+  display: flex;
+  justify-content: start;
+  width: 40%;
+  padding: 20px;
+  margin-left: 50px;
+}
+.member-info {
+  display: flex;
+  justify-content: start;
+  width: 60%;
+  padding: 20px;
+}
+.buttons {
+  display: flex;
+  justify-content: end;
+}
+.buttons button {
+  width: 120px;
+  height: 50px;
+  border-radius: 5px;
+  margin-top: 20px;
+  margin-left: 10px;
+}
+.goToModify {
+  background-color: #1275d6;
+  color: white;
+  border: none;
+  font-size: 20px;
+}
+.goBack {
+  background-color: #ffc83b;
+  border: none;
+  color: white;
+  font-size: 20px;
+}
+.info-group-pw {
+  display: flex;
+  flex-direction: row;
+  font-size: 20px;
+  color: #393939;
+  border-bottom: 1px solid #e1e1e1;
+}
+.pw {
+  display: flex;
+  justify-content: start;
+  margin-top: 10px;
+  padding: 10px;
+  height: 100%;
+  border-radius: 5px;
+  background-color: white;
+  border: 1px solid #1275d6;
+  color: #1275d6;
+}
+.pw:hover {
+  border-radius: 5px;
+  background-color: #1275d6;
+  border: 1px solid white;
+  color: white;
+}
+</style>
