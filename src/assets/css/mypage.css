@@ -1,0 +1,92 @@
+.info-container {
+  display: flex;
+  flex-direction: column;
+  margin-left: 15%;
+  margin-right: 15%;
+  margin-top: 20px;
+  margin-bottom: 50px;
+}
+.mypage-maintext {
+  padding-bottom: 30px;
+  color: #393939;
+  font-size: 40px;
+  font-weight: bold;
+}
+.mypage-content-row {
+  border-top: 1px solid #e1e1e1;
+  display: flex;
+  flex-direction: row;
+  padding: 30px;
+}
+.member {
+  justify-content: center;
+  text-align: center;
+}
+.info-group {
+  display: flex;
+  flex-direction: row;
+  font-size: 20px;
+  color: #393939;
+  border-bottom: 1px solid #e1e1e1;
+}
+.member-image {
+  display: flex;
+  justify-content: center;
+  width: 25%;
+  padding: 20px;
+}
+.member-content {
+  width: 70%;
+}
+.info-group label {
+  display: flex;
+  justify-content: start;
+  width: 40%;
+  padding: 20px;
+  margin-left: 50px;
+}
+.member-info {
+  display: flex;
+  justify-content: start;
+  width: 60%;
+  padding: 20px;
+}
+.buttons {
+  display: flex;
+  justify-content: center;
+}
+.buttons button {
+  width: 300px;
+  height: 70px;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+.goToModify {
+  background-color: #68c7ff;
+  color: white;
+  border: none;
+  font-size: 20px;
+}
+.info-group-pw {
+  display: flex;
+  flex-direction: row;
+  font-size: 20px;
+  color: #393939;
+  border-bottom: 1px solid #e1e1e1;
+}
+.pw {
+  display: flex;
+  justify-content: start;
+  padding: 10px;
+  height: 100%;
+  border-radius: 5px;
+  background-color: white;
+  border: 1px solid #68c7ff;
+  color: #68c7ff;
+}
+.pw:hover {
+  border-radius: 5px;
+  background-color: #68c7ff;
+  border: 1px solid #68c7ff;
+  color: white;
+}
