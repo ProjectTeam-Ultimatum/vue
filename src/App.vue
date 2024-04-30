@@ -5,11 +5,11 @@
     </router-link>
 
     <div class="nav-links">
+      <router-link to="/list">여행 정보</router-link>
+      <router-link to="/course">추천 코스</router-link>
       <router-link to="/chatting"> 메이트 찾기</router-link>
-      <router-link to="/reviews"> 여행후기 </router-link>
-      <router-link to="/list">리스트</router-link>
-      <router-link to="/course">코스</router-link>
-      <router-link to="/travel">여행스타일</router-link>
+      <router-link to="/reviews"> 여행 후기 </router-link>
+      <router-link to="/travel">여행 스타일</router-link>
     </div>
     <div class="login">
       <div v-if="!isAuthenticated">
