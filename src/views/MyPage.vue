@@ -137,8 +137,6 @@ export default {
         console.log("멤버 디테일 : ", response.data); // API 응답 로깅
       } catch (error) {
         console.error("로그인해주세요 : ", error);
-        this.$store.commit("auth/SET_AUTHENTICATED", false);
-        this.isAuthenticated = false; // 에러 발생 시 인증 상태 업데이트
       }
     },
     triggerFileInput() {

@@ -16,13 +16,15 @@
       <div v-if="!isAuthenticated">
         <button @click="showLoginModal">로그인</button>
       </div>
-      <div v-else class="user-info" @click="goToMyPage">
-        <img
-          v-if="userImage"
-          :src="userImage || 'default-image-url'"
-          class="user-image"
-        />
-        {{ userName }} 님
+      <div v-else class="user-info">
+        <div @click="goToMyPage">
+          <img
+            v-if="userImage"
+            :src="userImage || 'default-image-url'"
+            class="user-image"
+          />
+          {{ userName }}님
+        </div>
         <button @click="logout">로그아웃</button>
       </div>
     </div>
