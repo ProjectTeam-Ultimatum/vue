@@ -211,31 +211,16 @@ nav:not(.main-page) {
 .login {
   transition: color 0.3s;
 }
-nav.scrolled .user-info {
+nav.scrolled {
   background-color: white; /* 스크롤 시 배경색 변경 */
   color: black; /* 스크롤 시 텍스트 색상 변경 */
 }
 
-/* 스크롤되지 않았을 때 text-shadow 적용 */
-nav:not(.scrolled) .nav-links a,
-nav:not(.scrolled) .main-logo,
-nav:not(.scrolled) .login, .user-info {
-  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
-  color: white;
-}
-
-/* .user-info {
-  display: flex;
-  align-items: center;
-  color: white;
-  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
-} */
-
-/* nav.main-page .nav-links a,
+nav.main-page .nav-links a,
 nav.main-page .main-logo,
 nav.main-page .login {
   color: white;
-} */
+}
 
 nav.scrolled .nav-links a,
 nav.scrolled .main-logo,
@@ -250,7 +235,7 @@ nav:not(.main-page) .login,
 }
 
 nav a {
-  font-size: 23px;
+  font-size: 1.2em;
   font-weight: bold;
   text-decoration: none;
   color: #000000;
@@ -268,7 +253,12 @@ nav a.router-link-exact-active {
   font-size: 18px;
   cursor: pointer;
 }
-
+.user-info {
+  display: flex;
+  align-items: center;
+  color: white; /* 버튼 내 텍스트 색상을 흰색으로 설정합니다 */
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
+}
 
 .user-image {
   width: 40px; /* 이미지 크기 설정 */
