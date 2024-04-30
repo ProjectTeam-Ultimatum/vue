@@ -22,7 +22,7 @@
           :src="userImage || 'default-image-url'"
           class="user-image"
         />
-        {{ userName }} 님 환영합니다.
+        {{ userName }} 님
         <button @click="logout">로그아웃</button>
       </div>
     </div>
@@ -167,7 +167,6 @@ export default {
   right: 0;
   bottom: 0;
   left: 0;
-
 }
 .main-page #app {
   background-image: url("./assets/images/navbar-img.png"); /* 전체 페이지 배경 이미지 설정 */
