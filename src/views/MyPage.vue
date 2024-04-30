@@ -165,14 +165,13 @@ export default {
   margin-top: 50px;
 }
 .mypage-maintext {
-  padding: 50px;
+  padding: 30px;
   color: #393939;
   font-size: 40px;
   font-weight: bold;
 }
 .mypage-content-row {
-  border: 1px solid #e1e1e1;
-  border-radius: 10px;
+  border-top: 1px solid #e1e1e1;
   display: flex;
   flex-direction: row;
   padding: 50px;

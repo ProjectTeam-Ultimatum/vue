@@ -528,7 +528,7 @@ export default {
         })
         .catch((error) => {
           console.error("Login error:", error);
-          alert("로그인 실패: " + error.response.data.message);
+          alert("이메일이나 비밀번호가 맞지 않습니다.");
         });
     },
     nextStep() {
