@@ -13,8 +13,10 @@
     <div class="main-travel-style">
       <div class="main-travel-style-txt" > 
         <div v-if="isValidStyle" style="font-size: 22px;">
-          당신의 여행스타일은<strong style="color: #FFC83B">
-            {{ getMbtiNickname() }} </strong
+          <font-awesome-icon :icon="['fas', 'suitcase-rolling']" style="color:#68C7FF" />
+          당신의 여행스타일은
+          <strong style="color: #68C7FF">
+            "{{ getMbtiNickname() }}"</strong
           >입니다.
         </div>
       </div>
