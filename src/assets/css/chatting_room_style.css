@@ -11,7 +11,7 @@ html, body {
   }
   
   /* 경고 모달창 */
-  .modal {
+  .report-modal {
     position: fixed;
     left: 0;
     top: 0;

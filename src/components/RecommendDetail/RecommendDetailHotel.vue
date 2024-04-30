@@ -52,7 +52,6 @@
                             <!-- 태그 Read -->
                             <span>이런 점이 좋았어요</span>
                             <div class="cont-chart">
-                                <!-- PlaceChart 컴포넌트에 recommendPlaceId를 전달합니다 -->
                                 <HotelChart :recommendHotelId="hotel.recommendHotelId" />
                             </div>
                           </div>
@@ -69,9 +68,9 @@
                     </div>
                 <div id="subright-cont">
                     <div class="mini-map">
-                        <div>
-                            <img alt="map" src="@/assets/images/map.png" style="width:160px">
-                        </div>
+                      <div v-for="(hotel, i) in recommendListDetailHotel" :key="i">
+                          <KakaoMap :latitude="hotel.recommendHotelLatitude" :longitude="hotel.recommendHotelLongitude" />
+                      </div>
                     </div>
                   <!-- recommendListHotelRegion 표시 -->
                   <div class="recommend-list">
@@ -106,6 +105,7 @@
   </template>
   
   <script>
+  import KakaoMap from "@/components/KakaoMap/KakaoMap.vue";
   import CreateModalHotel from './CreateModalHotel.vue';
   import HotelChart from './HotelChart.vue';
   
@@ -118,6 +118,8 @@
       activeHotelId: null,  // 활성화된 음식 ID 저장, 모달 전달
       currentType: 'hotel',
       hotelRegion: '', //주변 지역 정보
+      placeLatitude: 0,
+      placeLongitude: 0,
       recommendListHotelRegion: [],
       replyHotelStar: '', //관광지 평점 정보
       recommendReplyStar: '',
@@ -125,6 +127,7 @@
     };
   },
   components: {
+    KakaoMap,
     CreateModalHotel,
     HotelChart
   },
@@ -149,6 +152,9 @@
                 data.recommendHotelTag = data.recommendHotelTag ? data.recommendHotelTag.split(',').slice(0, 8).join(', ') : '';
                 data.recommendHotelAllTag = data.recommendHotelAllTag ? data.recommendHotelAllTag.split(',').slice(0, 16).join(', ') : '';
                 this.recommendListDetailHotel = [data];
+                this.hotelRegion = data.recommendHotelRegion;
+                this.placeLatitude = data.recommendHotelLatitude;
+                this.placeLongitude = data.recommendHotelLongitude;
                 this.replyModalCreate = false;
                 this.fetchRegionData(); // fetchRegionData 호출
                 this.fetchRatingData(); //fetchRatingData 호출 

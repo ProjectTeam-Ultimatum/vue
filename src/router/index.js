@@ -25,7 +25,6 @@ import StyleResult from '@/components/TravelStyle/StyleResult.vue'
 import SocialSignUp from'@/views/SocialSignUp.vue'
 import MonthCalendar from '../views/schedule/MonthCalendar.vue'
 import PlanCourse from '../views/schedule/PlanCourse.vue'
-import MapApi from '../views/MapApi.vue'
 import MemberMyPage from '../views/MyPage.vue'
 import ModifyMypage from '../views/ModifyMyPage.vue'
 
@@ -38,11 +37,6 @@ const routes = [
     path: '/',
     name: 'MainPage',
     component: MainPage
-  },
-  {
-    path: '/map',
-    name: 'MapApi',
-    component: MapApi,
   },
   {
     path: '/result',
@@ -171,7 +165,14 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    } else {
+      return { left: 0, top: 0 };
+    }
+  }
 });
 
 export default router

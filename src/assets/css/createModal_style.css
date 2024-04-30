@@ -1,6 +1,4 @@
-.modal {
-    /* 모달의 스타일 */
-  }
+
   
   .modal-content {
     /* 모달 컨텐츠의 스타일 */
@@ -131,3 +129,7 @@
     text-align: left;
     margin-left: 20px;
   }
+
+  /* .modal-btn {
+    width: 120px;
+  } */
