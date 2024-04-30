@@ -24,6 +24,19 @@
           <div class="card_content">
 
             <div class="card_front">
+
+                <div class="left_section">
+                   같은 여행 스타일의 <br/> 친구들과 <br/><span style="color:#3ba7ff; font-weight:bold; font-size:30px;"> 만나보세요!</span>
+                </div>
+                <div class="right_section">
+                  <img :src="require('@/assets/images/surfing1.jpg')" alt="Report" style="width: 350px; height: 350px; margin-left: 10px;
+                   border-top-right-radius: 7px; border-bottom-right-radius: 5px;">
+                </div>
+
+            </div>
+
+            <div class="card_back">
+
                 <div class="left_section">
                    간편하게<br/> 나만의 최적화된<br/>
                    <span style="color:#3ba7ff; font-weight:bold; font-size:30px; letter-spacing : -2px;">메이트 찾기<br/></span>
@@ -32,16 +45,8 @@
                   <img :src="require('@/assets/images/chat02.jpg')" alt="Report" style="width: 350px; height: 350px; margin-left: 10px;
                    border-top-right-radius: 7px; border-bottom-right-radius: 5px;">
                 </div>
-            </div>
 
-            <div class="card_back">
-                <div class="left_section">
-                   같은 여행 스타일의 <br/> 친구들과 <br/><span style="color:#3ba7ff; font-weight:bold; font-size:30px;"> 만나보세요!</span>
-                </div>
-                <div class="right_section">
-                  <img :src="require('@/assets/images/surfing1.jpg')" alt="Report" style="width: 350px; height: 350px; margin-left: 10px;
-                   border-top-right-radius: 7px; border-bottom-right-radius: 5px;">
-                </div>
+
             </div>
           </div>
       </div>
@@ -50,14 +55,12 @@
           <p class="right-banner-header" style="letter-spacing : -2px;">나에게 딱 맞는 메이트 찾기</p>
           <div>
             <router-link to="/chatting">
-            <button type="button" 
-              class="btn btn-primary btn-reply" 
-              style="cursor: pointer"
-              @mouseover="hoverActive = true" 
-              @mouseleave="hoverActive = false">
-            <span><font-awesome-icon :icon="['far', 'comment-dots']" /></span>채팅 하기
-            </button>
-          </router-link>
+              <div class="fancy_text" 
+                  @mouseover="hoverActive = true" 
+                  @mouseleave="hoverActive = false">
+                  <span><font-awesome-icon :icon="['far', 'comment-dots']" /></span>채팅 하기
+              </div>
+            </router-link> 
           </div>
         </div>
         <ul class="right-banner-list">
@@ -66,13 +69,7 @@
           <li><em>🏃‍♂️올레길 4코스 함께해요ㅣ</em> 😝제일 길다는 4코스. 함께 하실 분~~ </li>
           <li><em>🍚같이 밥먹을 사람ㅣ</em> 👩🧑혼자 여행옴. 같이 밥 먹어요 </li>
         </ul>
-        <!-- <router-link to="/chatting">
-          <div class="fancy_text" 
-              @mouseover="hoverActive = true" 
-              @mouseleave="hoverActive = false">
-              여행메이트 찾으러가기 >>
-          </div>
-        </router-link> -->
+
       </div>
 
     </div>
@@ -100,6 +97,7 @@
           </div>
       </div>
     </div>
+  </div>
   </div>
 </template>
 
@@ -226,7 +224,7 @@ export default {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: #ffd8581b;
+  background: #3ba7ff3a;
   border-radius: 10px;
   font-size: 20px;
   color: #3ba7ff;
@@ -235,7 +233,7 @@ export default {
 } 
 
 .card .card_back {
-  background: #3ba7ff3a;
+  background: #ffd23f38;
   color: #3ba7ff;
 } 
 
@@ -262,7 +260,7 @@ export default {
 .right-banner-header{
   font-size:1.8em;
   font-weight: bold;
-  padding-top: 20px;
+  padding-top: 30px;
   padding-bottom: 20px;
 }
 
@@ -273,23 +271,23 @@ export default {
 }
 
 .fancy_text {
-    margin-top: 80px;
-    font-size: 24px; /* 텍스트 크기 */
+    font-size: 19px; /* 텍스트 크기 */
     color: #ffffff; /* 텍스트 색상 */
-    background: linear-gradient(45deg, #ffe4a0, #FFC83B); /* 배경 그라디언트 */
+    background: linear-gradient(45deg, #abd9ff, #3ba7ff); /* 배경 그라디언트 */
     padding: 10px 20px; /* 내부 여백 */
     border-radius: 8px; /* 둥근 테두리 */
-    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.6); /* 그림자 효과 */
     text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4); /* 텍스트 그림자 */
     font-weight: bold; /* 글자 굵기 */
     display: inline-block; /* 올바른 패딩과 배경을 위해 */
     transition: all 0.3s ease; /* 부드러운 전환 효과 */
+    width: 145px;
+    height: 45px;
 }
 
 .fancy_text:hover {
     transform: scale(1.1); /* 마우스 오버 시 텍스트 확대 */
     cursor: pointer; /* 마우스 커서 모양 변경 */
-     background: linear-gradient(45deg, #abd9ff, #3ba7ff); /* 배경 그라디언트 */
+    background: linear-gradient(45deg, #ffd772, #fdc12a); /* 배경 그라디언트 */
 }
 
 .taste-review-banner {

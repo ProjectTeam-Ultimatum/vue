@@ -5,23 +5,24 @@
     </router-link>
 
     <div class="nav-links">
+      <router-link to="/list">여행 정보</router-link>
+      <router-link to="/course">추천 코스</router-link>
       <router-link to="/chatting"> 메이트 찾기</router-link>
-      <router-link to="/reviews"> 여행후기 </router-link>
-      <router-link to="/list">리스트</router-link>
-      <router-link to="/course">코스</router-link>
-      <router-link to="/travel">여행스타일</router-link>
+      <router-link to="/reviews"> 여행 후기 </router-link>
+      <router-link to="/schedule"> 일정 짜기 </router-link>
+      <router-link to="/travel">여행 스타일</router-link>
     </div>
     <div class="login">
       <div v-if="!isAuthenticated">
         <button @click="showLoginModal">로그인</button>
       </div>
-      <div v-else class="user-info">
+      <div v-else class="user-info" @click="goToMyPage">
         <img
           v-if="userImage"
           :src="userImage || 'default-image-url'"
           class="user-image"
         />
-        {{ userName }} 님 환영합니다..
+        {{ userName }} 님 환영합니다.
         <button @click="logout">로그아웃</button>
       </div>
     </div>
@@ -144,6 +145,9 @@ export default {
       this.isAuthenticated = true;
       this.showModal = false;
     },
+    goToMyPage() {
+      this.$router.push("/mypage");
+    },
   },
   mounted() {
     window.addEventListener("scroll", () => {
@@ -252,6 +256,8 @@ nav a.router-link-exact-active {
 .user-info {
   display: flex;
   align-items: center;
+  color: white; /* 버튼 내 텍스트 색상을 흰색으로 설정합니다 */
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
 }
 
 .user-image {

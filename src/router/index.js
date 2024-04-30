@@ -25,6 +25,10 @@ import StyleResult from '@/components/TravelStyle/StyleResult.vue'
 import SocialSignUp from'@/views/SocialSignUp.vue'
 import MonthCalendar from '../views/schedule/MonthCalendar.vue'
 import PlanCourse from '../views/schedule/PlanCourse.vue'
+import MemberMyPage from '../views/MyPage.vue'
+import ModifyMypage from '../views/ModifyMyPage.vue'
+
+
 
 
 
@@ -147,11 +151,16 @@ const routes = [
     name: 'SocialSignUp',
     component: SocialSignUp,
   },
-  // {
-  //   path: '/social', // 이 경로는 카카오 개발자 콘솔에 설정한 리디렉트 URI와 일치해야 합니다.
-  //   component: () => import('@/views/SocialSignUp.vue') // OAuth2 콜백을 처리할 컴포넌트
-  // },
-
+  {
+    path: '/mypage', // 동적 세그먼트를 사용한 경로
+    name: 'MemberMyPage',
+    component: MemberMyPage,
+  },
+  {
+    path: '/modify-member', // 동적 세그먼트를 사용한 경로
+    name: 'ModifyMypage',
+    component: ModifyMypage,
+  },
 ]
 
 const router = createRouter({
