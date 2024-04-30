@@ -1,13 +1,7 @@
 <template>
-  <!-- 기존 메인 이미지-->
-  <!-- <div class="full-screen-background">
-  </div> -->
   <div>
     <SlideMainImg class="main-vis" />
   </div>
-  <!-- 영역 나누기 -->
-  <!-- <div class="divider"></div> -->
-  <!-- 1st 여행 스타일 추천 -->
   <div class="recommend-style">
     <h3 class="mb-3 main-title-txt">여행스타일 추천</h3>
     <div class="main-travel-style">
@@ -49,10 +43,8 @@
                    border-top-right-radius: 7px; border-bottom-right-radius: 5px;">
                 </div>
             </div>
-
           </div>
       </div>
-
       <div class="right-banner">
         <div class="right-header-wrap">
           <p class="right-banner-header" style="letter-spacing : -2px;">나에게 딱 맞는 메이트 찾기</p>

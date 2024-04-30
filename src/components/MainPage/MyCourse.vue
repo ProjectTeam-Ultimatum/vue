@@ -1,5 +1,6 @@
 <template>
     <div class="course-cards-container">
+      <router-link to="/list"  class="recommend-list-wrap">
       <div
         class="course-card"
         v-for="card in cards"
@@ -12,6 +13,7 @@
           <p>{{ card.description }}</p>
         </div>
       </div>
+    </router-link>
     </div>
   </template>
   

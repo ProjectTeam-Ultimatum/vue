@@ -1,7 +1,7 @@
 <template>
-  <ul class="recommend-card-list">
-    <li class="recommend-card" v-for="item in recommendItems" :key="item.id">
-      <a :href="item.url" class="recommend-link"> <!-- 링크 추가 -->
+  <div class="recommend-card-list">
+    <router-link to="/list"  class="recommend-list-wrap">
+    <div class="recommend-card" v-for="item in recommendItems" :key="item.id">
         <span class="best">BEST</span>
         <div class="img_scale">
           <div class="img_wrap" :style="{ backgroundImage: 'url(' + item.imageUrl + ')' }"></div>
@@ -14,9 +14,9 @@
             <span class="recommend-info-location"><font-awesome-icon :icon="['fas', 'location-dot']" style="color:#3ba7ff;" />{{ item.location }}</span>
           </div>
         </div>
-      </a>
-    </li>
-  </ul>
+    </div>
+  </router-link>
+</div>
 </template>
   
   <script>
