@@ -89,7 +89,12 @@
     <MyCourse />
   </div>
   <!-- 4th 여행 코스 추천 -->
+  <div style="  display: flex;
+  justify-content: center;
+  align-items: center;
+">
   <CarouselBanner />
+  </div>
   <!-- 여행 후기 게시판 -->
   <div class="travel-course">
     <h3 class="mb-3 main-title-txt">여행 후기 모음</h3>

@@ -421,12 +421,25 @@
         </div>
 
         <!-- 회원가입 완료 메시지 (단계 3) -->
-        <div v-if="currentStep === 3" class="signup-complete">
-          <h2>제주랑에 오신걸 환영합니다!</h2>
-          <p>제주랑이 준비한<br />맞춤여행소개 서비스를 이용해보세요</p>
-          <button @click="gotoLogin">나만의 여행스타일 바로가기</button>
-          <button @click="$emit('close')">화면 닫기</button>
-        </div>
+          <div  v-if="currentStep === 3" class="modal-container">
+              <div  class="signup-complete">
+                  <img src="@/assets/images/thank.png" style="width: 440px; height: 400px;" alt="...">
+                  <div class="service">
+                      <img src="@/assets/images/mbti-search.png" style="width: 50px; height: 50px;" alt="...">
+                      <img src="@/assets/images/planning.png" style="width: 50px; height: 50px;" alt="...">
+                      <img src="@/assets/images/travel-mate.png" style="width: 50px; height: 50px;" alt="...">
+                  </div>
+                  <div class="service-content">
+                      <p style="margin-top: 15px;"><span style="color: #F7C347;">여행스타일</span>을<br/>알아보세요</p>
+                      <p style="margin-top: 15px;"><span style="color: #F7C347;">코스 추천</span>을<br/> 받아보세요</p>
+                      <p style="margin-top: 15px;"><span style="color: #F7C347;">여행메이트</span>를 <br/>찾아보세요</p>
+                  </div>
+                  <div class="home-button-container">
+                  <button type="button" class="home-button"  @click="goToHome">제주랑 이용하러 가기</button>
+                  </div>
+              </div>
+          </div>
+
       </form>
     </div>
   </div>
@@ -495,6 +508,10 @@ export default {
     },
   },
   methods: {
+    goToHome() {
+      this.$router.push('/'); // 홈 경로로 이동
+      this.$emit('close'); // 부모 컴포넌트에 모달 닫기 이벤트 전송
+    },
     redirectToKakaoLogin() {
       //카카오 로그인페이지로 리디렉션할 url 생성
       //client_id와 redirect_ri는 실제 어플리케이션에 맞게 변경해야한다.
@@ -625,6 +642,10 @@ export default {
       // this.showModal = false;
       this.currentView = "login"; // 모달을 닫을 때 로그인 뷰로 리셋
       this.$emit("close");
+    },
+
+    signCloseModal() {
+      this.showSignupModal = false;
     },
     openPostcode() {
       new window.daum.Postcode({
