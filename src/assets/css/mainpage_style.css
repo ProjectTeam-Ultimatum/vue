@@ -267,3 +267,12 @@
   margin-top: 8px;
   color: #767676;
 }
+
+.recommend-link {
+  text-decoration: none; /* 링크 밑줄 제거 */
+  color: inherit; /* 링크 색상을 상위 요소의 색상과 동일하게 설정 */
+}
+
+.recommend-link:hover {
+  text-decoration: underline; /* 마우스 오버 시 밑줄 표시, 필요에 따라 제거 가능 */
+}

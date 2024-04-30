@@ -1,6 +1,7 @@
 <template>
-    <ul class="recommend-card-list">
-      <li class="recommend-card" v-for="item in recommendItems" :key="item.id">
+  <ul class="recommend-card-list">
+    <li class="recommend-card" v-for="item in recommendItems" :key="item.id">
+      <a :href="item.url" class="recommend-link"> <!-- 링크 추가 -->
         <span class="best">BEST</span>
         <div class="img_scale">
           <div class="img_wrap" :style="{ backgroundImage: 'url(' + item.imageUrl + ')' }"></div>
@@ -13,39 +14,43 @@
             <span class="recommend-info-location"><font-awesome-icon :icon="['fas', 'location-dot']" style="color:#3ba7ff;" />{{ item.location }}</span>
           </div>
         </div>
-      </li>
-    </ul>
-  </template>
+      </a>
+    </li>
+  </ul>
+</template>
   
   <script>
   export default {
     data() {
       return {
         recommendItems: [
-          {
-            id: 1,
-            imageUrl:  require('@/assets/images/img01.jpg'),
-            duration: '구경할 곳',
-            title: '여행이 있는 주말',
-            content: '매월 마지막 주말은 일상에서 벗어나 여행을 떠나보세요',
-            location: '서귀포시'
-          },
-          {
-            id: 2,
-            imageUrl:  require('@/assets/images/img02.jpg'),
-            duration: '가볼만한 곳',
-            title: '생활 관광',
-            content: '현지인다움과 지역다움을 체험할 수 있는 지역관광법을 소개합니다',
-            location: '성산읍'
-          },
-          {
-            id: 3,
-            imageUrl:  require('@/assets/images/img04.jpg'),
-            duration: '쉬어갈 곳',
-            title: '반려동물 동반 여행',
-            content: '반려 동물과 함께 할 수 있는 여행지를 소개합니다',
-            location: '제주시'
-          },
+        {
+        id: 1,
+        imageUrl: require('@/assets/images/img01.jpg'),
+        duration: '구경할 곳',
+        title: '여행이 있는 주말',
+        content: '매월 마지막 주말은 일상에서 벗어나 여행을 떠나보세요',
+        location: '서귀포시',
+        url: 'https://example.com/location1'  // URL 추가
+      },
+      {
+        id: 2,
+        imageUrl: require('@/assets/images/img02.jpg'),
+        duration: '가볼만한 곳',
+        title: '생활 관광',
+        content: '현지인다움과 지역다움을 체험할 수 있는 지역관광법을 소개합니다',
+        location: '성산읍',
+        url: 'https://example.com/location2'  // URL 추가
+      },
+      {
+        id: 3,
+        imageUrl: require('@/assets/images/img04.jpg'),
+        duration: '쉬어갈 곳',
+        title: '반려동물 동반 여행',
+        content: '반려 동물과 함께 할 수 있는 여행지를 소개합니다',
+        location: '제주시',
+        url: 'https://example.com/location3'  // URL 추가
+      },
         ]
       };
     },
