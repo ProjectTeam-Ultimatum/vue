@@ -256,3 +256,14 @@
   color: #ffffff; /* 제목 색상 조정 */
   text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.8); /* 그림자 추가 */
 }
+
+.recommend-info-txt{
+  font-size: 1.1em;
+  width: 300px;
+  color: #767676;
+}
+
+.recommend-info-location {
+  margin-top: 8px;
+  color: #767676;
+}

@@ -101,7 +101,6 @@
   <div class="travel-course">
     <h3 class="mb-3 main-title-txt">제주도민 평가단 모집</h3>
     <div class="recommand-card">
-
       <div class="taste-review-banner">
           <div class="banner-content">
               <p>내가 가는곳이 핫 플레이스!(꾸며야함)</p>
