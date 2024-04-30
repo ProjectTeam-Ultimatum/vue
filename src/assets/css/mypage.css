@@ -41,14 +41,14 @@
 .info-group label {
   display: flex;
   justify-content: start;
-  width: 40%;
+  width: 20%;
   padding: 20px;
   margin-left: 50px;
 }
 .member-info {
   display: flex;
   justify-content: start;
-  width: 60%;
+  width: 50%;
   padding: 20px;
 }
 .buttons {
@@ -89,4 +89,123 @@
   background-color: #68c7ff;
   border: 1px solid #68c7ff;
   color: white;
+}
+
+.goToStyle {
+  cursor: pointer;
+  background-color: white;
+  color: #68c7ff;
+  border: 1px solid #68c7ff;
+  border-radius: 5px;
+  font-size: 18px;
+  padding: 10px;
+  margin: 8px;
+  width: 15%;
+}
+.goToStyle:hover {
+  cursor: pointer;
+  background-color: #68c7ff;
+  color: white;
+  border: 1px solid #68c7ff;
+  border-radius: 5px;
+  font-size: 18px;
+  padding: 10px;
+  margin: 8px;
+  width: 15%;
+}
+
+.member {
+  justify-content: center;
+  text-align: center;
+}
+.info-group {
+  display: flex;
+  flex-direction: row;
+  font-size: 20px;
+  color: #393939;
+  border-bottom: 1px solid #e1e1e1;
+}
+.member-image {
+  display: flex;
+  justify-content: center;
+  width: 25%;
+  padding: 20px;
+}
+.member-content {
+  width: 70%;
+}
+.info-group label {
+  display: flex;
+  justify-content: start;
+  width: 35%;
+  padding: 20px;
+  margin-left: 50px;
+}
+.member-info {
+  display: flex;
+  justify-content: start;
+  width: 40%;
+  padding: 20px;
+}
+.buttons {
+  display: flex;
+  justify-content: center;
+}
+.buttons button {
+  width: 300px;
+  height: 70px;
+  border-radius: 5px;
+  margin-top: 20px;
+  margin-left: 10px;
+}
+.goToModify {
+  background-color: #68c7ff;
+  color: white;
+  border: none;
+  font-size: 20px;
+}
+
+.info-group-pw {
+  display: flex;
+  flex-direction: row;
+  font-size: 20px;
+  color: #393939;
+  border-bottom: 1px solid #e1e1e1;
+}
+.pw {
+  display: flex;
+  justify-content: start;
+  margin-top: 10px;
+  padding: 10px;
+  height: 100%;
+  border-radius: 5px;
+  background-color: white;
+  border: 1px solid #1275d6;
+  color: #1275d6;
+}
+.pw:hover {
+  border-radius: 5px;
+  background-color: #1275d6;
+  border: 1px solid white;
+  color: white;
+}
+.member-input {
+  font-size: 18px; /* 입력 필드 글자 크기 */
+  width: 400px; /* 전체 너비 */
+  border: 1px solid #e1e1e1; /* 모든 테두리 제거 */
+  outline: none; /* 클릭 시 테두리 없앰 */
+  margin: 10px;
+  margin-right: 5px;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.delete-member {
+  position: absolute;
+  top: 180px;
+  left: 250px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #68c7ff;
+  text-decoration: none;
 }
