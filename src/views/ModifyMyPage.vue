@@ -136,7 +136,7 @@
         </div>
       </div>
     </form>
-    <a class="delete-member" @click="deleteMember">회원탈퇴</a>
+    <a class="delete-member" @click="confirmDelete">회원탈퇴</a>
   </div>
 </template>
 
@@ -162,8 +162,26 @@ export default {
     this.fetchUserDetail();
   },
   methods: {
-    deleteMember() {
-      this.$axios.delete(`/api/v1/user/delete`);
+    confirmDelete() {
+      if (confirm("정말로 회원 탈퇴를 하시겠습니까?")) {
+        this.deleteMember();
+      }
+    },
+    async deleteMember() {
+      try {
+        const response = await this.$axios.delete(`/api/v1/user/delete`);
+        console.log("회원탈퇴", response.data);
+        alert("회원탈퇴 되셨습니다.");
+        this.$router.push("/").then(() => {
+          window.location.reload();
+        });
+      } catch (error) {
+        console.error("회원 탈퇴 실패:", error.response.data);
+        alert(
+          "회원 탈퇴에 실패하였습니다 :",
+          error || error.response.data.message
+        );
+      }
     },
     goToStyle() {
       this.$router.push("/travel");
