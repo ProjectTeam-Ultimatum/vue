@@ -115,7 +115,7 @@ import LatestReviews from "../components/Review/LatestReviews.vue";
 import SlideMainImg from "../components/MainPage/SlideMainImg.vue";
 import CarouselBanner from "../components/MainPage/CarouselBanner.vue";
 import MyCourse from "../components/MainPage/MyCourse.vue";
-import RecommendBanner from "../components/MainPage/RecommendBanner.vue";
+
 // @ is an alias to /src
 /* eslint-disable */
 export default {
@@ -126,7 +126,6 @@ export default {
     SlideMainImg,
     CarouselBanner,
     MyCourse,
-    RecommendBanner
   },
   
   data(){

@@ -167,6 +167,7 @@ export default {
   right: 0;
   bottom: 0;
   left: 0;
+
 }
 .main-page #app {
   background-image: url("./assets/images/navbar-img.png"); /* 전체 페이지 배경 이미지 설정 */

@@ -219,7 +219,7 @@
               </div>
             </div>
           </div>
-          <div class="selected-items">
+          <transition-group name="selected-itemlist" tag="div" class="selected-items">
             <div v-for="(selected, index) in selectedItems" :key="selected.title" class="selected-item">
               <span>{{ selected.order }}</span>
               <img :src="selected.imgPath" :alt="selected.title" class="selected-image" @error="handleImageError"/>
@@ -237,7 +237,7 @@
               </div>
               <button @click="removeItem(index)">X</button>
             </div>
-          </div>
+          </transition-group>
         </div>
         <button class="nextbutton" style="margin-left:858px; margin-bottom:12px;" @click="currentStep = 4">다음</button>
       </div>
@@ -579,7 +579,6 @@ export default {
       this.daystime = [...this.daystime];
     },
     formatDateToISOTime(time) {
-      // Ensure the time is in HH:mm format, then convert it to HH:mm:ss for backend compatibility
       const [hours, minutes] = time.split(':').map(Number);
       return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
     },
@@ -681,13 +680,18 @@ export default {
         .then(response => {
           this.items = response.data.content.map(item => {
             const categoryKey = this.getCategoryKey(item);
+            const uniqueId = `${categoryKey}-${item[`${categoryKey}Id`]}`;
+
+            // 이미 선택된 아이템인지 확인
+            const isSelected = this.selectedItems.some(selected => selected.uniqueId === uniqueId);
+
             return {
-              selected: false,
+              selected: isSelected,
               recommendFoodId: item[`${categoryKey}Id`],
               recommendEventId: item[`${categoryKey}Id`],
               recommendPlaceId: item[`${categoryKey}Id`],
-              title: this.trimTitle(item[`${categoryKey}Title`]), // title을 trimTitle로 처리
-              address: this.trimAddress(item[`${categoryKey}Address`]), // address를 trimAddress로 처리
+              title: this.trimTitle(item[`${categoryKey}Title`]),
+              address: this.trimAddress(item[`${categoryKey}Address`]),
               imgPath: item[`${categoryKey}ImgPath`],
               category: categoryKey.replace('recommend', '').toLowerCase()
             };
@@ -702,23 +706,28 @@ export default {
       return null;
     },
     searchData() {
-        let baseUrl;
-        if (this.selectedCategory === 'all') {
-            baseUrl = `http://localhost:8080/api/recommend/search/all`;
-        } else {
-            baseUrl = `http://localhost:8080/api/recommend/search/${this.selectedCategory}`;
-        }
-        const params = new URLSearchParams({ title: this.searchQuery }).toString();
-        axios.get(`${baseUrl}?${params}`)
-            .then(response => {
-                console.log(response.data);  // 데이터 구조 확인을 위한 로그
-                this.items = response.data.map(item => ({
-                    title: this.trimTitle(item.title || item.recommendPlaceTitle || item.recommendFoodTitle || item.recommendEventTitle),
-                    address: this.trimAddress(item.address || item.recommendPlaceAddress || item.recommendFoodAddress || item.recommendEventAddress),
-                    imgPath: item.imgPath || item.recommendPlaceImgPath || item.recommendFoodImgPath || item.recommendEventImgPath
-                }));
-            })
-            .catch(error => console.error('Search error:', error));
+      let baseUrl = this.selectedCategory === 'all' ? 'http://localhost:8080/api/recommend/search/all' : `http://localhost:8080/api/recommend/search/${this.selectedCategory}`;
+      const params = new URLSearchParams({ title: this.searchQuery }).toString();
+
+      axios.get(`${baseUrl}?${params}`)
+        .then(response => {
+          this.items = response.data.map(item => {
+            const categoryKey = this.getCategoryKey(item);
+            const uniqueId = `${categoryKey}-${item[`${categoryKey}Id`]}`;
+
+            // 이미 선택된 아이템인지 확인
+            const isSelected = this.selectedItems.some(selected => selected.uniqueId === uniqueId);
+
+            return {
+              selected: isSelected,
+              title: this.trimTitle(item.title || item.recommendPlaceTitle || item.recommendFoodTitle || item.recommendEventTitle),
+              address: this.trimAddress(item.address || item.recommendPlaceAddress || item.recommendFoodAddress || item.recommendEventAddress),
+              imgPath: item.imgPath || item.recommendPlaceImgPath || item.recommendFoodImgPath || item.recommendEventImgPath,
+              category: categoryKey.replace('recommend', '').toLowerCase()
+            };
+          });
+        })
+        .catch(error => console.error('Search error:', error));
     },
     fetchHotels() {
       axios.get('http://localhost:8080/api/recommend/listhotel')
@@ -761,8 +770,9 @@ export default {
       }[category];
     },
     addToSelected(item) {
-      const recommendIdKey = this.getIdFieldNameByCategory(item.category);
-      if (!this.selectedItems.some(selected => selected[recommendIdKey] === item[recommendIdKey])) {
+      const uniqueId = `${item.category}-${item[this.getIdFieldNameByCategory(item.category)]}`;
+
+      if (!this.selectedItems.some(selected => selected.uniqueId === uniqueId)) {
         item.selected = true;
         const newItemDuration = (parseFloat(item.durationHours) || 0) + (parseFloat(item.durationMinutes) || 0) / 60;
         const currentTotalDuration = parseFloat(this.calculateTotalItemDuration());
@@ -770,9 +780,10 @@ export default {
 
         console.log(`New Item Duration: ${newItemDuration}, Current Total: ${currentTotalDuration}, Scheduled: ${scheduledHours}`);
 
-        if (currentTotalDuration + newItemDuration < scheduledHours) {
+        if (currentTotalDuration + newItemDuration <= scheduledHours) {
           this.selectedItems.push({
             ...item,
+            uniqueId,
             order: this.selectedItems.length + 1,
             durationHours: item.durationHours || 2,
             durationMinutes: item.durationMinutes || 0
@@ -785,6 +796,8 @@ export default {
           alert(`총 아이템 시간이 예정된 일정 시간을 초과합니다. (현재: ${currentHours}시간 ${currentMinutes}분, 예정: ${Math.floor(scheduledHours)}시간 ${scheduledMinutes}분)`);
           item.selected = false;
         }
+      } else {
+        alert('이미 추가된 아이템입니다.');
       }
       this.items = [...this.items];
     },
@@ -1016,6 +1029,7 @@ export default {
   height: 750px;
   border-radius: 10px;
   padding: 20px;
+  box-shadow : 0px 5px 7px 1px rgb(163, 163, 163);
 }
 
 .schedulecontainer > div {
@@ -1133,11 +1147,12 @@ $border-color: #efefef;
 
           &.today {
             .date {
-              background-color: #93b3c9;
               width: 50px;
               height: 50px;
-              color: #ffffff;
+              color: #000000;
               border-radius: 10px;
+              font-weight: bold;
+              font-size:23px;
               margin: 4px 6px;
             }
           }
@@ -1372,6 +1387,18 @@ $border-color: #efefef;
   object-fit: cover;
   margin-right: 10px;
   border-radius: 7px;
+}
+
+.selected-itemlist-enter-active, .selected-itemlist-leave-active {
+  transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+}
+.selected-itemlist-enter, .selected-itemlist-leave-to {
+  opacity: 0;
+  transform: translateX(-100px);
+}
+.selected-itemlist-enter-to, .selected-itemlist-leave {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .selected-items {
