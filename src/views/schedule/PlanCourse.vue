@@ -40,7 +40,7 @@
           <span class="placetitle1">명소</span>
 
           <span class="placetitle2">삐삐그루밍</span>
-          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
+          <img class="planimg" src="https://api.cdn.visitjeju.net/photomng/thumbnailpath/202212/15/76821e6d-690e-4d4d-9682-5e43efcd1205.jpg">
 
           <div>
             <font-awesome-icon class="car-icon" icon="fa-solid fa-car" />
@@ -55,7 +55,8 @@
           <span class="placetitle1">명소</span>
 
           <span class="placetitle2">토향</span>
-          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
+          <img class="planimg" src="https://api.cdn.visitjeju.net/photomng/thumbnailpath/201810/11/4e1fd59d-1c5c-4004-b4d1-092cfc94fd01.jpg
+">
 
           <div>
             <font-awesome-icon class="car-icon" icon="fa-solid fa-car" />
@@ -69,7 +70,7 @@
           <div class="line7"></div>
           <span class="placetitle1">명소</span>
           <span class="placetitle2">제주펫스쿨</span>
-          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
+          <img class="planimg" src="https://api.cdn.visitjeju.net/photomng/thumbnailpath/202308/23/fe24ac67-455d-42e6-8bc2-9c079f48b807.jpg">
           <div>
             <font-awesome-icon class="car-icon" icon="fa-solid fa-car" />
             <span style="color: grey;">&nbsp;&nbsp;28분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
@@ -82,7 +83,7 @@
           <div class="line9"></div>
           <span class="placetitle1">숙소</span>
           <span class="placetitle2">동막골펜션</span>
-          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
+          <img class="planimg" src="https://api.cdn.visitjeju.net/photomng/thumbnailpath/201804/30/6ff84a98-975c-4670-9fc2-d48d2eaf6ac1.jpg">
 
           <div>
             <font-awesome-icon class="icon2" icon="fa-solid fa-circle" />
@@ -100,7 +101,7 @@
           <div class="line1"></div>
           <span class="placetitle1">숙소</span>
           <span class="placetitle2">동막골펜션</span>
-          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
+          <img class="planimg" src="https://api.cdn.visitjeju.net/photomng/thumbnailpath/201804/30/6ff84a98-975c-4670-9fc2-d48d2eaf6ac1.jpg">
 
           <div>
             <font-awesome-icon class="car-icon" icon="fa-solid fa-car" />
@@ -115,7 +116,7 @@
           <span class="placetitle1">명소</span>
 
           <span class="placetitle2">백제사</span>
-          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
+          <img class="planimg" src="https://api.cdn.visitjeju.net/photomng/thumbnailpath/201804/30/a09336c6-88ad-400f-8cf9-d46665fea168.png">
 
           <div>
             <font-awesome-icon class="car-icon" icon="fa-solid fa-car" />
@@ -130,7 +131,7 @@
           <span class="placetitle1">명소</span>
 
           <span class="placetitle2">현의합장묘역</span>
-          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
+          <img class="planimg" src="https://api.cdn.visitjeju.net/photomng/thumbnailpath/201804/30/e4ce1d51-e5ee-402b-b21b-a3edfdffe131.jpg">
 
           <div>
             <font-awesome-icon class="car-icon" icon="fa-solid fa-car" />
@@ -145,7 +146,7 @@
           <span class="placetitle1">명소</span>
 
           <span class="placetitle2">하양한</span>
-          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
+          <img class="planimg" src="https://api.cdn.visitjeju.net/photomng/thumbnailpath/202305/26/79dc6022-7cb5-4298-9455-7334939fa8ea.jpg">
           <div>
             <font-awesome-icon class="car-icon" icon="fa-solid fa-car" />
             <span style="color: grey;">&nbsp;&nbsp;30분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
@@ -158,7 +159,7 @@
           <div class="line9"></div>
           <span class="placetitle1">숙소</span>
           <span class="placetitle2">네모스테이</span>
-          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
+          <img class="planimg" src="https://api.cdn.visitjeju.net/photomng/thumbnailpath/202401/12/340d8479-c265-4b37-817e-418d828a979c.png">
 
           <div>
             <font-awesome-icon class="icon2" icon="fa-solid fa-circle" />
@@ -177,7 +178,7 @@
 
           <span class="placetitle1">숙소</span>
           <span class="placetitle2">네모스테이</span>
-          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
+          <img class="planimg" src="https://api.cdn.visitjeju.net/photomng/thumbnailpath/202401/12/340d8479-c265-4b37-817e-418d828a979c.png">
           <div>
             <font-awesome-icon class="car-icon" icon="fa-solid fa-car" />
             <span style="color: grey;">&nbsp;&nbsp;30분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
@@ -191,7 +192,7 @@
           <span class="placetitle1">명소</span>
 
           <span class="placetitle2">브라보비치</span>
-          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
+          <img class="planimg" src="https://api.cdn.visitjeju.net/photomng/thumbnailpath/202306/01/37ac78db-63f6-409a-ba08-5725d220c7ff.jpg">
 
           <div>
             <font-awesome-icon class="car-icon" icon="fa-solid fa-car" />
@@ -206,7 +207,7 @@
           <span class="placetitle1">명소</span>
 
           <span class="placetitle2">뽀요요 카페</span>
-          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
+          <img class="planimg" src="https://api.cdn.visitjeju.net/photomng/thumbnailpath/201804/30/70b142ae-b807-4ca6-aa78-dd02aac87de7.jpg">
 
           <div>
             <font-awesome-icon class="car-icon" icon="fa-solid fa-car" />
@@ -220,7 +221,7 @@
           <div class="line7"></div>
           <span class="placetitle1">명소</span>
           <span class="placetitle2">제주 캘리아트</span>
-          <img class="planimg" :src="require('@/assets/images/jejuairport.png')">
+          <img class="planimg" src="https://api.cdn.visitjeju.net/photomng/thumbnailpath/202306/20/11dad76e-e560-491d-85de-d3c5619bf46a.jpg">
           <div>
             <font-awesome-icon class="car-icon" icon="fa-solid fa-car" />
             <span style="color: grey;">&nbsp;&nbsp;30분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>

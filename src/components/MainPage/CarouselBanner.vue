@@ -1,30 +1,29 @@
 <template>
-  <swiper
-    :slidesPerView="3"
-    :spaceBetween="50"
-    :autoplay="{ delay: 2500, disableOnInteraction: false }"
-    :loop="true"
-  >
-    <swiper-slide><img src="@/assets/images/bn01.jpg" alt="First slide"></swiper-slide>
-    <swiper-slide><img src="@/assets/images/bn02.jpg" alt="Second slide"></swiper-slide>
-    <swiper-slide><img src="@/assets/images/bn03.jpg" alt="Third slide"></swiper-slide>
-  </swiper>
+<div id="carouselExampleSlidesOnly" class="carousel slide " data-bs-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img src="@/assets/images/bn01.jpg" class="d-block w-100" alt="...">
+    </div>
+    <div class="carousel-item">
+      <img src="@/assets/images/bn02.jpg" class="d-block w-100" alt="...">
+    </div>
+    <div class="carousel-item">
+      <img src="@/assets/images/bn03.jpg" class="d-block w-100" alt="...">
+    </div>
+  </div>
+</div>
 </template>
 
-<script>
-import { Swiper, SwiperSlide } from 'swiper/vue';
-import 'swiper/swiper-bundle.css';
 
-// Swiper 설정 내에서 Autoplay 기능을 활성화
-export default {
-  components: {
-    Swiper,
-    SwiperSlide
-  }
-}
-</script>
 <style scoped>
-.swiper{
-  height: 300px;
+
+.carousel-inner{
+  width: 1200px;
 }
+
+.carousel-item {
+  width: 100%; /* 각 슬라이드의 너비를 100%로 설정 */
+}
+
+
 </style>

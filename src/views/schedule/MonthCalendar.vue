@@ -167,7 +167,7 @@
             <div class="stepOff1">숙소 선택</div>
           </div>
         </div>
-        <div style="margin-left:-680px; color:grey">{{ formattedSelectedDates }}</div>
+        <div style="margin-left: 30px; color:grey">{{ formattedSelectedDates }}</div>
         <div class="selector">
           <div class="category-selector">
             <select v-model="selectedCategory" @change="fetchData">
@@ -256,7 +256,7 @@
             <div class="stepOn1">숙소 선택</div>
           </div>
         </div>
-        <div style="margin-left:-680px; color:grey">{{ formattedSelectedDates }}</div>
+        <div style="margin-left: 30px; color:grey">{{ formattedSelectedDates }}</div>
         <div class="STEP3-container">
           <div class="STEP3-search">
             <input type="text" v-model="hotelSearchQuery" @keyup.enter="searchDatahotel" placeholder="숙소명 검색" class="hotel-search-input" />
@@ -1010,7 +1010,6 @@ export default {
   background-image: url('~@/assets/images/map.jpg');
   background-size: cover;
   background-position: center;
-  margin: -8px -8px;
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -1025,7 +1024,8 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 1000px;
+  margin-top:60px;
+  width: 1100px;
   height: 750px;
   border-radius: 10px;
   padding: 20px;
@@ -1045,25 +1045,29 @@ export default {
 .stepOn {
 color:rgb(99, 145, 197);
 font-size:30px;
-margin-left: 100px; /* 왼쪽 내부 여백 */
-margin-right: 100px; /* 오른쪽 내부 여백 */
+margin-left: 100px;
+margin-right: 100px;
 }
 
 .stepOff {
 color: #999;
 font-size:30px;
-margin-left: 100px; /* 왼쪽 내부 여백 */
-margin-right: 100px; /* 오른쪽 내부 여백 */
+margin-left: 100px;
+margin-right: 100px;
 }
 
 .stepOn1{
   color:rgb(99, 145, 197);
   font-size:19px;
+  margin-left: 115px;
+  margin-right: 115px;
 }
 
 .stepOff1 {
   color: #999;
   font-size:19px;
+  margin-left: 115px;
+  margin-right: 115px;
 }
 
 .scheduletitle1 {
@@ -1082,6 +1086,8 @@ margin-right: 100px; /* 오른쪽 내부 여백 */
 }
 
 .yearmonth{
+  display:flex;
+  margin-left:150px;
   margin-top: 50px;
   font-size:30px;
 }
@@ -1094,11 +1100,11 @@ margin-right: 100px; /* 오른쪽 내부 여백 */
 }
 
 .monthbutton1{
-  margin: 10px -140px;
+  margin: 10px 10px !important;
 }
 
 .monthbutton2{
-  margin: 10px 130px;
+  margin: -35px 440px !important;
 }
 
 $border-color: #efefef;
@@ -1286,6 +1292,7 @@ $border-color: #efefef;
   padding: 8px;
   border-radius: 5px;
   border: 1px solid #ccc;
+  height: 40px;
   margin-top: 10px;
 }
 
@@ -1304,7 +1311,7 @@ $border-color: #efefef;
   display: flex;
   padding: 5px;
   width: 260px;
-  height: 23px;
+  height: 40px;
   margin-top: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -1312,7 +1319,6 @@ $border-color: #efefef;
 
 .search-input {
   flex-grow: 1;
-  padding: 8px;
   border: none;
   outline: none;
 }
@@ -1439,7 +1445,7 @@ $border-color: #efefef;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
-    margin-left:20px;
+    margin-left:40px;
     height: 70px;
     padding: 10px;
     text-align: left;
@@ -1527,7 +1533,7 @@ $border-color: #efefef;
   display: flex;
   padding: 5px;
   width: 340px;
-  height: 23px;
+  height: 40px;
   margin-top: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;

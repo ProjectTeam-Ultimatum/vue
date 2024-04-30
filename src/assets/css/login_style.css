@@ -427,3 +427,59 @@
   width: 100%; /* 부모 컨테이너의 너비에 맞춤 */
   margin-bottom: 50px;
 }
+
+.modal-container{
+  width: 450px;
+  height: 700px;
+  margin-top:40px;
+}
+
+.signup-complete {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.service{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-left: 80px;
+  padding-right: 80px;
+}
+
+
+.service-content{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+.service-content p {
+  font-weight: 600;
+}
+
+.home-button{
+  font-family: "Nanum Gothic", sans-serif;
+  font-style: normal;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #8EDFFD;
+  border: none;
+  border-radius: 25px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  width: 400px;
+  margin-top: 20px;
+}
+
+.home-button-container{
+  display: flex;
+  justify-content: center;
+}

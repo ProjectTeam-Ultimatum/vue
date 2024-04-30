@@ -126,7 +126,7 @@ export default {
       messages: [], // 채팅방의 메시지 목록
       socket: null,
       connectedChatRooms: [],  // 사용자가 연결된 채팅방 ID 목록
-      badWordsPattern: /나쁜말|나\s*쁜\s*말|나쁜[\d\s\W]*말|바보|바\s*보|바[\d\s\W]*보|멍청이|멍\s*청\s*이|멍[\d\s\W]*청이|멍청[\d\s\W]*이/,  // 정규 표현식 패턴을 사용하여 욕설 필터링
+      badWordsPattern: /나쁜말|나\s*쁜\s*말|멍청아|나쁜[\d\s\W]*말|바보|바\s*보|바[\d\s\W]*보|멍청이|멍\s*청\s*이|멍[\d\s\W]*청이|멍청[\d\s\W]*이/,  // 정규 표현식 패턴을 사용하여 욕설 필터링
       warningCount: 0,   //비속어 5회이상 채팅제한
       isChatBanned: false,  //비속어 5회이상 채팅제한
       banTimer: null, //비속어 5회이상 채팅제한
@@ -574,7 +574,7 @@ html, body {
     padding: 10px 20px;
     margin-right: 5px;
     cursor: pointer;
-    width: 125px;
+    width: 145px;
     height: 50px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s, box-shadow 0.3s;

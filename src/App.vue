@@ -237,7 +237,7 @@ nav:not(.main-page) .login,
 }
 
 nav a {
-  font-size: 23px;
+  font-size: 1.2em;
   font-weight: bold;
   text-decoration: none;
   color: #000000;

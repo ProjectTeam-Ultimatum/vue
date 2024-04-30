@@ -40,7 +40,7 @@
           </div> <!-- tag-wrap-->
         </div>
         <div>
-          <img alt="map" src="@/assets/images/map.png" style="width:160px">
+          <img alt="map" src="@/assets/images/map.png" style="width:170px">
         </div>
     </div> <!-- recomemnd_info -->
     
