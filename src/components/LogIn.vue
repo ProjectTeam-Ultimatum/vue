@@ -528,7 +528,7 @@ export default {
         })
         .catch((error) => {
           console.error("Login error:", error);
-          alert("로그인 실패: " + error.message);
+          alert("로그인 실패: " + error.response.data.message);
         });
     },
     nextStep() {
