@@ -7,6 +7,7 @@
       @click="openModal(review)"
     >
       <div class="latestReview-image">
+        <span class="new">New</span>
         <img
           :src="
             review.reviewImages.length > 0
@@ -29,10 +30,11 @@
       :isModalVisible="isModalVisible"
       @close="closeModal"
     />
-    <router-link class="more-reviews" to="/reviews">
-      여행 후기 더보기</router-link
-    >
   </div>
+  <router-link class="more-reviews" to="/reviews"
+    >여행 후기 전체 보러가기
+    <font-awesome-icon :icon="['fas', 'chevron-right']"
+  /></router-link>
 </template>
 <script>
 import ReviewModal from "./ReviewModal.vue";
@@ -56,7 +58,7 @@ export default {
       try {
         const response = await this.$axios.get("/api/reviews");
         this.allReviews = response.data.content;
-        this.latestReviews = this.allReviews.slice(0, 4); //전체리뷰에서 최신 3개 선택
+        this.latestReviews = this.allReviews.slice(0, 4); //전체리뷰에서 최신 5개 선택
       } catch (error) {
         if (error.response && error.response.data) {
           //백엔드에서 보낸 에러메시지 표시
@@ -108,10 +110,21 @@ export default {
 };
 </script>
 <style scoped>
+.new {
+  position: absolute;
+  top: 10px; /* Adjust as needed */
+  left: 10px; /* Adjust as needed */
+  background-color: #ffc83b;
+  color: white;
+  padding: 5px 10px;
+  font-size: 0.8em;
+  border-radius: 5px;
+  z-index: 2;
+}
 .latestReview-cards {
   display: flex;
   flex-wrap: wrap;
-  gap: 0px; /* 카드 사이의 간격 */
+  gap: 0; /* 카드 사이의 간격 */
 }
 
 .latestReview-card {
@@ -124,7 +137,7 @@ export default {
   position: relative; /* 호버 텍스트 위치 지정을 위해 상대 위치 설정 */
 }
 .latestReview-image {
-  height: 200px; /* 이미지 컨테이너의 높이를 고정 */
+  height: 250px; /* 이미지 컨테이너의 높이를 고정 */
   overflow: hidden; /* 이미지가 컨테이너를 벗어날 경우 숨김 처리 */
   position: relative; /* 하위 요소에 대한 위치 지정 기준 설정 */
   margin-bottom: 20px;
@@ -145,12 +158,20 @@ export default {
 }
 
 .more-reviews {
-  display: block;
-  text-align: center;
-  justify-content: center;
-  margin-top: 20px;
+  font-family: "Nanum Gothic", sans-serif;
+  font-style: normal;
+  padding: 1.3rem 2rem;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+  background-color: #fff;
+  border: none;
+  border-radius: 35px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  width: 250px;
   text-decoration: none;
-  /* 더보기 링크 스타일 */
+  border: 1px solid #ddd;
 }
 .review-hover-text {
   position: absolute;
