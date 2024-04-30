@@ -22,7 +22,7 @@
           :src="userImage || 'default-image-url'"
           class="user-image"
         />
-        {{ userName }} 님 환영합니다.
+        {{ userName }} 님
         <button @click="logout">로그아웃</button>
       </div>
     </div>
@@ -211,16 +211,31 @@ nav:not(.main-page) {
 .login {
   transition: color 0.3s;
 }
-nav.scrolled {
+nav.scrolled .user-info {
   background-color: white; /* 스크롤 시 배경색 변경 */
   color: black; /* 스크롤 시 텍스트 색상 변경 */
 }
 
-nav.main-page .nav-links a,
+/* 스크롤되지 않았을 때 text-shadow 적용 */
+nav:not(.scrolled) .nav-links a,
+nav:not(.scrolled) .main-logo,
+nav:not(.scrolled) .login, .user-info {
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
+  color: white;
+}
+
+/* .user-info {
+  display: flex;
+  align-items: center;
+  color: white;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
+} */
+
+/* nav.main-page .nav-links a,
 nav.main-page .main-logo,
 nav.main-page .login {
   color: white;
-}
+} */
 
 nav.scrolled .nav-links a,
 nav.scrolled .main-logo,
@@ -253,12 +268,7 @@ nav a.router-link-exact-active {
   font-size: 18px;
   cursor: pointer;
 }
-.user-info {
-  display: flex;
-  align-items: center;
-  color: white; /* 버튼 내 텍스트 색상을 흰색으로 설정합니다 */
-  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
-}
+
 
 .user-image {
   width: 40px; /* 이미지 크기 설정 */

@@ -47,9 +47,9 @@
   display: flex;
   justify-content: center;
   width: 600px;
-  border: 1px solid #333;
+  border: 1px solid #ddd;
   border-radius: 40px;
-  padding: 10px;
+  padding: 1.3rem 2rem;
   background-color: white;
 }
 
@@ -143,6 +143,7 @@
   
   .recommend-list-wrap:hover {
     text-decoration: underline; /* 마우스 오버 시 밑줄 표시, 필요에 따라 제거 가능 */
+    text-decoration: none; /* 링크 밑줄 제거 */
   }
 
   .best {

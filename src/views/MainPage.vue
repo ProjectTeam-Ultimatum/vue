@@ -76,11 +76,13 @@
   </div>
   <!-- 3rd 나만의 여행 코스 -->
   <div class="my-travel-course">
-    <h3 class="mb-3 main-title-txt">나만의 여행 코스</h3>
+    <h3 class="mb-3 main-title-txt">나의 여행</h3>
     <MyCourse />
   </div>
   <!-- 4th 여행 코스 추천 -->
-  <CarouselBanner />
+  <router-link to="/course"  class="recommend-list-wrap">
+    <CarouselBanner />
+</router-link>
   <!-- 여행 후기 게시판 -->
   <div class="travel-course">
     <h3 class="mb-3 main-title-txt">여행 후기 모음</h3>
@@ -97,7 +99,6 @@
           </div>
       </div>
     </div>
-  </div>
   </div>
 </template>
 

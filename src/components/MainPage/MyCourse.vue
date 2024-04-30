@@ -1,6 +1,6 @@
 <template>
     <div class="course-cards-container">
-      <router-link to="/list"  class="recommend-list-wrap">
+      <router-link to="/schedule"  class="recommend-list-wrap">
       <div
         class="course-card"
         v-for="card in cards"
