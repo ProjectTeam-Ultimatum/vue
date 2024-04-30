@@ -165,7 +165,7 @@
 </template>
 
 <script>
-import UpdateReview from "../Review/UpdateReview.vue";
+import UpdateReview from "./UpdateReview.vue";
 /* eslint-disable */
 
 export default {

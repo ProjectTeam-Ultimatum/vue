@@ -89,7 +89,12 @@
   }
 
   .divider {
-    padding: 30px;
+    padding: 10px;
+  }
+
+  .main-title-txt{
+    font-weight:bold;
+    letter-spacing : -2px;
   }
 
   /* recommend */
@@ -98,17 +103,20 @@
   .travel-course,
   .my-travel-course {
     display: flex;
-    background-color: #f3f3f3;
+    background-color: #ffffff;
     padding: 50px;
     flex-direction: column;
     align-items: center;
     text-align: center;
     width: 100%;
   }
+
   .recommand-card {
+    /* border: 1px solid blue; */
     width: 100%; /* 카드의 너비를 화면 전체로 설정 */
     display: flex;
     justify-content: center; /* 내부 요소를 가로축 중앙에 배치 */
+    /* background-color: #F1F8FF; */
   }
 
   .recommend-card-list {
@@ -241,10 +249,10 @@
 .course-card-content p {
   margin-top: 0;
   text-align: left;
-  font-size: 1.5em;
-  letter-spacing : -1.5px; /* 자간 조절 */
+  font-size: 1.2em;
+  letter-spacing : -1.2px; /* 자간 조절 */
   line-height : 0.8em;  /*행간 조절*/
-  font-weight: 500;
+  font-weight: 600;
   color: #ffffff; /* 제목 색상 조정 */
   text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.8); /* 그림자 추가 */
 }
