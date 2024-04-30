@@ -1,14 +1,8 @@
 <template>
   <div>
-  <!-- 기존 메인 이미지-->
-  <!-- <div class="full-screen-background">
-  </div> -->
   <div>
     <SlideMainImg class="main-vis" />
   </div>
-  <!-- 영역 나누기 -->
-  <!-- <div class="divider"></div> -->
-  <!-- 1st 여행 스타일 추천 -->
   <div class="recommend-style">
     <h3 class="mb-3 main-title-txt">여행스타일 추천</h3>
     <div class="main-travel-style">
@@ -55,10 +49,8 @@
 
 
             </div>
-
           </div>
       </div>
-
       <div class="right-banner">
         <div class="right-header-wrap">
           <p class="right-banner-header" style="letter-spacing : -2px;">나에게 딱 맞는 메이트 찾기</p>
@@ -85,16 +77,20 @@
   </div>
   <!-- 3rd 나만의 여행 코스 -->
   <div class="my-travel-course">
-    <h3 class="mb-3 main-title-txt">나만의 여행 코스</h3>
+    <h3 class="mb-3 main-title-txt">나의 여행</h3>
     <MyCourse />
   </div>
   <!-- 4th 여행 코스 추천 -->
+  <router-link to="/course" >
   <div style="  display: flex;
   justify-content: center;
   align-items: center;
 ">
   <CarouselBanner />
   </div>
+</router-link>
+
+ 
   <!-- 여행 후기 게시판 -->
   <div class="travel-course">
     <h3 class="mb-3 main-title-txt">여행 후기 모음</h3>
@@ -112,7 +108,8 @@
       </div>
     </div>
   </div>
-  </div>
+</div>
+
 </template>
 
 <script>
