@@ -27,6 +27,8 @@ import MonthCalendar from '../views/schedule/MonthCalendar.vue'
 import PlanCourse from '../views/schedule/PlanCourse.vue'
 import MapApi from '../views/MapApi.vue'
 import MemberMyPage from '../views/MyPage.vue'
+import ModifyMypage from '../views/ModifyMyPage.vue'
+
 
 
 
@@ -159,6 +161,11 @@ const routes = [
     path: '/mypage', // 동적 세그먼트를 사용한 경로
     name: 'MemberMyPage',
     component: MemberMyPage,
+  },
+  {
+    path: '/modify-member', // 동적 세그먼트를 사용한 경로
+    name: 'ModifyMypage',
+    component: ModifyMypage,
   },
 ]
 

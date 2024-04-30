@@ -8,22 +8,10 @@
           <div class="file-upload-wrapper">
             <div class="image-upload-preview" v-if="profileImageSrc">
               <img :src="profileImageSrc" class="profile-image" />
-              <button
-                type="button"
-                class="image-edit-button"
-                @click.prevent="triggerFileInput"
-              >
-                &#9998;
-              </button>
+
               <!-- 이모티콘은 적절한 아이콘으로 교체 가능 -->
             </div>
-            <div v-else class="image-upload-placeholder">
-              <button
-                type="button"
-                @click="triggerFileInput"
-                class="file-upload-button"
-              ></button>
-            </div>
+            <div v-else class="image-upload-placeholder"></div>
             <input
               type="file"
               id="profileImage"
@@ -44,10 +32,20 @@
               {{ memberDetails.userName }}
             </div>
           </div>
-          <div class="info-group-pw">
+          <div
+            v-if="currentPassword !== null && currentPassword !== ''"
+            class="info-group-pw"
+          >
             <label for="pw">비밀번호</label>
-            <div type="button" id="pw" class="pw">비밀번호 변경</div>
+            <div @click="openPwModal" type="button" id="pw" class="pw">
+              비밀번호 변경
+            </div>
           </div>
+          <PasswordChangeModal
+            :memberDetails="memberDetails"
+            :isChangingPw="isPwModalVisible"
+            @close="closePwModal"
+          />
           <div class="info-group">
             <label for="age">나 이</label>
             <div class="member-info" id="age">{{ memberDetails.age }}</div>
@@ -71,6 +69,12 @@
             </div>
           </div>
           <div class="info-group">
+            <label for="findByAnswer">가고싶은 여행지는?</label>
+            <div class="member-info" id="findByAnswer">
+              {{ memberDetails.findByAnswer }}
+            </div>
+          </div>
+          <div class="info-group">
             <label for="style">여행 스타일</label>
             <div class="member-info" id="style">
               {{ memberDetails.memberStyle }}
@@ -79,26 +83,42 @@
         </div>
       </div>
       <div class="buttons">
-        <button type="button" class="goToModify">수 정</button>
-        <button type="button" class="goBack">뒤로가기</button>
+        <button type="button" class="goToModify" @click="goToModifyPage">
+          내 정보 수정하러 가기
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import PasswordChangeModal from "../components/ChangePw.vue";
 export default {
+  components: {
+    PasswordChangeModal,
+  },
   data() {
     return {
       memberDetails: [],
       profileImageSrc: null,
       profileImageFile: null,
+      isPwModalVisible: false,
     };
   },
+
   mounted() {
     this.fetchUserDetail();
   },
   methods: {
+    goToModifyPage() {
+      this.$router.push("/modify-member");
+    },
+    openPwModal() {
+      this.isPwModalVisible = true;
+    },
+    closePwModal() {
+      this.isPwModalVisible = false;
+    },
     async fetchUserDetail() {
       try {
         const response = await this.$axios.get("/api/v1/user/info/detail");
@@ -192,25 +212,18 @@ label {
 }
 .buttons {
   display: flex;
-  justify-content: end;
+  justify-content: center;
 }
 .buttons button {
-  width: 120px;
-  height: 50px;
+  width: 300px;
+  height: 70px;
   border-radius: 5px;
   margin-top: 20px;
-  margin-left: 10px;
 }
 .goToModify {
-  background-color: #1275d6;
+  background-color: #68c7ff;
   color: white;
   border: none;
-  font-size: 20px;
-}
-.goBack {
-  background-color: #ffc83b;
-  border: none;
-  color: white;
   font-size: 20px;
 }
 .info-group-pw {
@@ -228,13 +241,13 @@ label {
   height: 100%;
   border-radius: 5px;
   background-color: white;
-  border: 1px solid #1275d6;
-  color: #1275d6;
+  border: 1px solid #68c7ff;
+  color: #68c7ff;
 }
 .pw:hover {
   border-radius: 5px;
-  background-color: #1275d6;
-  border: 1px solid white;
+  background-color: #68c7ff;
+  border: 1px solid #68c7ff;
   color: white;
 }
 </style>
