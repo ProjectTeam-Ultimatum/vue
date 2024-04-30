@@ -21,7 +21,7 @@
           </div>
           <div class="planturn">
             <span class="planturnnumber">1</span>
-            <span class="plantime">11:00~11:00</span>
+            <span class="plantime">13:30~13:30</span>
           </div>
           <div class="line1"></div>
           <span class="placetitle1">명소</span>
@@ -29,42 +29,55 @@
           <img class="planimg" :src="require('@/assets/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon" icon="fa-solid fa-car" />
-            <span style="color: grey;">&nbsp;&nbsp;23분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
+            <span style="color: grey;">&nbsp;&nbsp;47분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
           </div>
           <div class="line2"></div>
           <div class="planturn">
-            <span class="planturnnumber">1</span>
-            <span class="plantime">11:00~11:00</span>
+            <span class="planturnnumber">2</span>
+            <span class="plantime">14:17~16:17</span>
           </div>
           <div class="line3"></div>
           <span class="placetitle1">명소</span>
-          <span class="placetitle2">제주국제공항</span>
+          <span class="placetitle2">삐삐그루밍</span>
           <img class="planimg" :src="require('@/assets/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon" icon="fa-solid fa-car" />
-            <span style="color: grey;">&nbsp;&nbsp;23분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
+            <span style="color: grey;">&nbsp;&nbsp;14분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
           </div>
           <div class="line4"></div>
           <div class="planturn">
-            <span class="planturnnumber">1</span>
-            <span class="plantime">11:00~11:00</span>
+            <span class="planturnnumber">3</span>
+            <span class="plantime">16:17~18:17</span>
           </div>
           <div class="line5"></div>
           <span class="placetitle1">명소</span>
-          <span class="placetitle2">제주국제공항</span>
+          <span class="placetitle2">토향</span>
           <img class="planimg" :src="require('@/assets/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon" icon="fa-solid fa-car" />
-            <span style="color: grey;">&nbsp;&nbsp;23분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
+            <span style="color: grey;">&nbsp;&nbsp;13분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
           </div>
           <div class="line6"></div>
           <div class="planturn">
-            <span class="planturnnumber">1</span>
-            <span class="plantime">11:00~11:00</span>
+            <span class="planturnnumber">4</span>
+            <span class="plantime">18:30~20:30</span>
           </div>
           <div class="line7"></div>
           <span class="placetitle1">명소</span>
-          <span class="placetitle2">제주국제공항</span>
+          <span class="placetitle2">제주펫스쿨</span>
+          <img class="planimg" :src="require('@/assets/jejuairport.png')">
+          <div>
+            <font-awesome-icon class="icon" icon="fa-solid fa-car" />
+            <span style="color: grey;">&nbsp;&nbsp;28분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
+          </div>
+          <div class="line8"></div>
+          <div class="planturn">
+            <span class="planturnnumber">5</span>
+            <span class="plantime">20:58~20:58</span>
+          </div>
+          <div class="line9"></div>
+          <span class="placetitle1">숙소</span>
+          <span class="placetitle2">동막골펜션</span>
           <img class="planimg" :src="require('@/assets/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon2" icon="fa-solid fa-circle" />
@@ -77,50 +90,63 @@
           </div>
           <div class="planturn">
             <span class="planturnnumber2">1</span>
-            <span class="plantime">11:00~11:00</span>
+            <span class="plantime">11:30~11:30</span>
           </div>
           <div class="line1"></div>
-          <span class="placetitle1">명소</span>
-          <span class="placetitle2">제주국제공항</span>
+          <span class="placetitle1">숙소</span>
+          <span class="placetitle2">동막골펜션</span>
           <img class="planimg" :src="require('@/assets/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon" icon="fa-solid fa-car" />
-            <span style="color: grey;">&nbsp;&nbsp;23분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
+            <span style="color: grey;">&nbsp;&nbsp;22분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
           </div>
           <div class="line2"></div>
           <div class="planturn">
-            <span class="planturnnumber2">1</span>
-            <span class="plantime">11:00~11:00</span>
+            <span class="planturnnumber2">2</span>
+            <span class="plantime">11:52~13:52</span>
           </div>
           <div class="line3"></div>
           <span class="placetitle1">명소</span>
-          <span class="placetitle2">제주국제공항</span>
+          <span class="placetitle2">백제사</span>
           <img class="planimg" :src="require('@/assets/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon" icon="fa-solid fa-car" />
-            <span style="color: grey;">&nbsp;&nbsp;23분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
+            <span style="color: grey;">&nbsp;&nbsp;58분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
           </div>
           <div class="line4"></div>
           <div class="planturn">
-            <span class="planturnnumber2">1</span>
-            <span class="plantime">11:00~11:00</span>
+            <span class="planturnnumber2">3</span>
+            <span class="plantime">14:50~16:50</span>
           </div>
           <div class="line5"></div>
           <span class="placetitle1">명소</span>
-          <span class="placetitle2">제주국제공항</span>
+          <span class="placetitle2">현의합장묘역</span>
           <img class="planimg" :src="require('@/assets/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon" icon="fa-solid fa-car" />
-            <span style="color: grey;">&nbsp;&nbsp;23분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
+            <span style="color: grey;">&nbsp;&nbsp;70분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
           </div>
           <div class="line6"></div>
           <div class="planturn">
-            <span class="planturnnumber2">1</span>
-            <span class="plantime">11:00~11:00</span>
+            <span class="planturnnumber2">4</span>
+            <span class="plantime">18:00~20:00</span>
           </div>
           <div class="line7"></div>
           <span class="placetitle1">명소</span>
-          <span class="placetitle2">제주국제공항</span>
+          <span class="placetitle2">하양한</span>
+          <img class="planimg" :src="require('@/assets/jejuairport.png')">
+          <div>
+            <font-awesome-icon class="icon" icon="fa-solid fa-car" />
+            <span style="color: grey;">&nbsp;&nbsp;30분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
+          </div>
+          <div class="line8"></div>
+          <div class="planturn">
+            <span class="planturnnumber">5</span>
+            <span class="plantime">20:30~20:30</span>
+          </div>
+          <div class="line9"></div>
+          <span class="placetitle1">숙소</span>
+          <span class="placetitle2">네모스테이</span>
           <img class="planimg" :src="require('@/assets/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon2" icon="fa-solid fa-circle" />
@@ -136,21 +162,21 @@
             <span class="plantime">11:00~11:00</span>
           </div>
           <div class="line1"></div>
-          <span class="placetitle1">명소</span>
-          <span class="placetitle2">제주국제공항</span>
+          <span class="placetitle1">숙소</span>
+          <span class="placetitle2">네모스테이</span>
           <img class="planimg" :src="require('@/assets/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon" icon="fa-solid fa-car" />
-            <span style="color: grey;">&nbsp;&nbsp;23분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
+            <span style="color: grey;">&nbsp;&nbsp;30분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
           </div>
           <div class="line2"></div>
           <div class="planturn">
             <span class="planturnnumber3">1</span>
-            <span class="plantime">11:00~11:00</span>
+            <span class="plantime">11:30~13:30</span>
           </div>
           <div class="line3"></div>
           <span class="placetitle1">명소</span>
-          <span class="placetitle2">제주국제공항</span>
+          <span class="placetitle2">브라보비치</span>
           <img class="planimg" :src="require('@/assets/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon" icon="fa-solid fa-car" />
@@ -158,23 +184,36 @@
           </div>
           <div class="line4"></div>
           <div class="planturn">
-            <span class="planturnnumber3">1</span>
-            <span class="plantime">11:00~11:00</span>
+            <span class="planturnnumber3">2</span>
+            <span class="plantime">13:53~15:53</span>
           </div>
           <div class="line5"></div>
           <span class="placetitle1">명소</span>
-          <span class="placetitle2">제주국제공항</span>
+          <span class="placetitle2">뽀요요 카페</span>
           <img class="planimg" :src="require('@/assets/jejuairport.png')">
           <div>
             <font-awesome-icon class="icon" icon="fa-solid fa-car" />
-            <span style="color: grey;">&nbsp;&nbsp;23분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
+            <span style="color: grey;">&nbsp;&nbsp;28분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
           </div>
           <div class="line6"></div>
           <div class="planturn">
-            <span class="planturnnumber3">1</span>
-            <span class="plantime">11:00~11:00</span>
+            <span class="planturnnumber2">3</span>
+            <span class="plantime">16:21~18:21</span>
           </div>
           <div class="line7"></div>
+          <span class="placetitle1">명소</span>
+          <span class="placetitle2">제주 캘리아트</span>
+          <img class="planimg" :src="require('@/assets/jejuairport.png')">
+          <div>
+            <font-awesome-icon class="icon" icon="fa-solid fa-car" />
+            <span style="color: grey;">&nbsp;&nbsp;30분&nbsp;&nbsp;<font-awesome-icon icon="fa-solid fa-chevron-right" /></span>
+          </div>
+          <div class="line8"></div>
+          <div class="planturn">
+            <span class="planturnnumber3">4</span>
+            <span class="plantime">18:51~18:51</span>
+          </div>
+          <div class="line9"></div>
           <span class="placetitle1">명소</span>
           <span class="placetitle2">제주국제공항</span>
           <img class="planimg" :src="require('@/assets/jejuairport.png')">
@@ -471,6 +510,24 @@ export default {
   position:absolute;
   margin-left:40px;
   margin-top:676px;
+  width: 2px;
+  height: 108px;
+  background-color: #adadad;
+}
+
+.line8 {
+  position:absolute;
+  margin-left:40px;
+  margin-top:810px;
+  width: 2px;
+  height: 40px;
+  background-color: #adadad;
+}
+
+.line9 {
+  position:absolute;
+  margin-left:40px;
+  margin-top:870px;
   width: 2px;
   height: 108px;
   background-color: #adadad;
