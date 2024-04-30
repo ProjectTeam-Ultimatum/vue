@@ -190,9 +190,11 @@ export default {
           },
         });
         console.log("수정이 완료되었습니다.");
-        alert("회원정보 수정 완료 !");
 
-        this.$router.push("/mypage");
+        this.fetchUserDetail().then(() => {
+          alert("회원정보 수정 완료 !");
+          this.$router.push("/mypage");
+        });
       } catch (error) {
         console.error("멤버 정보 수정 실패 : ", error);
       }
