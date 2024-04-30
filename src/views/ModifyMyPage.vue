@@ -259,6 +259,7 @@ export default {
 
 <style scoped>
 @import "@/assets/css/login_style.css";
+@import "@/assets/css/mypage.css";
 
 .goToStyle {
   cursor: pointer;
@@ -269,26 +270,9 @@ export default {
   font-size: 18px;
   padding: 10px;
   margin: 8px;
+  width: 20%;
 }
-.info-container {
-  display: flex;
-  flex-direction: column;
-  margin-left: 10%;
-  margin-right: 10%;
-  margin-top: 50px;
-}
-.mypage-maintext {
-  padding: 30px;
-  color: #393939;
-  font-size: 40px;
-  font-weight: bold;
-}
-.mypage-content-row {
-  border-top: 1px solid #e1e1e1;
-  display: flex;
-  flex-direction: row;
-  padding: 50px;
-}
+
 .member {
   justify-content: center;
   text-align: center;
@@ -303,13 +287,13 @@ export default {
 .member-image {
   display: flex;
   justify-content: center;
-  width: 30%;
+  width: 25%;
   padding: 20px;
 }
 .member-content {
   width: 70%;
 }
-label {
+.info-group label {
   display: flex;
   justify-content: start;
   width: 40%;

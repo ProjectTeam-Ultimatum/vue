@@ -34,11 +34,13 @@
           </div>
           <div
             v-if="currentPassword !== null && currentPassword !== ''"
-            class="info-group-pw"
+            class="info-group"
           >
             <label for="pw">비밀번호</label>
-            <div @click="openPwModal" type="button" id="pw" class="pw">
-              비밀번호 변경
+            <div class="member-info">
+              <div @click="openPwModal" type="button" id="pw" class="pw">
+                비밀번호 변경
+              </div>
             </div>
           </div>
           <PasswordChangeModal
@@ -156,97 +158,5 @@ export default {
 
 <style scoped>
 @import "@/assets/css/login_style.css";
-
-.info-container {
-  display: flex;
-  flex-direction: column;
-  margin-left: 10%;
-  margin-right: 10%;
-  margin-top: 50px;
-}
-.mypage-maintext {
-  padding: 30px;
-  color: #393939;
-  font-size: 40px;
-  font-weight: bold;
-}
-.mypage-content-row {
-  border-top: 1px solid #e1e1e1;
-  display: flex;
-  flex-direction: row;
-  padding: 50px;
-}
-.member {
-  justify-content: center;
-  text-align: center;
-}
-.info-group {
-  display: flex;
-  flex-direction: row;
-  font-size: 20px;
-  color: #393939;
-  border-bottom: 1px solid #e1e1e1;
-}
-.member-image {
-  display: flex;
-  justify-content: center;
-  width: 30%;
-  padding: 20px;
-}
-.member-content {
-  width: 70%;
-}
-label {
-  display: flex;
-  justify-content: start;
-  width: 40%;
-  padding: 20px;
-  margin-left: 50px;
-}
-.member-info {
-  display: flex;
-  justify-content: start;
-  width: 60%;
-  padding: 20px;
-}
-.buttons {
-  display: flex;
-  justify-content: center;
-}
-.buttons button {
-  width: 300px;
-  height: 70px;
-  border-radius: 5px;
-  margin-top: 20px;
-}
-.goToModify {
-  background-color: #68c7ff;
-  color: white;
-  border: none;
-  font-size: 20px;
-}
-.info-group-pw {
-  display: flex;
-  flex-direction: row;
-  font-size: 20px;
-  color: #393939;
-  border-bottom: 1px solid #e1e1e1;
-}
-.pw {
-  display: flex;
-  justify-content: start;
-  margin-top: 10px;
-  padding: 10px;
-  height: 100%;
-  border-radius: 5px;
-  background-color: white;
-  border: 1px solid #68c7ff;
-  color: #68c7ff;
-}
-.pw:hover {
-  border-radius: 5px;
-  background-color: #68c7ff;
-  border: 1px solid #68c7ff;
-  color: white;
-}
+@import "@/assets/css/mypage.css";
 </style>
