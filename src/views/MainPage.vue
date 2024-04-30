@@ -1,48 +1,37 @@
 <template>
+  <div>
   <!-- 기존 메인 이미지-->
   <!-- <div class="full-screen-background">
   </div> -->
   <div>
     <SlideMainImg class="main-vis" />
   </div>
-
-  <div class="divider"></div>
-
+  <!-- 영역 나누기 -->
+  <!-- <div class="divider"></div> -->
+  <!-- 1st 여행 스타일 추천 -->
   <div class="recommend-style">
-    <h2 class="mb-3">여행스타일 추천</h2>
+    <h3 class="mb-3 main-title-txt">여행스타일 추천</h3>
     <div class="main-travel-style">
       <div class="main-travel-style-txt" > 
         <div v-if="isValidStyle" style="font-size: 22px;">
-          당신의 여행스타일은<span style="color: #f7c347">
-            {{ getMbtiNickname() }} </span
+          <font-awesome-icon :icon="['fas', 'suitcase-rolling']" style="color:#68C7FF" />
+          당신의 여행스타일은
+          <strong style="color: #68C7FF">
+            "{{ getMbtiNickname() }}"</strong
           >입니다.
         </div>
       </div>
     </div>
     <RecommendBanner/>
   </div>
-
-
-    <div class="recommand-card"></div>
-  <div class="divider"></div>
-
-  <div class="chat">
-    <div class="recommand-card">
-
+  <!-- 2nd 여행 메이트 찾기 -->
+  <div class="chat" style="background-color: #F1F8FF;">
+    <div class="recommand-card" style="width:2000px;">
       <div :class="['card horizontal_card', { 'is-hovering': hoverActive }]">
           <div class="card_content">
 
             <div class="card_front">
-                <div class="left_section">
-                   동행자를<br/> 찾는것이 목적지보다<br/> <span style="color:#FFC83B; font-weight:bold; font-size:30px;">어렵다고<br/> 느껴지나요?</span>
-                </div>
-                <div class="right_section">
-                  <img :src="require('@/assets/images/alone.jpg')" alt="Report" style="width: 350px; height: 350px; margin-left: 10px;
-                   border-top-right-radius: 7px; border-bottom-right-radius: 5px;">
-                </div>
-            </div>
 
-            <div class="card_back">
                 <div class="left_section">
                    같은 여행 스타일의 <br/> 친구들과 <br/><span style="color:#3ba7ff; font-weight:bold; font-size:30px;"> 만나보세요!</span>
                 </div>
@@ -50,64 +39,78 @@
                   <img :src="require('@/assets/images/surfing1.jpg')" alt="Report" style="width: 350px; height: 350px; margin-left: 10px;
                    border-top-right-radius: 7px; border-bottom-right-radius: 5px;">
                 </div>
+
+            </div>
+
+            <div class="card_back">
+
+                <div class="left_section">
+                   간편하게<br/> 나만의 최적화된<br/>
+                   <span style="color:#3ba7ff; font-weight:bold; font-size:30px; letter-spacing : -2px;">메이트 찾기<br/></span>
+                </div>
+                <div class="right_section">
+                  <img :src="require('@/assets/images/chat02.jpg')" alt="Report" style="width: 350px; height: 350px; margin-left: 10px;
+                   border-top-right-radius: 7px; border-bottom-right-radius: 5px;">
+                </div>
+
+
             </div>
 
           </div>
       </div>
 
       <div class="right-banner">
-        <div>
-        <p class="right-banner-header">나의 여행 메이트</p>
-        </div>
-        <div>
-          <p class="right-banner-subtitle">비슷한 여행취향, 완벽한 동행</p>
-        </div>
-        <div>
-          <p class="right-banner-subtitle">이제 여행 메이트 매칭으로 더 즐거운 여행을 시작하세요.</p>
-        </div>
-        <router-link to="/chatting">
-          <div class="fancy_text" 
-              @mouseover="hoverActive = true" 
-              @mouseleave="hoverActive = false">
-              여행메이트 찾으러가기 >>
+        <div class="right-header-wrap">
+          <p class="right-banner-header" style="letter-spacing : -2px;">나에게 딱 맞는 메이트 찾기</p>
+          <div>
+            <router-link to="/chatting">
+              <div class="fancy_text" 
+                  @mouseover="hoverActive = true" 
+                  @mouseleave="hoverActive = false">
+                  <span><font-awesome-icon :icon="['far', 'comment-dots']" /></span>채팅 하기
+              </div>
+            </router-link> 
           </div>
-        </router-link>
+        </div>
+        <ul class="right-banner-list">
+          <li><em>🏕 한라산 등반 크루 모집ㅣ</em> 5월 연휴에 한라산 등반 하실 분😎</li>
+          <li><em>🍺 여행하면서 낮술 하실 분ㅣ</em> 😍소주 맥주 막걸리 와인 모두 가능</li>
+          <li><em>🏃‍♂️올레길 4코스 함께해요ㅣ</em> 😝제일 길다는 4코스. 함께 하실 분~~ </li>
+          <li><em>🍚같이 밥먹을 사람ㅣ</em> 👩🧑혼자 여행옴. 같이 밥 먹어요 </li>
+        </ul>
+
       </div>
 
     </div>
   </div>
-  <div class="divider" ></div>
+  <!-- 3rd 나만의 여행 코스 -->
   <div class="my-travel-course">
-    <h2 class="mb-3">나만의 여행 코스</h2>
+    <h3 class="mb-3 main-title-txt">나만의 여행 코스</h3>
     <MyCourse />
   </div>
-
-  <div class="divider" ></div>
+  <!-- 4th 여행 코스 추천 -->
+  <CarouselBanner />
+  <!-- 여행 후기 게시판 -->
   <div class="travel-course">
+    <h3 class="mb-3 main-title-txt">여행 후기 모음</h3>
+    <LatestReviews />
+  </div>
+  <!-- 제주도민 평가단 모집 -->
+  <div class="travel-course">
+    <h3 class="mb-3 main-title-txt">제주도민 평가단 모집</h3>
     <div class="recommand-card">
       <div class="taste-review-banner">
           <div class="banner-content">
-              <h1>제주도민 평가단 모집</h1>
               <p>내가 가는곳이 핫 플레이스!(꾸며야함)</p>
               <button class="btn-join">지금 신청하기</button>
           </div>
       </div>
     </div>
   </div>
-  <div class="divider" ></div>
-
-  <div class="divider"></div>
-  <CarouselBanner />
-  <div class="divider"></div>
-
-  <div class="travel-course">
-    <LatestReviews />
   </div>
-  <div class="divider"></div>
 </template>
 
 <script>
-
 import LatestReviews from "../components/Review/LatestReviews.vue";
 import SlideMainImg from "../components/MainPage/SlideMainImg.vue";
 import CarouselBanner from "../components/MainPage/CarouselBanner.vue";
@@ -184,6 +187,7 @@ export default {
 <style scoped>
 @import "@/assets/css/mainpage_style.css";
 
+/* chat 스타일 */
 /* 공통 스타일 */
 .card {
   position:relative;
@@ -198,7 +202,7 @@ export default {
   position: absolute;
   width: 100%;
   height: 100%;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); */
   border-radius: 10px; transition: transform 1s;
   transform-style: preserve-3d;
 } 
@@ -206,6 +210,7 @@ export default {
 .left_section,
 .right_section {
     flex: 1; /* 두 섹션이 동일한 너비를 갖도록 설정합니다 */
+    letter-spacing : -2px;
 }
 
 .left_section{
@@ -228,16 +233,16 @@ export default {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: #ffd8581b;
+  background: #3ba7ff3a;
   border-radius: 10px;
   font-size: 20px;
-  color: #FFC83B;
+  color: #3ba7ff;
   text-align: center;
   backface-visibility: hidden;
 } 
 
 .card .card_back {
-  background: #3ba7ff3a;
+  background: #ffd23f38;
   color: #3ba7ff;
 } 
 
@@ -258,14 +263,13 @@ export default {
   display: flex;
   flex-direction: column; /* 자식 요소들을 세로로 배치 */
   text-align: start;
-  margin-left: 50px;
   padding-top: 20px;
 }
 
 .right-banner-header{
-  font-size:28px;
+  font-size:1.8em;
   font-weight: bold;
-  padding-top: 20px;
+  padding-top: 30px;
   padding-bottom: 20px;
 }
 
@@ -276,23 +280,23 @@ export default {
 }
 
 .fancy_text {
-    margin-top: 80px;
-    font-size: 24px; /* 텍스트 크기 */
+    font-size: 19px; /* 텍스트 크기 */
     color: #ffffff; /* 텍스트 색상 */
-    background: linear-gradient(45deg, #ffe4a0, #FFC83B); /* 배경 그라디언트 */
+    background: linear-gradient(45deg, #abd9ff, #3ba7ff); /* 배경 그라디언트 */
     padding: 10px 20px; /* 내부 여백 */
     border-radius: 8px; /* 둥근 테두리 */
-    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.6); /* 그림자 효과 */
     text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4); /* 텍스트 그림자 */
     font-weight: bold; /* 글자 굵기 */
     display: inline-block; /* 올바른 패딩과 배경을 위해 */
     transition: all 0.3s ease; /* 부드러운 전환 효과 */
+    width: 145px;
+    height: 45px;
 }
 
 .fancy_text:hover {
     transform: scale(1.1); /* 마우스 오버 시 텍스트 확대 */
     cursor: pointer; /* 마우스 커서 모양 변경 */
-     background: linear-gradient(45deg, #abd9ff, #3ba7ff); /* 배경 그라디언트 */
+    background: linear-gradient(45deg, #ffd772, #fdc12a); /* 배경 그라디언트 */
 }
 
 .taste-review-banner {
@@ -336,4 +340,35 @@ export default {
 .btn-join:hover {
     background-color: #fa8072; /* 마우스 오버 시 버튼 색상 변경 */
 }
+
+/* chat */
+
+.right-header-wrap{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.right-banner-list {
+  list-style: none; 
+  padding: 0;
+  margin: 0; 
+}
+
+.right-banner-list li {
+  padding: 10px;
+  margin-bottom: 10px; /* Adds space between list items */
+  font-size: 1.2em; /* Sets the font size smaller than the default */
+  line-height: 1.5; /* Sets the line height for readability */
+  letter-spacing : -2px;
+  border-bottom: 1px solid #e1e1e1;
+}
+
+.right-banner-list li em {
+  font-style: normal; /* Overrides the default italic style of <em> */
+  font-weight: bold; /* Makes the text bold */
+  color: #0D6EFD; /* Sets the color of the text; replace with the actual color you want */
+}
+
 </style>

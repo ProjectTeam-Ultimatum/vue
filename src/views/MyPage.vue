@@ -1,4 +1,5 @@
 <template>
+  <div>
   <div class="divider" />
   <div class="info-container">
     <div class="member">
@@ -91,6 +92,7 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script>

@@ -36,9 +36,11 @@
   margin: 30px;
 }
 
+
 .tit-wrap-sub {
   margin-top: 50px;
 }
+
 
 .main-travel-style {
   margin: 0 auto;
@@ -83,6 +85,111 @@
   color: white;
   text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.8); /* 그림자 추가 */
 }
+
+  .divider {
+    padding: 10px;
+  }
+
+  .main-title-txt{
+    font-weight:bold;
+    letter-spacing : -2px;
+  }
+
+  /* recommend */
+  .recommend-style,
+  .chat,
+  .travel-course,
+  .my-travel-course {
+    display: flex;
+    background-color: #ffffff;
+    padding: 50px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+  }
+
+  .recommand-card {
+    /* border: 1px solid blue; */
+    width: 100%; /* 카드의 너비를 화면 전체로 설정 */
+    display: flex;
+    justify-content: center; /* 내부 요소를 가로축 중앙에 배치 */
+    /* background-color: #F1F8FF; */
+  }
+
+  .recommend-card-list {
+    display: flex;
+    flex-direction: row;
+    margin-top: 30px;
+    list-style: none;
+    padding: 0;
+    gap: 20px; /* 필요에 따라 조정 */
+  }
+  
+  .recommend-card {
+    position: relative;
+    width: 390px;
+    margin-bottom: 20px; /* Space between cards */
+  }
+  
+  .best {
+    position: absolute;
+    top: 10px; /* Adjust as needed */
+    left: 10px; /* Adjust as needed */
+    background-color: #ff6f61;
+    color: white;
+    padding: 5px 10px;
+    font-size: 0.8em;
+    border-radius: 5px;
+    z-index: 2;
+  }
+  
+  .img_scale {
+    overflow: hidden;
+    border-radius: 10px; /* Rounded corners for image */
+  }
+  
+  .img_wrap {
+    width: 100%;
+    height: 200px; /* Adjust as needed */
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .img_scale:hover .img_wrap {
+    transform: scale(1.05); /* Zoom effect on hover */
+  }
+  
+  .recommend-info {
+    background: white;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 0 0 10px 10px; /* Rounded corners on the bottom */
+  }
+  
+  .recommend-info em {
+    position: absolute;
+    width: 120px;
+    height: 30px;
+    /* line-height: 30px; */
+    left: 10px;
+    top: 185px;
+    display: block;
+    font-size: 1.1em;
+    font-weight: 600;
+    background: #50bbfd;
+    border-radius: 9px;
+    color: white;
+    font-style: normal;
+  }
+  
+  .recommend-info-contents {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+  }
 
 .tit-wrap-sub {
   margin-top: 30px;
@@ -240,10 +347,24 @@
 .course-card-content p {
   margin-top: 0;
   text-align: left;
-  font-size: 1.5em;
-  letter-spacing: -1.5px; /* 자간 조절 */
-  line-height: 0.8em; /*행간 조절*/
-  font-weight: 500;
+
+  font-size: 1.2em;
+  letter-spacing : -1.2px; /* 자간 조절 */
+  line-height : 0.8em;  /*행간 조절*/
+  font-weight: 600;
   color: #ffffff; /* 제목 색상 조정 */
   text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.8); /* 그림자 추가 */
 }
+
+.recommend-info-txt{
+  font-size: 1.1em;
+  width: 300px;
+  color: #767676;
+}
+
+.recommend-info-location {
+  margin-top: 8px;
+  color: #767676;
+}
+
+

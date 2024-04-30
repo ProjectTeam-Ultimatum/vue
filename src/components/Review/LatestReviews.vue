@@ -1,5 +1,4 @@
 <template>
-  <h2 class="mb-3">여행 후기 게시판</h2>
   <div class="latestReview-cards">
     <div
       v-for="(review, index) in latestReviews"

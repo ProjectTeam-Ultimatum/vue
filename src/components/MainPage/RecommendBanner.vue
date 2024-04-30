@@ -9,8 +9,8 @@
           <em>{{ item.duration }}</em>
           <div class="recommend-info-contents">
             <strong>{{ item.title }}</strong>
-            <span class="area">{{ item.location }}</span>
-            <span>{{ item.date }}</span>
+            <span class="recommend-info-txt">{{ item.content }}</span>
+            <span class="recommend-info-location"><font-awesome-icon :icon="['fas', 'location-dot']" style="color:#3ba7ff;" />{{ item.location }}</span>
           </div>
         </div>
       </li>
@@ -26,25 +26,25 @@
             id: 1,
             imageUrl:  require('@/assets/images/img01.jpg'),
             duration: '구경할 곳',
-            title: '성산 일출봉',
-            location: '제주시',
-            date: '쉬어갈 곳'
+            title: '여행이 있는 주말',
+            content: '매월 마지막 주말은 일상에서 벗어나 여행을 떠나보세요',
+            location: '서귀포시'
           },
           {
             id: 2,
             imageUrl:  require('@/assets/images/img02.jpg'),
             duration: '가볼만한 곳',
-            title: '오셜록 뮤지엄',
-            location: '서귀포시',
-            date: '쉬어갈 곳'
+            title: '생활 관광',
+            content: '현지인다움과 지역다움을 체험할 수 있는 지역관광법을 소개합니다',
+            location: '성산읍'
           },
           {
             id: 3,
-            imageUrl:  require('@/assets/images/img03.jpg'),
+            imageUrl:  require('@/assets/images/img04.jpg'),
             duration: '쉬어갈 곳',
-            title: '바당차차 민박',
-            location: '성산읍',
-            date: '쉬어갈 곳'
+            title: '반려동물 동반 여행',
+            content: '반려 동물과 함께 할 수 있는 여행지를 소개합니다',
+            location: '제주시'
           },
         ]
       };
