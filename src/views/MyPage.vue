@@ -82,7 +82,7 @@
               <div class="member-info" id="style">
                 {{ memberDetails.memberStyle }}
               </div>
-              <div @click="goToStyle" class="goToStyle">스타일 변경</div>
+              <div @click="goToStyle" class="goToStyle">여행 스타일 변경</div>
             </div>
           </div>
         </div>

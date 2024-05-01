@@ -41,9 +41,9 @@
 .info-group label {
   display: flex;
   justify-content: start;
-  width: 20%;
+  width: 10%;
   padding: 20px;
-  margin-left: 50px;
+  margin-left: 10px;
 }
 .member-info {
   display: flex;
@@ -100,7 +100,7 @@
   font-size: 18px;
   padding: 10px;
   margin: 8px;
-  width: 15%;
+  width: 20%;
 }
 .goToStyle:hover {
   cursor: pointer;
@@ -111,7 +111,7 @@
   font-size: 18px;
   padding: 10px;
   margin: 8px;
-  width: 15%;
+  width: 20%;
 }
 
 .member {
@@ -137,14 +137,14 @@
 .info-group label {
   display: flex;
   justify-content: start;
-  width: 35%;
+  width: 30%;
   padding: 20px;
-  margin-left: 50px;
+  margin-left: 20px;
 }
 .member-info {
   display: flex;
   justify-content: start;
-  width: 40%;
+  width: 50%;
   padding: 20px;
 }
 .buttons {
@@ -175,17 +175,16 @@
 .pw {
   display: flex;
   justify-content: start;
-  margin-top: 10px;
   padding: 10px;
   height: 100%;
   border-radius: 5px;
   background-color: white;
-  border: 1px solid #1275d6;
-  color: #1275d6;
+  border: 1px solid #68c7ff;
+  color: #68c7ff;
 }
 .pw:hover {
   border-radius: 5px;
-  background-color: #1275d6;
+  background-color: #68c7ff;
   border: 1px solid white;
   color: white;
 }

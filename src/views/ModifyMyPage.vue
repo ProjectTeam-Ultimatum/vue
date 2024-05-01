@@ -1,7 +1,7 @@
 <template>
   <div class="divider" />
   <div class="info-container">
-    <form @submit.prevent="updateUserInfo">
+    <form @submit.prevent="confirmUpdate">
       <div class="member">
         <div class="mypage-maintext">내 정보 수정</div>
         <div class="mypage-content-row">
@@ -219,6 +219,11 @@ export default {
         });
       } catch (error) {
         console.error("멤버 정보 수정 실패 : ", error);
+      }
+    },
+    confirmUpdate() {
+      if (confirm("정말로 수정 하시겠습니까?")) {
+        this.updateUserInfo();
       }
     },
     async fetchUserDetail() {
