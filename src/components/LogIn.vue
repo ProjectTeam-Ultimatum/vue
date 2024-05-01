@@ -421,25 +421,50 @@
         </div>
 
         <!-- 회원가입 완료 메시지 (단계 3) -->
-          <div  v-if="currentStep === 3" class="modal-container">
-              <div  class="signup-complete">
-                  <img src="@/assets/images/thank.png" style="width: 440px; height: 400px;" alt="...">
-                  <div class="service">
-                      <img src="@/assets/images/mbti-search.png" style="width: 50px; height: 50px;" alt="...">
-                      <img src="@/assets/images/planning.png" style="width: 50px; height: 50px;" alt="...">
-                      <img src="@/assets/images/travel-mate.png" style="width: 50px; height: 50px;" alt="...">
-                  </div>
-                  <div class="service-content">
-                      <p style="margin-top: 15px;"><span style="color: #F7C347;">여행스타일</span>을<br/>알아보세요</p>
-                      <p style="margin-top: 15px;"><span style="color: #F7C347;">코스 추천</span>을<br/> 받아보세요</p>
-                      <p style="margin-top: 15px;"><span style="color: #F7C347;">여행메이트</span>를 <br/>찾아보세요</p>
-                  </div>
-                  <div class="home-button-container">
-                  <button type="button" class="home-button"  @click="goToHome">제주랑 이용하러 가기</button>
-                  </div>
-              </div>
+        <div v-if="currentStep === 3" class="modal-container">
+          <div class="signup-complete">
+            <img
+              src="@/assets/images/thank.png"
+              style="width: 440px; height: 400px"
+              alt="..."
+            />
+            <div class="service">
+              <img
+                src="@/assets/images/mbti-search.png"
+                style="width: 50px; height: 50px"
+                alt="..."
+              />
+              <img
+                src="@/assets/images/planning.png"
+                style="width: 50px; height: 50px"
+                alt="..."
+              />
+              <img
+                src="@/assets/images/travel-mate.png"
+                style="width: 50px; height: 50px"
+                alt="..."
+              />
+            </div>
+            <div class="service-content">
+              <p style="margin-top: 15px">
+                <span style="color: #f7c347">여행스타일</span>을<br />알아보세요
+              </p>
+              <p style="margin-top: 15px">
+                <span style="color: #f7c347">코스 추천</span>을<br />
+                받아보세요
+              </p>
+              <p style="margin-top: 15px">
+                <span style="color: #f7c347">여행메이트</span>를
+                <br />찾아보세요
+              </p>
+            </div>
+            <div class="home-button-container">
+              <button type="button" class="home-button" @click="goToHome">
+                제주랑 이용하러 가기
+              </button>
+            </div>
           </div>
-
+        </div>
       </form>
     </div>
   </div>
@@ -509,8 +534,8 @@ export default {
   },
   methods: {
     goToHome() {
-      this.$router.push('/'); // 홈 경로로 이동
-      this.$emit('close'); // 부모 컴포넌트에 모달 닫기 이벤트 전송
+      this.$router.push("/"); // 홈 경로로 이동
+      this.$emit("close"); // 부모 컴포넌트에 모달 닫기 이벤트 전송
     },
     redirectToKakaoLogin() {
       //카카오 로그인페이지로 리디렉션할 url 생성
