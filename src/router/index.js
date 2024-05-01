@@ -30,7 +30,6 @@ import ModifyMypage from '../views/ModifyMyPage.vue'
 
 
 
-
 const routes = [
   {
     path: '/',
