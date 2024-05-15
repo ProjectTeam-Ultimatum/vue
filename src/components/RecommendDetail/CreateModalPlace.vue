@@ -41,9 +41,9 @@
             </div>
             <div class="modal-btn">
               <!-- <button class="action-button cancel" @click="close">취소</button> -->
-              <button type="button" class="btn btn-secondary cancel" style="width: 120px" @click="close">취소</button>
+              <button type="button" class="btn btn-secondary cancel" style="width: 122px" @click="close">취소</button>
               <!-- <button class="action-button confirm" @click="submitFeedback">제출</button> -->
-              <button type="button" class="btn btn-primary confirm" style="width: 120px" @click="submitFeedback">제출</button>
+              <button type="button" class="btn btn-primary confirm" style="width: 122px" @click="submitFeedback">제출</button>
             </div>
           </form>
        </div>
