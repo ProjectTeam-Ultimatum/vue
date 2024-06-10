@@ -102,7 +102,7 @@
     <div class="recommand-card">
       <div class="taste-review-banner">
           <div class="banner-content">
-              <p>내가 가는곳이 핫 플레이스!(꾸며야함)</p>
+              <p>내가 가는곳이 핫 플레이스!</p>
               <button class="btn-join">지금 신청하기</button>
           </div>
       </div>
